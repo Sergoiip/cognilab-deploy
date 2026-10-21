@@ -42,16 +42,28 @@ cambió desde el último `--sellar`.
 | Perfil | Escala | Incluye |
 |---|---|---|
 | ligero | 1 | Hermes, Obsidian, Git, GitHub CLI, plugins obsidian-git y Templater |
-| negocio | 2 | + TaskNotes, Cadence (CRM), Syncthing, Pandoc, FFmpeg |
+| negocio | 2 | + TaskNotes, Cadence (CRM y finanzas), Syncthing, Pandoc, FFmpeg |
 | equipo | 3 | + rclone (espejo en nube), Excalidraw |
 
 Además, cada módulo suma lo suyo (por ejemplo C1 trae Inkscape y GIMP; D2 trae Kdenlive).
 
-**Cómo se asigna.** En la ficha de ingreso se anota qué ya usa el cliente.
-- `modo: cliente`: se respeta lo que ya usa (`ya_usa`) y solo se instala lo que los módulos piden.
-- `modo: asignar`: el cliente no sabe qué usar; se le da el perfil de su escala.
+**Todo es opcional.** Los perfiles son una propuesta, no una obligación. `instala.sh` muestra la lista numerada y pregunta:
+Enter instala todo, `3,5` quita esas, `n` no instala ninguna app. Sin terminal no instala nada salvo que pases `--si`.
+Los skills del producto siempre se instalan; las apps nunca se imponen.
 
-**Seguridad.** Los plugins de Obsidian no se copian al repo: se bajan del release oficial y se comparan por sha256 con el catálogo; si no coincide, no se instala. Cadence se instala desde el original (MIT) de su autor, con la plantilla de CRM de este repo (sin token ni datos).
+**Cómo se asigna.** En la ficha de ingreso se anota qué ya usa el cliente.
+- `modo: cliente`: se respeta lo que ya usa (`ya_usa`) y solo se ofrece lo que los módulos piden.
+- `modo: asignar`: el cliente no sabe qué usar; se le propone el perfil de su escala.
+
+**Cadence modificado.** Va en `stack/vendor/cognilab-cadence/` (fork MIT de wesswart77, con reporte de Finanzas y alerta de estancados a 15 días). Es una versión neutra, sin nombres de clientes; cambios y pendientes en su `CAMBIOS.md`.
+
+**Ampliar el stack con la operación.**
+1. Agregar una app en `stack/extras.yaml` (hay un ejemplo comentado). Se funde con el catálogo al cargar.
+2. Sumarla a un perfil o a un módulo desde el mismo archivo.
+3. Cuando se consolide, pasarla a `stack/catalogo.yaml` y subir `version_catalogo`.
+`tools/verificar.py` valida que lo agregado exista, tenga hash si es plugin y esté marcado opcional.
+
+**Seguridad.** Los plugins de terceros no se copian al repo: se bajan del release oficial y se comparan por sha256 con el catálogo; si no coincide, no se instala. El fork de Cadence sí vive en el repo, también con hash, y el verificador falla si se altera sin actualizar el catálogo.
 
 **Límites conocidos.**
 - Los nombres de paquete están verificados solo en `pacman`. Los de `apt` y `dnf` están por probar en un equipo real.

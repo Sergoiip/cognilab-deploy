@@ -47,10 +47,12 @@ PROHIBIDO = [(r"\$\s?\d[\d.,]*", "precio"), (r"\bCOP\b", "moneda"),
               "nombre de cliente"),
              (r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP")]
 for p in ROOT.rglob("*"):
-    if p.is_file() and p.suffix in (".md", ".yaml", ".sh", ".py") and ".git" not in p.parts and p.name != "verificar.py":
+    if p.is_file() and p.suffix in (".md", ".yaml", ".sh", ".py", ".js", ".css", ".json") and ".git" not in p.parts and p.name != "verificar.py":
         t = p.read_text(encoding="utf-8", errors="ignore")
         for rx, what in PROHIBIDO:
-            if what in ("precio", "moneda") and p.suffix in (".sh", ".py"):
+            if what in ("precio", "moneda") and p.suffix in (".sh", ".py", ".js", ".css", ".json"):
+                continue
+            if what == "IP" and p.suffix in (".js", ".css", ".json"):
                 continue
             if re.search(rx, t):
                 err.append(f"{p.relative_to(ROOT)}: contiene {what}")
@@ -78,12 +80,19 @@ if CATF.exists():
         if a["tipo"] == "obsidian-plugin":
             if set(a.get("sha256", {})) != {"main.js", "manifest.json", "styles.css"}:
                 err.append(f"stack: {k} sin sha256 completo")
+            if a.get("fuente") == "vendor":
+                for f, esperado in a["sha256"].items():
+                    fp = ROOT / a["ruta"] / f
+                    if not fp.exists() or hashlib.sha256(fp.read_bytes()).hexdigest() != esperado:
+                        err.append(f"stack: {k}/{f} no coincide con su sha256 del catálogo")
+                if not (ROOT / a["ruta"] / "LICENSE").exists():
+                    err.append(f"stack: {k} vendorizado sin LICENSE")
             if not a.get("licencia"):
                 err.append(f"stack: {k} sin licencia declarada")
         if a["tipo"] == "sistema" and not {"pacman", "apt"} <= set(a["pm"]):
             warn.append(f"stack: {k} sin paquete para apt/pacman")
-        if a["tipo"] == "sistema" and a.get("verificado") == ["pacman"]:
-            pass
+        if not a.get("opcional"):
+            warn.append(f"stack: {k} no está marcada opcional")
     for x in cat["plantillas"].values():
         t = (ROOT / x).read_text(encoding="utf-8")
         if re.search(r'"cadenceApiToken":\s*"[^"]+"', t):

@@ -176,6 +176,6 @@ Fuente de los entregables: `Cadence/Services/Paquetes por entregables — modelo
 
 1. Los 3 perfiles (ligero, negocio, equipo) y qué apps lleva cada uno: ver `README.md`.
 2. Regla de asignación: si el cliente no sabe qué usar, se le da el perfil de su escala más alta.
-3. Cadence (CRM) entra desde el perfil negocio. Es un plugin de otro autor (MIT): se instala el original, no tu versión modificada.
-4. Todo lo del stack debe ser gratis. Lo que no lo sea (API oficial de WhatsApp) queda como cuenta manual.
+3. Cadence (CRM) entra desde el perfil negocio. Va el fork modificado incluido en el repo (MIT, con la licencia del autor original).
+4. Todo es opcional: el cliente elige qué se instala. Todo lo del stack debe ser gratis. Lo que no lo sea (API oficial de WhatsApp) queda como cuenta manual.
 5. Criterio de hecho del stack: cada app instalada abre y cumple su prueba mínima (Obsidian abre la bóveda, el plugin aparece, Git hace un commit, el agente responde). Falta escribir esas pruebas.

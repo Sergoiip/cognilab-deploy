@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Deja un PC listo según el manifiesto del cliente. Idempotente: se puede repetir sin romper nada.
-#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps]
+#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si]
+# Las apps son OPCIONALES: sin --si pregunta cuáles instalar (sin terminal, no instala ninguna).
 # Instala los módulos pedidos (más E2, siempre) y las aplicaciones que el manifiesto resuelve.
 set -euo pipefail
 
-MANIFIESTO=""; DRY=0; SIN_APPS=0
+MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0
 for a in "$@"; do
   case "$a" in
     --dry-run) DRY=1 ;;
     --sin-apps) SIN_APPS=1 ;;
+    --si) SI=1 ;;
     *) MANIFIESTO="$a" ;;
   esac
 done
@@ -64,7 +66,24 @@ echo "== 4/5 Aplicaciones"
 if [[ $SIN_APPS -eq 1 ]]; then
   echo "  (omitido por --sin-apps)"
 else
-  PLAN="$("$PY" "$REPO/tools/stack.py" plan "$MANIFIESTO" --pm "$PM")" || die "no se pudo resolver el stack"
+  LISTA="$("$PY" "$REPO/tools/stack.py" lista "$MANIFIESTO" --pm "$PM")" || die "no se pudo resolver el stack"
+  EXCL=""
+  echo "  Propuesta (todo opcional):"
+  echo "$LISTA" | awk -F'|' '$1=="INFO"{print "  "$2} $1=="APP"{n++; printf "   %2d) %-44s %s [%s]\n", n, $3, $4, $5}'
+  if [[ $DRY -eq 0 && $SI -eq 0 ]]; then
+    if [[ -t 0 ]]; then
+      read -r -p "  Enter = instalar todas · números separados por coma = QUITAR esas · n = ninguna: " R
+      case "$R" in
+        "") ;;
+        n|N) EXCL="$(echo "$LISTA" | awk -F'|' '$1=="APP"{printf "%s%s", s, $2; s=","}')" ;;
+        *) EXCL="$(echo "$LISTA" | awk -F'|' -v q="$R" 'BEGIN{n=split(q,a,","); for(i=1;i<=n;i++) m[a[i]+0]=1} $1=="APP"{k++; if(k in m){printf "%s%s", s, $2; s=","}}')" ;;
+      esac
+    else
+      echo "  Sin terminal y sin --si: no se instala ninguna app (usa --si para aceptar la propuesta)."
+      EXCL="$(echo "$LISTA" | awk -F'|' '$1=="APP"{printf "%s%s", s, $2; s=","}')"
+    fi
+  fi
+  PLAN="$("$PY" "$REPO/tools/stack.py" plan "$MANIFIESTO" --pm "$PM" --excluir "$EXCL")" || die "no se pudo resolver el stack"
   VAULT="$("$PY" -c 'import sys,yaml,os;print(os.path.expanduser(yaml.safe_load(open(sys.argv[1])).get("vault","")))' "$MANIFIESTO")"
   MANUALES=()
   while IFS='|' read -r tipo a b; do
@@ -91,8 +110,8 @@ else
         if [[ -z "$VAULT" ]]; then MANUALES+=("Plugins de Obsidian ($a): el manifiesto no trae 'vault:'")
         else
           echo "  + plugins de Obsidian en $VAULT: $a"
-          if [[ $DRY -eq 1 ]]; then "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" --dry-run | sed 's/^/    /'
-          else "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" | sed 's/^/    /'; fi
+          if [[ $DRY -eq 1 ]]; then "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" --excluir "$EXCL" --dry-run | sed 's/^/    /'
+          else "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" --excluir "$EXCL" | sed 's/^/    /'; fi
         fi ;;
       MANUAL) MANUALES+=("$a") ;;
     esac

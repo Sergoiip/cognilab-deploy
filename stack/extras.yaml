@@ -1,0 +1,14 @@
+# Ampliaciones del stack, sin tocar catalogo.yaml. Se funden al cargar.
+# Ejemplo (descomentar y ajustar):
+# apps:
+#   mi-app:
+#     nombre: Mi app
+#     tipo: sistema            # sistema | pip | obsidian-plugin | hermes
+#     bin: miapp               # comando que prueba si ya está instalada
+#     pm: {pacman: miapp, apt: miapp, dnf: miapp}
+#     para: para qué sirve
+# perfiles:
+#   negocio: {apps: [mi-app]}  # se SUMA al perfil
+# por_modulo:
+#   C3: [mi-app]               # se SUMA a lo que ya pide el módulo
+apps: {}

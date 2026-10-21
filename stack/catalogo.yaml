@@ -1,6 +1,8 @@
-_nota: Todo es gratis. Los plugins se bajan del release oficial y se verifican por
-  sha256 (no se redistribuyen aquí). 'verificado' = gestores donde confirmé el nombre
-  del paquete.
+version_catalogo: 0.3.0
+_nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
+  qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
+  se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
+  de Cadence).'
 apps:
   hermes:
     nombre: Hermes Agent
@@ -8,6 +10,7 @@ apps:
     costo: gratis
     url: https://hermes-agent.nousresearch.com/install.sh
     para: agente de IA
+    opcional: true
   obsidian:
     nombre: Obsidian
     tipo: sistema
@@ -19,6 +22,7 @@ apps:
     verificado:
     - pacman
     para: bóveda / second brain
+    opcional: true
   git:
     nombre: Git
     tipo: sistema
@@ -30,6 +34,7 @@ apps:
     verificado:
     - pacman
     para: versionar la bóveda
+    opcional: true
   gh:
     nombre: GitHub CLI
     tipo: sistema
@@ -41,6 +46,7 @@ apps:
     verificado:
     - pacman
     para: respaldo en GitHub
+    opcional: true
   ffmpeg:
     nombre: FFmpeg
     tipo: sistema
@@ -52,6 +58,7 @@ apps:
     verificado:
     - pacman
     para: audio y video
+    opcional: true
   pandoc:
     nombre: Pandoc
     tipo: sistema
@@ -63,6 +70,7 @@ apps:
     verificado:
     - pacman
     para: documentos
+    opcional: true
   syncthing:
     nombre: Syncthing
     tipo: sistema
@@ -74,6 +82,7 @@ apps:
     verificado:
     - pacman
     para: sincronizar equipos sin nube
+    opcional: true
   rclone:
     nombre: rclone
     tipo: sistema
@@ -85,6 +94,7 @@ apps:
     verificado:
     - pacman
     para: espejo con Drive u otra nube
+    opcional: true
   obs-studio:
     nombre: OBS Studio
     tipo: sistema
@@ -95,6 +105,7 @@ apps:
     verificado:
     - pacman
     para: captura multipista
+    opcional: true
   kdenlive:
     nombre: Kdenlive
     tipo: sistema
@@ -106,6 +117,7 @@ apps:
     verificado:
     - pacman
     para: edición de video
+    opcional: true
   inkscape:
     nombre: Inkscape
     tipo: sistema
@@ -117,6 +129,7 @@ apps:
     verificado:
     - pacman
     para: logos y vectores
+    opcional: true
   gimp:
     nombre: GIMP
     tipo: sistema
@@ -128,6 +141,7 @@ apps:
     verificado:
     - pacman
     para: retoque de fotos
+    opcional: true
   libreoffice:
     nombre: LibreOffice
     tipo: sistema
@@ -139,23 +153,15 @@ apps:
     verificado:
     - pacman
     para: cotizaciones y cuentas de cobro
+    opcional: true
   faster-whisper:
     nombre: Transcripción local (faster-whisper)
     tipo: pip
     paquete: faster-whisper
     para: captura por voz
-  cadence-planner:
-    nombre: cadence-planner
-    tipo: obsidian-plugin
-    repo: wesswart77/obsidian-cadence
-    version: 0.15.0
-    licencia: MIT
-    sha256:
-      main.js: 00a3a32ad9fde6b9c4ec59717c1d2ebf7a09570b00d4867d284ba4215c0aabab
-      manifest.json: 0ca4e2cbf9f5fe14271deac227f067fcdc76435b4c232c6307d197310d1473d2
-      styles.css: 0c9f9c39c83a146f8054291a175b7de59e9df81a0a38118000dbeae24e436fda
+    opcional: true
   tasknotes:
-    nombre: tasknotes
+    nombre: TaskNotes (plugin)
     tipo: obsidian-plugin
     repo: callumalpass/tasknotes
     version: 4.13.10
@@ -164,8 +170,10 @@ apps:
       main.js: 0f44edc278bd300ac8c06d1e3d8316a08105ac063e8d57a84c451155f57dd976
       manifest.json: 4b43e3117c01059197fac53508111174b92a9b9b598f23aa66653b039242cd9c
       styles.css: a3ae674cb83fe7629c4e4de3a987e99c145f47c73e4b1698e879b12fa373ce5d
+    opcional: true
+    para: tareas como notas
   templater-obsidian:
-    nombre: templater-obsidian
+    nombre: Templater (plugin)
     tipo: obsidian-plugin
     repo: SilentVoid13/Templater
     version: 2.26.0
@@ -174,8 +182,10 @@ apps:
       main.js: 0acd45cfdb3a7337e2bef511699bc1f819dc64645ad3480df33579d42d2dcbaa
       manifest.json: 91c9fa8510082fffa0b3d022aac4986e3b392295b1126e847ead7ed7289169b8
       styles.css: 67a6dd2d1d6dedca1287c334ca884ec4196433f71ca47388a0bd3eac14cf8b5f
+    opcional: true
+    para: plantillas de notas
   obsidian-git:
-    nombre: obsidian-git
+    nombre: Obsidian Git (plugin)
     tipo: obsidian-plugin
     repo: Vinzent03/obsidian-git
     version: 2.42.0
@@ -184,8 +194,10 @@ apps:
       main.js: 496db148bcea4169f455e234bb02f08f8c50c317c0ad5afde3b27c0904daf133
       manifest.json: 7ad98e8cce157e9846b47941c6a7cb9b022bc9d5c6d11782290e7a7a164b470d
       styles.css: f30ad2ca42fefe3b704c548f7747d285c2038fa4ce90601e68fe6fd660494052
+    opcional: true
+    para: respaldo de la bóveda en GitHub
   obsidian-excalidraw-plugin:
-    nombre: obsidian-excalidraw-plugin
+    nombre: Excalidraw (plugin)
     tipo: obsidian-plugin
     repo: zsviczian/obsidian-excalidraw-plugin
     version: 2.29.0
@@ -194,6 +206,22 @@ apps:
       main.js: 4da2084a4eafe7d328484fa5742004b9fb990346c4c84fde924b885a5ecc1c17
       manifest.json: 4880b885c50643ef848d31cea829776ca2e96747353aee334d71e875f79d31c0
       styles.css: 173e9c161a01c53b3c173344e023de4d327fd0658e476961b46b0e6a93117ded
+    opcional: true
+    para: mapas y diagramas a mano
+  cognilab-cadence:
+    nombre: Cadence (CogniLab) — CRM, planner y finanzas
+    tipo: obsidian-plugin
+    fuente: vendor
+    ruta: stack/vendor/cognilab-cadence
+    version: 0.15.0-cognilab.1
+    licencia: 'MIT (base: wesswart77/obsidian-cadence)'
+    sha256:
+      main.js: 191e739409101c5517f6be69a250c327d390b7f1686c83106bbedfba8bd26fcb
+      manifest.json: 5854586fe6ddd5a14e52475a9fe6439898d1392b1b65d08170f01bbe5387f7eb
+      styles.css: 765b28503cc5cf9045bb906524db925eb87ab06024c8a3175b040320daaf3a01
+    para: CRM y finanzas en Obsidian
+    opcional: true
+    nota: Fork MIT de wesswart77/obsidian-cadence incluido en el repo (ver stack/vendor/cognilab-cadence/CAMBIOS.md)
 perfiles:
   ligero:
     escala: 1
@@ -211,7 +239,7 @@ perfiles:
     hereda: ligero
     apps:
     - tasknotes
-    - cadence-planner
+    - cognilab-cadence
     - syncthing
     - pandoc
     - ffmpeg
@@ -262,9 +290,9 @@ por_modulo:
 por_modulo_desde_escala:
   A2:
     '2':
-    - cadence-planner
+    - cognilab-cadence
 plantillas:
-  cadence-planner: stack/plantillas/cadence-crm/data.json
+  cognilab-cadence: stack/plantillas/cadence-crm/data.json
 cuentas_manuales:
   telegram: Cuenta o bot de Telegram (BotFather). Gratis.
   whatsapp-business: 'WhatsApp Business: la app es gratis; la API oficial tiene costo.'
