@@ -1,0 +1,19 @@
+id: B3
+nombre: Captura por voz
+slug: cd-captura-voz
+bloque: B
+ms: MS-03
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- local-audio-transcription
+hecho:
+- Transcripción local funcionando.
+- Al menos 5 notas de voz convertidas en registros estructurados.
+- Errores revisados con el cliente y glosario propio dejado.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

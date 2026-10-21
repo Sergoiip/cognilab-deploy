@@ -1,0 +1,22 @@
+id: B4
+nombre: Integración de herramientas con el agente
+slug: cd-integracion-herramientas
+bloque: B
+ms: MS-11
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- obsidian-mcp-integration
+- hermes-agent
+- google-workspace
+- computer-use
+hecho:
+- Cada herramienta conectada con prueba de lectura y de escritura.
+- Permisos mínimos documentados.
+- Cómo revocar cada acceso, entregado por escrito.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

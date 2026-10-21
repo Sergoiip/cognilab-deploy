@@ -1,0 +1,20 @@
+id: E3
+nombre: Capacitación y manual propio
+slug: cd-capacitacion
+bloque: E
+ms: null
+estado: esqueleto-sin-fuente
+requiere_skills_hermes: []
+hecho:
+- Manual del cliente, con sus nombres y rutas.
+- Sesión de uso con acta.
+- El cliente ejecuta 3 tareas clave sin ayuda.
+- Plan de continuidad escrito.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Escribir el método desde cero

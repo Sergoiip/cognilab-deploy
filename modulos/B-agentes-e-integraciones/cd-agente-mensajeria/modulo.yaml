@@ -1,0 +1,21 @@
+id: B2
+nombre: Agente conectado a Telegram o WhatsApp Business
+slug: cd-agente-mensajeria
+bloque: B
+ms: MS-17
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes: []
+hecho:
+- Conectado al canal real del negocio.
+- Probado con al menos 10 casos, incluidas 3 derivaciones a humano.
+- Cada conversación queda registrada en el sistema del cliente.
+- 'Regla probada: si el dato no está en la tabla, no lo inventa y escala.'
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Generalizar el manual de 8 fases (hoy escrito para un cliente concreto)
+- Lista de 'lo que falta para activar' pasa a ser el checklist de activación por cliente

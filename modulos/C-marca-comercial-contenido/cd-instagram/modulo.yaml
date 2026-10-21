@@ -1,0 +1,18 @@
+id: C5
+nombre: Flujo de Instagram
+slug: cd-instagram
+bloque: C
+ms: MS-16
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes: []
+hecho:
+- Banco de al menos 30 ideas.
+- Parrilla de 4 semanas.
+- Cuatro piezas producidas y medición base.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

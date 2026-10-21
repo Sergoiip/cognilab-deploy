@@ -1,0 +1,21 @@
+id: E2
+nombre: Entrega verificada
+slug: cd-entrega-verificada
+bloque: E
+ms: MS-13
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- pdf
+- brand-identity-and-collateral
+- docx
+- xlsx
+hecho:
+- Lista de verificación aplicada en cada hito, con evidencia.
+- Lo faltante declarado antes de pedir la aceptación.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

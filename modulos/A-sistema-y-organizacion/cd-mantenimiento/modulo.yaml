@@ -1,0 +1,19 @@
+id: A6
+nombre: Mantenimiento y recuperación de equipos
+slug: cd-mantenimiento
+bloque: A
+ms: null
+estado: esqueleto-sin-fuente
+requiere_skills_hermes: []
+hecho:
+- Checklist de salud ejecutado (disco, actualizaciones, respaldos).
+- Respaldo restaurable, probado.
+- Calendario mensual acordado por escrito.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Escribir el método desde cero

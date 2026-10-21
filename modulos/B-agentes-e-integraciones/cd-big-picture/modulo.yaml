@@ -1,0 +1,19 @@
+id: B5
+nombre: Vista Big Picture
+slug: cd-big-picture
+bloque: B
+ms: MS-14
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- obsidian
+hecho:
+- Mapa navegable con clientes, tareas y sistemas reales.
+- Actualización desde el registro, o procedimiento documentado.
+- El cliente encuentra 3 datos sin ayuda.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

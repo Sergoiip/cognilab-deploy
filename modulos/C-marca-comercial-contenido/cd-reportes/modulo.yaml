@@ -1,0 +1,21 @@
+id: C3
+nombre: Reportes periódicos con marca
+slug: cd-reportes
+bloque: C
+ms: MS-06
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- brand-identity-and-collateral
+- pdf
+- weekly-review-planning
+hecho:
+- Un reporte generado con datos reales.
+- KPIs definidos sobre la línea base.
+- El cliente lo regenera sin ayuda.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

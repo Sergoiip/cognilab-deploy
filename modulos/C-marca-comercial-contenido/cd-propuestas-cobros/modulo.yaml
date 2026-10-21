@@ -1,0 +1,20 @@
+id: C2
+nombre: Propuestas, cotizaciones y cobros
+slug: cd-propuestas-cobros
+bloque: C
+ms: MS-05
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- brand-asset-kit-from-site
+- brand-identity-and-collateral
+hecho:
+- Plantillas de propuesta, cotización y cuenta de cobro, con numeración.
+- Un documento real emitido de punta a punta.
+- Seguimiento programado.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

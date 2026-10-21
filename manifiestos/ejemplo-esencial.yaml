@@ -1,0 +1,16 @@
+cliente: '[cliente]'
+paquete: esencial
+version_repo: se llena al instalar
+modulos:
+- id: A1
+  escala: 1
+- id: A2
+  escala: 1
+- id: B1
+  escala: 1
+- id: C1
+  escala: 1
+- id: E1
+  escala: 1
+- id: E3
+  escala: 1

@@ -1,0 +1,20 @@
+id: A4
+nombre: Orden de archivos y almacenamiento
+slug: cd-orden-archivos
+bloque: A
+ms: MS-07
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- storage-cleanup-organization
+hecho:
+- Estructura acordada aplicada.
+- Inventario antes y después (conteo y espacio).
+- Respaldo verificado antes de mover nada; cero borrados.
+- Duplicados en cuarentena hasta que el cliente acepte.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

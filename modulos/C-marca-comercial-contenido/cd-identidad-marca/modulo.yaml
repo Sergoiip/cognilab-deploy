@@ -1,0 +1,22 @@
+id: C1
+nombre: Identidad de marca y kit de assets
+slug: cd-identidad-marca
+bloque: C
+ms: MS-04
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- brand-identity-and-collateral
+- brand-asset-kit-from-site
+hecho:
+- El cliente aprobó la dirección antes de producir variantes.
+- 'Manual de marca: logo, paleta, tipografía y usos incorrectos.'
+- Kit en los formatos y tamaños que usa (perfil, portada, catálogo).
+- Legible a tamaño de foto de perfil.
+- Sin marcas de terceros ni afirmaciones que el cliente no pueda sustentar.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

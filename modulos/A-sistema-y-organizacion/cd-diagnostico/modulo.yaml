@@ -1,0 +1,21 @@
+id: A1
+nombre: Diagnóstico del caos al sistema
+slug: cd-diagnostico
+bloque: A
+ms: null
+estado: esqueleto-sin-fuente
+requiere_skills_hermes: []
+hecho:
+- Mapa del flujo actual en una página, validado con el cliente.
+- Dolores priorizados, cada uno con al menos 3 evidencias dichas o mostradas por el
+  cliente.
+- Plan de entregables con paquete y escala (1, 2 o 3) elegida por módulo.
+- 'Línea base: mínimo 3 indicadores medidos y fechados (ver E1).'
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Escribir el método desde cero

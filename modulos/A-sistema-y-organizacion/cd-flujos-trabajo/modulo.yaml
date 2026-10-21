@@ -1,0 +1,19 @@
+id: A3
+nombre: Flujos de trabajo y ritmo semanal
+slug: cd-flujos-trabajo
+bloque: A
+ms: MS-12
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- weekly-review-planning
+hecho:
+- Ciclo captura → tarea → revisión funcionando durante 2 semanas.
+- Una automatización recurrente corriendo, con ejecución comprobada en log.
+- Una revisión semanal hecha una vez junto al cliente.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

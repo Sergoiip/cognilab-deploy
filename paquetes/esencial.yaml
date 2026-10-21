@@ -1,0 +1,40 @@
+paquete: Esencial
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+fases: 3
+obligatorios:
+- A1
+- E1
+- E2
+- E3
+principal:
+  elegir: 1
+  entre:
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - B1
+  - B2
+  - B3
+  - B4
+  - B5
+  - C1
+  - C2
+  - C3
+  - C4
+  - C5
+  - C6
+  - D1
+  - D2
+ligero:
+  elegir: 1
+  entre_PROPUESTA:
+  - A5
+  - A6
+  - B3
+  - C2
+  - C3
+  - D1
+  nota: Sergio define cuáles son 'ligeros'; hoy es una propuesta.
+precio: ver Cadence

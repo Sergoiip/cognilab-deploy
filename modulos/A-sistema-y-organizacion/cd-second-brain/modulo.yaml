@@ -1,0 +1,20 @@
+id: A2
+nombre: Second Brain / sistema de registro (Obsidian)
+slug: cd-second-brain
+bloque: A
+ms: MS-09
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- obsidian
+hecho:
+- Bóveda abierta y funcionando en el equipo del cliente, con sincronización probada.
+- Entidades y campos fijos definidos y documentados (esquema).
+- Mínimo 10 registros reales cargados con el cliente.
+- En sesión, el cliente crea una nota y una tarea enlazada sin ayuda.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

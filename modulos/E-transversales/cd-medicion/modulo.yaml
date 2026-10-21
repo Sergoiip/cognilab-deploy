@@ -1,0 +1,19 @@
+id: E1
+nombre: 'Medición: línea base y cierre'
+slug: cd-medicion
+bloque: E
+ms: null
+estado: esqueleto-sin-fuente
+requiere_skills_hermes: []
+hecho:
+- Máximo 5 indicadores, cada uno medible.
+- Línea base con fecha y fuente.
+- Reporte de cierre contra la línea base.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Escribir el método desde cero

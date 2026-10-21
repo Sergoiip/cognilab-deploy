@@ -1,0 +1,18 @@
+id: C4
+nombre: Universo de cliente y guiones
+slug: cd-universo-cliente
+bloque: C
+ms: MS-08
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- client-universe-marketing-workflow
+hecho:
+- Documento de voz y estilo construido con al menos 10 muestras reales.
+- Tres piezas generadas que el cliente reconoce como suyas.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []

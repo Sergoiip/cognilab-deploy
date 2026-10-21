@@ -1,0 +1,20 @@
+id: B1
+nombre: Agente de IA instalado en la máquina
+slug: cd-agente-en-maquina
+bloque: B
+ms: null
+estado: esqueleto-sin-fuente
+requiere_skills_hermes: []
+hecho:
+- Instalado, arranca tras reiniciar y el cliente sabe abrirlo.
+- Tres tareas reales del cliente resueltas en sesión.
+- Credenciales fuera de texto plano; permisos definidos por escrito.
+- 'Límites explícitos: qué hace y qué no hace.'
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar:
+- Escribir el método desde cero

@@ -1,0 +1,6 @@
+.env
+*.env
+clientes/
+manifiestos/cliente-*.yaml
+__pycache__/
+*.pyc

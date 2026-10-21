@@ -1,0 +1,20 @@
+id: A5
+nombre: Espejo local ↔ nube
+slug: cd-espejo-nube
+bloque: A
+ms: MS-10
+estado: esqueleto-desde-meta-skill
+requiere_skills_hermes:
+- google-workspace
+- storage-cleanup-organization
+hecho:
+- Misma estructura en disco y en la nube.
+- 'Verificación por conteo y tamaño: cero diferencias, o diferencias listadas.'
+- Restauración probada de una carpeta.
+hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
+escalas:
+- 1-individuo
+- 2-negocio
+- 3-equipo
+cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+pendiente_generalizar: []
