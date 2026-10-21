@@ -1,0 +1,14 @@
+cliente: "[cliente]"
+paquete: integral
+vault: ~/Documents/Obsidian/Bóveda-cliente
+modulos:
+  - {id: A1, escala: 2}
+  - {id: A2, escala: 2}
+  - {id: A3, escala: 2}
+  - {id: A5, escala: 2}
+  - {id: B2, escala: 2}
+  - {id: C1, escala: 2}
+  - {id: C2, escala: 2}
+  - {id: E1, escala: 2}
+  - {id: E3, escala: 2}
+herramientas: {modo: asignar, perfil: auto, ya_usa: [], extras: [], excluir: [], cuentas: [telegram, whatsapp-business, google-drive]}

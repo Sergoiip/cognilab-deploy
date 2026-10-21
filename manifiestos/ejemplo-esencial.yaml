@@ -1,16 +1,17 @@
-cliente: '[cliente]'
+cliente: "[cliente]"
 paquete: esencial
-version_repo: se llena al instalar
+vault: ~/Documents/Obsidian/Bóveda-cliente      # dónde vive su bóveda
 modulos:
-- id: A1
-  escala: 1
-- id: A2
-  escala: 1
-- id: B1
-  escala: 1
-- id: C1
-  escala: 1
-- id: E1
-  escala: 1
-- id: E3
-  escala: 1
+  - {id: A1, escala: 1}
+  - {id: A2, escala: 1}
+  - {id: B1, escala: 1}
+  - {id: C1, escala: 1}
+  - {id: E1, escala: 1}
+  - {id: E3, escala: 1}
+herramientas:
+  modo: asignar        # asignar = el cliente no sabe qué usar: se le da el perfil. cliente = se respeta lo que ya usa
+  perfil: auto         # auto = según la escala más alta de los módulos (ligero / negocio / equipo)
+  ya_usa: []           # apps del catálogo que ya tiene: NO se instalan
+  extras: []
+  excluir: []
+  cuentas: [telegram]  # cuentas que el cliente crea a mano

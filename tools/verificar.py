@@ -55,6 +55,43 @@ for p in ROOT.rglob("*"):
             if re.search(rx, t):
                 err.append(f"{p.relative_to(ROOT)}: contiene {what}")
 
+
+# Stack: el catálogo debe ser coherente con los módulos y con los perfiles
+CATF = ROOT / "stack" / "catalogo.yaml"
+if CATF.exists():
+    cat = yaml.safe_load(CATF.read_text(encoding="utf-8"))
+    apps = cat["apps"]
+    ids_mod = {m["id"] for m in mods}
+    refs = set()
+    for pf in cat["perfiles"].values():
+        refs |= set(pf["apps"])
+    for mid, lst in cat["por_modulo"].items():
+        refs |= set(lst)
+        if mid not in ids_mod:
+            err.append(f"stack: por_modulo usa el módulo {mid}, que no existe")
+    for mid, d in cat.get("por_modulo_desde_escala", {}).items():
+        for lst in d.values():
+            refs |= set(lst)
+    for r in sorted(refs - set(apps)):
+        err.append(f"stack: '{r}' está referenciada pero no existe en apps")
+    for k, a in apps.items():
+        if a["tipo"] == "obsidian-plugin":
+            if set(a.get("sha256", {})) != {"main.js", "manifest.json", "styles.css"}:
+                err.append(f"stack: {k} sin sha256 completo")
+            if not a.get("licencia"):
+                err.append(f"stack: {k} sin licencia declarada")
+        if a["tipo"] == "sistema" and not {"pacman", "apt"} <= set(a["pm"]):
+            warn.append(f"stack: {k} sin paquete para apt/pacman")
+        if a["tipo"] == "sistema" and a.get("verificado") == ["pacman"]:
+            pass
+    for x in cat["plantillas"].values():
+        t = (ROOT / x).read_text(encoding="utf-8")
+        if re.search(r'"cadenceApiToken":\s*"[^"]+"', t):
+            err.append(f"{x}: trae un token")
+    warn.append("stack: nombres de paquete verificados solo en pacman; apt y dnf sin probar en equipo real")
+else:
+    err.append("falta stack/catalogo.yaml")
+
 # Sincronía con Cadence
 if CAD.exists():
     txt = CAD.read_text(encoding="utf-8")

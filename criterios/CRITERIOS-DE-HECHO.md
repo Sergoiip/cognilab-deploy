@@ -171,3 +171,11 @@ Fuente de los entregables: `Cadence/Services/Paquetes por entregables — modelo
 3. ¿Qué módulos son 'ligeros' para el Esencial? (`paquetes/esencial.yaml`)
 4. ¿Cuántas rondas de ajuste incluye C1 identidad? (hoy sin definir)
 5. ¿Los módulos sin origen (A1, A6, B1, E1, E3) se escriben primero?
+
+## Stack (para aprobar)
+
+1. Los 3 perfiles (ligero, negocio, equipo) y qué apps lleva cada uno: ver `README.md`.
+2. Regla de asignación: si el cliente no sabe qué usar, se le da el perfil de su escala más alta.
+3. Cadence (CRM) entra desde el perfil negocio. Es un plugin de otro autor (MIT): se instala el original, no tu versión modificada.
+4. Todo lo del stack debe ser gratis. Lo que no lo sea (API oficial de WhatsApp) queda como cuenta manual.
+5. Criterio de hecho del stack: cada app instalada abre y cumple su prueba mínima (Obsidian abre la bóveda, el plugin aparece, Git hace un commit, el agente responde). Falta escribir esas pruebas.

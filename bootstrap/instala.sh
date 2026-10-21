@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 # Deja un PC listo según el manifiesto del cliente. Idempotente: se puede repetir sin romper nada.
-#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run]
-# Instala SOLO los módulos que el manifiesto pide (más E2 Entrega verificada, siempre).
+#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps]
+# Instala los módulos pedidos (más E2, siempre) y las aplicaciones que el manifiesto resuelve.
 set -euo pipefail
 
-MANIFIESTO="${1:-}"; DRY=0; [[ "${2:-}" == "--dry-run" ]] && DRY=1
+MANIFIESTO=""; DRY=0; SIN_APPS=0
+for a in "$@"; do
+  case "$a" in
+    --dry-run) DRY=1 ;;
+    --sin-apps) SIN_APPS=1 ;;
+    *) MANIFIESTO="$a" ;;
+  esac
+done
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HH="${HERMES_HOME:-$HOME/.hermes}"
 DEST="$HH/skills/cognilab-deploy"
@@ -12,18 +19,21 @@ DEST="$HH/skills/cognilab-deploy"
 die() { echo "ERROR: $*" >&2; exit 1; }
 run() { if [[ $DRY -eq 1 ]]; then echo "  [dry-run] $*"; else eval "$@"; fi; }
 
-[[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh <manifiesto.yaml> [--dry-run]"
+[[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh <manifiesto.yaml> [--dry-run] [--sin-apps]"
 
-echo "== 1/4 Preflight"
+echo "== 1/5 Preflight"
 PY=""
 for c in /usr/bin/python3 python3 "$HH/hermes-agent/venv/bin/python"; do
   if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import yaml' 2>/dev/null; then PY="$c"; break; fi
 done
-[[ -n "$PY" ]] || die "no encuentro un Python con PyYAML (instala python-yaml)"
-[[ -d "$HH" ]] || die "no existe $HH: instala Hermes primero"
-echo "  SO: $(uname -sr) · Hermes en: $HH · disco libre: $(df -h "$HH" | awk 'NR==2{print $4}')"
+[[ -n "$PY" ]] || die "no encuentro un Python con PyYAML (pacman: python-yaml · apt: python3-yaml · dnf: python3-pyyaml)"
+PM=""
+for c in pacman apt-get dnf; do command -v "$c" >/dev/null 2>&1 && { PM="$c"; break; }; done
+[[ "$PM" == "apt-get" ]] && PM="apt"
+[[ -n "$PM" ]] || die "gestor de paquetes no soportado (solo pacman, apt, dnf)"
+echo "  SO: $(uname -sr) · gestor: $PM · Hermes en: $HH · disco libre: $(df -h "$HOME" | awk 'NR==2{print $4}')"
 
-echo "== 2/4 Resolver módulos del manifiesto"
+echo "== 2/5 Resolver módulos del manifiesto"
 RESUELTO="$("$PY" - "$MANIFIESTO" "$REPO" <<'PY'
 import sys, yaml, pathlib
 man = yaml.safe_load(open(sys.argv[1], encoding="utf-8"))
@@ -41,16 +51,56 @@ for i in ids:
 PY
 )" || die "manifiesto inválido (ver mensaje arriba)"
 mapfile -t SLUGS <<<"$RESUELTO"
-for l in "${SLUGS[@]}"; do echo "  - ${l%%|*}  ${l#*|}" | cut -d'|' -f1; done
+for l in "${SLUGS[@]}"; do echo "  - ${l%%|*}"; done
 
-echo "== 3/4 Instalar skills en $DEST"
+echo "== 3/5 Instalar skills en $DEST"
 run "mkdir -p '$DEST'"
 for l in "${SLUGS[@]}"; do
   IFS='|' read -r id slug src <<<"$l"
   run "rm -rf '$DEST/$slug' && cp -r '$src' '$DEST/$slug'"
 done
 
-echo "== 4/4 Registrar versión instalada"
+echo "== 4/5 Aplicaciones"
+if [[ $SIN_APPS -eq 1 ]]; then
+  echo "  (omitido por --sin-apps)"
+else
+  PLAN="$("$PY" "$REPO/tools/stack.py" plan "$MANIFIESTO" --pm "$PM")" || die "no se pudo resolver el stack"
+  VAULT="$("$PY" -c 'import sys,yaml,os;print(os.path.expanduser(yaml.safe_load(open(sys.argv[1])).get("vault","")))' "$MANIFIESTO")"
+  MANUALES=()
+  while IFS='|' read -r tipo a b; do
+    case "$tipo" in
+      INFO) echo "  $a" ;;
+      SKIP) echo "  = $a ($b)" ;;
+      HERMES)
+        if [[ -d "$HH" ]]; then echo "  = hermes (ya instalado)"; else
+          echo "  + hermes (instalador oficial)"
+          run "T=\$(mktemp) && curl -fsSL '$a' -o \"\$T\" && bash \"\$T\" && rm -f \"\$T\""
+        fi ;;
+      PKG)
+        echo "  + paquetes: $a"
+        case "$PM" in
+          pacman) run "sudo pacman -S --needed --noconfirm $a" ;;
+          apt)    run "sudo apt-get install -y $a" ;;
+          dnf)    run "sudo dnf install -y $a" ;;
+        esac ;;
+      FLATPAK) echo "  + flatpak: $a"; run "flatpak install -y flathub '$a'" ;;
+      PIP)
+        echo "  + pip (venv propio): $a"
+        run "python3 -m venv '$HH/venvs/cognilab' && '$HH/venvs/cognilab/bin/pip' install -q $a" ;;
+      PLUGINS)
+        if [[ -z "$VAULT" ]]; then MANUALES+=("Plugins de Obsidian ($a): el manifiesto no trae 'vault:'")
+        else
+          echo "  + plugins de Obsidian en $VAULT: $a"
+          if [[ $DRY -eq 1 ]]; then "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" --dry-run | sed 's/^/    /'
+          else "$PY" "$REPO/tools/stack.py" plugins "$MANIFIESTO" --vault "$VAULT" | sed 's/^/    /'; fi
+        fi ;;
+      MANUAL) MANUALES+=("$a") ;;
+    esac
+  done <<<"$PLAN"
+  if [[ ${#MANUALES[@]} -gt 0 ]]; then echo "  A mano (no se pueden automatizar):"; for m in "${MANUALES[@]}"; do echo "    [ ] $m"; done; fi
+fi
+
+echo "== 5/5 Registrar versión instalada"
 VER="$(git -C "$REPO" describe --tags --always 2>/dev/null || echo sin-git)"
 run "cp '$MANIFIESTO' '$DEST/MANIFIESTO.yaml' && printf '%s\n' '$VER' > '$DEST/VERSION'"
 echo "Listo. Versión del repo: $VER. Anótala en Cadence junto al cliente."
