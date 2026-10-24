@@ -13,11 +13,23 @@ metadata:
 
 # A1 · Diagnóstico del caos al sistema
 
-> Estado: **esqueleto-sin-fuente**. Se elige la variante según la escala del cliente (ver `variantes/`).
+> Estado: **borrador-v1 (método escrito, sin probar con un cliente real)**. Se elige la variante según la escala del cliente (ver `variantes/`).
 
 ## Propósito
 
-POR DESARROLLAR: este módulo no tiene meta-skill de origen.
+Entender el negocio o proyecto antes de tocar nada: dónde duele, por qué, y qué arreglar primero. Es la Radiografía (`fases/0-radiografia.md`) y su entregable, el **Mapa vivo**, que sigue creciendo durante el piloto y el paquete.
+
+## Método (todas las escalas)
+1. **Contexto y dolores.** Entrevista: qué hace, qué le duele (máx. 5 dolores), qué ya intentó. Cada dolor lleva un ejemplo real.
+2. **Evidencia.** Por dolor, 3 evidencias: dichas por el cliente o mostradas en su trabajo. Lo observado pesa más que lo contado. Sin 3 evidencias, el dolor no entra al plan.
+3. **Flujo actual.** Un día normal, paso a paso, en una página: quién hace qué, con qué herramienta, dónde se espera, dónde se pierde información.
+4. **Causa de raíz.** Por cada dolor, «¿por qué?» hasta llegar a algo arreglable (proceso, herramienta, hábito, falta de decisión). Separar síntoma de causa.
+5. **Línea base (E1).** Máximo 5 indicadores medibles, con fecha y fuente.
+6. **Inventario.** Equipo (`tools/inventario.sh`, con permiso) y herramientas que ya usa.
+7. **Plan.** `tools/plan.py` propone módulos y escala por módulo; la decisión final es de Sergio con el cliente.
+8. **Devolución.** Se presenta el Mapa vivo y qué arreglar primero. Se afirma solo lo observado.
+
+Test humano para todo entregable propuesto: ¿libera tiempo para lo humano o reemplaza un esfuerzo que forma?
 
 ## Criterio de hecho (BORRADOR, pendiente de aprobar)
 

@@ -3,7 +3,7 @@ nombre: Diagnóstico del caos al sistema
 slug: cd-diagnostico
 bloque: A
 ms: null
-estado: esqueleto-sin-fuente
+estado: borrador-v1
 requiere_skills_hermes: []
 hecho:
 - Mapa del flujo actual en una página, validado con el cliente.
@@ -18,4 +18,4 @@ escalas:
 - 3-equipo
 cadence_ref: Cadence/Services/Paquete Del caos al sistema en 90 días
 pendiente_generalizar:
-- Escribir el método desde cero
+- Probar el método con un cliente real y ajustar

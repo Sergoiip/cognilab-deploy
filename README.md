@@ -22,6 +22,8 @@ tools/         verificar.py: estructura + sincronía con Cadence
 ```
 
 ## Flujo con un cliente
+0. **Radiografía** (`fases/0-radiografia.md`, 1 semana): entrevistas, observación, `tools/inventario.sh` (con permiso), línea base, Mapa vivo v1. Sale `radiografia.yaml`.
+   `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
 1. Fase 1: llenar `fichas/ingreso.md` → sale el manifiesto (paquete + módulos + escala).
 2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.

@@ -1,0 +1,37 @@
+# Ficha estructurada de la Radiografía. Se copia a la carpeta del cliente (NO se versiona aquí con datos reales).
+# Alimenta tools/plan.py. Reemplaza en la práctica a fichas/ingreso.md (que sigue como guion de entrevista).
+cliente: "[cliente]"
+tipo: negocio              # negocio | proyecto
+paquete_objetivo: integral # esencial | integral | piloto
+vault: ~/Documents/Obsidian/Bóveda-cliente
+
+personas:                  # quién toca el trabajo (roles, no nombres)
+  - {rol: dueño, usa_pc: true}
+
+# Dolores: máximo 5. Sin 3 evidencias no entra al plan.
+# categoria: ver criterios/dolor-a-modulo.yaml
+dolores:
+  - id: D1
+    categoria: archivos-desordenados
+    descripcion: "Ejemplo: no encuentra la última cotización"
+    prioridad: 3            # 1 baja · 3 alta
+    evidencias: ["dicha: ...", "mostrada: ...", "mostrada: ..."]
+    causa_raiz: ""
+
+# Por módulo candidato: cuántas personas lo tocan y qué cuesta que falle (bajo | medio | alto)
+uso_modulos: {}
+# Ejemplo:
+#   A2: {personas: 1, costo_falla: bajo}
+
+herramientas_actuales:      # ids del catálogo que ya usa, o texto libre si no está en el catálogo
+  ya_usa: []
+  otras: []                 # ej. Notion, Excel
+  modo: asignar             # cliente | asignar
+
+cuentas_que_crea_el_cliente: []   # telegram, whatsapp-business, discord, google-drive
+
+linea_base:                 # máx. 5
+  - {indicador: "", valor: "", fecha: "", fuente: ""}
+
+datos_sensibles: ""
+portafolio_autorizado: false
