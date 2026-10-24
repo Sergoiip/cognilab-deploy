@@ -26,6 +26,7 @@ tools/         verificar.py: estructura + sincronía con Cadence
    `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
 1. Fase 1: llenar `fichas/ingreso.md` → sale el manifiesto (paquete + módulos + escala).
 2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
+   Si el cliente ya tiene Hermes, él mismo puede correr el setup: la instrucción lista para pegar está en `bootstrap/INSTRUCCION-HERMES.md`.
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.
 4. Anotar en Cadence la versión instalada (`VERSION` en el equipo del cliente).
 
