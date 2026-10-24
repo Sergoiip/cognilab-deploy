@@ -42,10 +42,14 @@ if len(ids) != len(set(ids)):
 
 # Reglas de contenido: sin precios, sin datos de clientes, sin rastros de otros clientes
 PROHIBIDO = [(r"\$\s?\d[\d.,]*", "precio"), (r"\bCOP\b", "moneda"),
-             (r"(?i)\bdosis\b|\bocean\b|\bshaco\b|dosiscreativa", "rastro de otro cliente"),
-             (r"(?i)Sebasti[aá]n Rada|Felipe Quintero|Alejandro L[oó]pez|Laura Valencia|Susana L[oó]pez|Yuliana",
-              "nombre de cliente"),
              (r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP")]
+# Nombres de clientes: NO viven en el repo. Si existe tools/prohibidos.local.txt (ignorado por git),
+# una expresión regular por línea, se aplican también.
+_loc = ROOT / "tools/prohibidos.local.txt"
+if _loc.exists():
+    for _l in _loc.read_text(encoding="utf-8").splitlines():
+        if _l.strip() and not _l.startswith("#"):
+            PROHIBIDO.append((_l.strip(), "nombre de cliente (lista local)"))
 for p in ROOT.rglob("*"):
     if p.is_file() and p.suffix in (".md", ".yaml", ".sh", ".py", ".js", ".css", ".json") and ".git" not in p.parts and p.name != "verificar.py":
         t = p.read_text(encoding="utf-8", errors="ignore")

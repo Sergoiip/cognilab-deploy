@@ -5,3 +5,4 @@
 - 0.5.0: Cadence modificado pasa a llamarse **Lab Cadence** (id `lab-cadence`, 0.15.0-lab.1). Incluye Finanzas v2. Reglas configurables en `data.json > lab` (staleDays, expensesFolder, ownerPaymentPattern, ownerLabel); ya no hay nombres propios en el código.
 - 0.6.0: Fase 0 Radiografía (fases/0-radiografia.md), ficha estructurada, tools/inventario.sh y tools/plan.py (Radiografía → manifiesto), criterios/dolor-a-modulo.yaml (propuesta), método de A1 en borrador.
 - 0.6.1: Hermes se detecta por ejecutable (no solo por carpeta): instalado / incompleto (no se reinstala solo) / falta. bootstrap/INSTRUCCION-HERMES.md.
+- 0.7.0: tools/empaquetar.sh (paquete .tar.gz + sha256 para clientes sin GitHub). Nombres de clientes fuera de verificar.py (lista local ignorada por git). Instrucción para Hermes con opción token y opción paquete.

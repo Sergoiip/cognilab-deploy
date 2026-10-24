@@ -4,3 +4,5 @@ clientes/
 manifiestos/cliente-*.yaml
 __pycache__/
 *.pyc
+tools/prohibidos.local.txt
+dist/
