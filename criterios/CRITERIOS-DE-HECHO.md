@@ -2,7 +2,7 @@
 
 **Estado: BORRADOR.** Los umbrales numéricos (10 registros, 30 ideas, 5 reels...) son **supuestos míos**, no medidos. Cada criterio se aprueba, se corrige o se descarta.
 
-Fuente de los entregables: `Cadence/Services/Paquetes por entregables — modelo 90 días`. Aquí no hay precios.
+Fuente de los entregables: `Cadence/Services/Paquete Del caos al sistema en 90 días`. Aquí no hay precios.
 
 ## Comunes a todo módulo (los 5 aplican siempre)
 

@@ -2,7 +2,7 @@
 
 Paquetes instalables para dejar el equipo de un cliente listo, según el modelo de **entregables en 90 días**.
 Repo privado. Es el producto técnico; **los precios, cuotas y condiciones viven en Cadence**, no aquí:
-`Cadence/Services/Paquetes por entregables — modelo 90 días`.
+`Cadence/Services/Paquete Del caos al sistema en 90 días`.
 
 ## Dos ejes
 - **Paquete** (qué módulos entran): `Esencial` o `Integral` → `paquetes/`.
@@ -11,7 +11,7 @@ Repo privado. Es el producto técnico; **los precios, cuotas y condiciones viven
 ## Estructura
 ```
 modulos/       22 entregables en 5 bloques (A a E), cada uno con SKILL.md, modulo.yaml y variantes/1,2,3
-paquetes/      esencial.yaml, integral.yaml
+paquetes/      esencial.yaml, integral.yaml (escalera de oferta en escalera.md)
 fases/         las 3 fases de 90 días y su hito
 fichas/        ficha de ingreso y de cierre
 criterios/     criterios de "hecho" para aprobar

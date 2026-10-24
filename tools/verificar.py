@@ -6,7 +6,7 @@ Sale con código 1 si hay errores. Las advertencias no bloquean."""
 import sys, re, json, hashlib, pathlib, yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-CAD = pathlib.Path("/home/sergoip/Documents/Obsidian/Bóveda de Operaciones/Cadence/Services/Paquetes por entregables — modelo 90 días.md")
+CAD = pathlib.Path("/home/sergoip/Documents/Obsidian/Bóveda de Operaciones/Cadence/Services/Paquete Del caos al sistema en 90 días.md")
 SELLO = ROOT / "SYNC.json"
 err, warn, sin_var = [], [], []
 

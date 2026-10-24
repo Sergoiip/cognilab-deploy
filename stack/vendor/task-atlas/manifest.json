@@ -1,0 +1,9 @@
+{
+  "id": "task-atlas",
+  "name": "Task Atlas",
+  "version": "0.4.0",
+  "minAppVersion": "1.4.0",
+  "description": "Infinite canvas map of your TaskNotes tasks: hub, areas and tasks as nodes linked by frontmatter, with statuses, drag-to-create and auto-layout.",
+  "author": "Sergio Marcucci",
+  "isDesktopOnly": false
+}

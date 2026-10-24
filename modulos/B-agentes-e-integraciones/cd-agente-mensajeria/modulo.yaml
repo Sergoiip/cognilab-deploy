@@ -15,7 +15,7 @@ escalas:
 - 1-individuo
 - 2-negocio
 - 3-equipo
-cadence_ref: Cadence/Services/Paquetes por entregables — modelo 90 días
+cadence_ref: Cadence/Services/Paquete Del caos al sistema en 90 días
 pendiente_generalizar:
 - Generalizar el manual de 8 fases (hoy escrito para un cliente concreto)
 - Lista de 'lo que falta para activar' pasa a ser el checklist de activación por cliente
