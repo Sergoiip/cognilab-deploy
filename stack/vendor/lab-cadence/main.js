@@ -8,7 +8,16 @@
 
 const obsidian = require('obsidian');
 
-const VIEW_TYPE_CADENCE_APP = 'cognilab-cadence-app';
+const VIEW_TYPE_CADENCE_APP = 'lab-cadence-app';
+/* Lab Cadence: reglas configurables (data.json -> "lab"). Se rellena en onload. */
+const LAB_DEFAULTS = {
+  staleDays: 15,                                   // dias sin tocar para marcar un deal/contacto como estancado
+  expensesFolder: 'Cadence/Gastos',                // carpeta de egresos para Finanzas
+  ownerPaymentPattern: '^pago a (socio|socia|propietari[oa]|due[ñn][oa]|titular|fundador|fundadora)',
+  ownerLabel: 'socio',                             // como se nombra al dueño en Finanzas
+};
+let LAB_CFG = Object.assign({}, LAB_DEFAULTS);
+const labStaleMs = () => (Number(LAB_CFG.staleDays) || 15) * 86400000;
 
 /* ─────────── Nav structure ─────────── */
 /* Mirrors the Cadence web-app left nav exactly. Groups can be collapsed.
@@ -269,6 +278,7 @@ const BUILT_SURFACES = new Set([
 
 /* ─────────── Settings ─────────── */
 const DEFAULT_SETTINGS = {
+  lab: Object.assign({}, LAB_DEFAULTS),
   dailyNoteFolder: 'daily',
   dailyNoteFormat: 'YYYY-MM-DD',
   journalHeading: '## Journal',
@@ -6271,13 +6281,13 @@ priority: normal
       });
     }
 
-    /* 5. Stale contacts on open deals (>15 days since lastContact) */
+    /* 5. Stale contacts on open deals (>staleDays since lastContact) */
     const contacts = listEntities(this.app, 'contact');
     const openDeals = deals.filter((e) => !['Won', 'Lost'].includes(String(entityValue(e, 'stage', dealDef))));
     const dealContactNames = new Set(
       openDeals.map((d) => String(entityValue(d, 'contact', dealDef) || '').trim()).filter(Boolean)
     );
-    const staleCutoffMs = todayMs - 15 * 86400000;
+    const staleCutoffMs = todayMs - labStaleMs();
     let staleSample = null;
     let staleCount = 0;
     contacts.forEach((c) => {
@@ -8665,7 +8675,7 @@ priority: normal
     });
 
     // Stale top-5 list under aging
-    const staleCutoff = now - 15 * 86400000;
+    const staleCutoff = now - labStaleMs();
     const stale = open
       .filter((e) => e.file && e.file.stat && e.file.stat.mtime < staleCutoff)
       .sort((a, b) => (a.file.stat.mtime || 0) - (b.file.stat.mtime || 0))
@@ -8675,7 +8685,7 @@ priority: normal
         meta: `${entityValue(e, 'stage', def) || '—'} · ${Math.round((now - e.file.stat.mtime) / 86400000)}d quiet · ${fmtValue(dealValue(e), 'currency')}`,
         file: e.file,
       }));
-    this._dashCardSection(right, 'STALE · 15+ DAYS NO EDITS', stale, 'No deals over 15 days quiet — nice.');
+    this._dashCardSection(right, `STALE · ${LAB_CFG.staleDays}+ DAYS NO EDITS`, stale, `No deals over ${LAB_CFG.staleDays} days quiet — nice.`);
   }
 
 
@@ -8711,10 +8721,12 @@ priority: normal
     });
 
     // ── Egresos ──
-    const isOwner = (name) => /^pago a (socio|propietari[oa]|due[ñn][oa]|titular)\b/i.test(String(name || ''));
+    let ownerRe; try { ownerRe = new RegExp(LAB_CFG.ownerPaymentPattern, 'i'); } catch (e) { ownerRe = new RegExp(LAB_DEFAULTS.ownerPaymentPattern, 'i'); }
+    const isOwner = (name) => ownerRe.test(String(name || '').trim());
+    const expFolder = String(LAB_CFG.expensesFolder || 'Cadence/Gastos').replace(/\/+$/, '') + '/';
     const expensesAll = [];
     this.app.vault.getMarkdownFiles().forEach((f) => {
-      if (!f.path.startsWith('Cadence/Gastos/')) return;
+      if (!f.path.startsWith(expFolder)) return;
       const fm = (this.app.metadataCache.getFileCache(f) || {}).frontmatter || {};
       const amount = num(fm.amount);
       if (!amount) return;
@@ -8788,8 +8800,8 @@ priority: normal
       const go = (k) => { this._finMonth = k; this._finCat = null; this.render(); };
       allKeys.slice(-4).forEach((k) => pill(k === curKey ? 'Este mes' : k, sel === k, () => go(k)));
       pill('Todo', sel === 'all', () => go('all'));
-      pill(excludeOwner ? '✓ Sin pagos al fundador' : 'Incluir pagos al fundador', excludeOwner, () => { this._finNoOwner = !excludeOwner; this.render(); },
-        'Quita de los egresos los pagos al socio o titular para ver la utilidad operativa');
+      pill(excludeOwner ? '✓ Sin pagos al socio' : 'Incluir pagos al socio', excludeOwner, () => { this._finNoOwner = !excludeOwner; this.render(); },
+        'Quita de los egresos los pagos al socio/propietario para ver la utilidad operativa del negocio');
     });
 
     // ── KPIs ──
@@ -8803,7 +8815,7 @@ priority: normal
       if (dl) { const d = c.createDiv({ cls: 'cad-stat-sub', text: dl.text }); d.style.color = dl.good ? GREEN : RED; d.style.fontWeight = '600'; }
     };
     stat('COBRADO', money(cobrado), `${inc.length} deals pagados`, 'emerald', delta(cobrado, prev && prev.cobrado, true));
-    stat('EGRESOS', money(egresos), `${exp.length} gastos${excludeOwner ? ' · sin fundador' : ''}`, 'rose', delta(egresos, prev && prev.egresos, false));
+    stat('EGRESOS', money(egresos), `${exp.length} gastos${excludeOwner ? ' · sin socio' : ''}`, 'rose', delta(egresos, prev && prev.egresos, false));
     stat(excludeOwner ? 'UTILIDAD OPERATIVA' : 'UTILIDAD NETA', money(neta), margen == null ? 'cobrado − egresos' : `margen ${pctTxt(margen)}`, neta >= 0 ? 'mint' : 'rose', delta(neta, prev && prev.neta, true));
     stat('POR COBRAR', money(porCobrar), `${pending.length} deals ganados sin pagar`, 'sky');
     stat('PROYECTADA', money(proyectada), 'neta + por cobrar', 'sky');
@@ -8870,7 +8882,7 @@ priority: normal
     legend.createSpan({ text: 'Clic en un mes para verlo en detalle' }).style.opacity = '.7';
 
     // ═════════ SECCIÓN GASTOS ═════════
-    root.createDiv({ cls: 'cad-section-label-lg', text: `GASTOS · ${sel === 'all' ? 'TODO EL HISTORIAL' : sel}${excludeOwner ? ' · SIN PAGOS AL FUNDADOR' : ''}` });
+    root.createDiv({ cls: 'cad-section-label-lg', text: `GASTOS · ${sel === 'all' ? 'TODO EL HISTORIAL' : sel}${excludeOwner ? ' · SIN PAGOS AL SOCIO' : ''}` });
 
     const CAT_COLORS = ['#ff5d73', '#ffb454', '#5db8ff', '#b48cff', '#2ee59d', '#ff8fd0', '#8be0ff', '#d6e35d', '#9aa4b2'];
     const catOrder = ['Honorarios / Freelance', 'Marketing / Publicidad', 'Servicios (luz, internet, etc.)', 'Software / Suscripciones', 'Equipo / Mantenimiento', 'Estudio / Arriendo', 'Transporte', 'Impuestos', 'Otro'];
@@ -8987,7 +8999,7 @@ priority: normal
       const row = lbody.createDiv();
       row.style.cssText = `display:grid;grid-template-columns:62px minmax(120px,1fr) minmax(110px,170px) 78px 96px;gap:10px;align-items:center;padding:6px 2px;border-bottom:1px solid ${BORDER};font-size:12.5px;cursor:pointer;position:relative;`;
       row.createSpan({ text: (r.date || '—').slice(5) }).style.color = MUTED;
-      const nm = row.createSpan({ text: r.name + (r.owner ? '  · fundador' : '') }); nm.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+      const nm = row.createSpan({ text: r.name + (r.owner ? '  · socio' : '') }); nm.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
       const chip = row.createSpan({ text: r.cat.replace(/ \(.*\)/, '') });
       chip.style.cssText = `font-size:11px;padding:2px 8px;border-radius:10px;justify-self:start;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:${colorOf(r.cat)}26;color:${colorOf(r.cat)};`;
       const rc = row.createSpan({ text: r.recurring ? '↻ ' + r.recLabel : 'Puntual' });
@@ -11904,6 +11916,7 @@ class CadencePlugin extends obsidian.Plugin {
   async loadSettings() {
     const loadedData = await this.loadData() || {};
     this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
+    LAB_CFG = Object.assign({}, LAB_DEFAULTS, this.settings.lab || {});
 
     // Deep default customEntities if missing or empty
     if (!this.settings.customEntities) {

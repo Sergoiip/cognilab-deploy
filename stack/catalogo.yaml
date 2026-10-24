@@ -1,4 +1,4 @@
-version_catalogo: 0.4.0
+version_catalogo: 0.5.0
 _nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
   qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
   se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
@@ -208,20 +208,20 @@ apps:
       styles.css: 173e9c161a01c53b3c173344e023de4d327fd0658e476961b46b0e6a93117ded
     opcional: true
     para: mapas y diagramas a mano
-  cognilab-cadence:
-    nombre: Cadence (CogniLab) — CRM, planner y finanzas
+  lab-cadence:
+    nombre: Lab Cadence — CRM, planner y finanzas
     tipo: obsidian-plugin
     fuente: vendor
-    ruta: stack/vendor/cognilab-cadence
-    version: 0.15.0-cognilab.1
+    ruta: stack/vendor/lab-cadence
+    version: 0.15.0-lab.1
     licencia: 'MIT (base: wesswart77/obsidian-cadence)'
     sha256:
-      main.js: 191e739409101c5517f6be69a250c327d390b7f1686c83106bbedfba8bd26fcb
-      manifest.json: 5854586fe6ddd5a14e52475a9fe6439898d1392b1b65d08170f01bbe5387f7eb
+      main.js: d8af79c736b5aaaa646a2b465a4aba0fc73720401aef2ed31ef75c1a2327e7e4
+      manifest.json: 4372626b5bd18722862b8d3d307f83695ee32c605c72209b4ff455cf617209c1
       styles.css: 765b28503cc5cf9045bb906524db925eb87ab06024c8a3175b040320daaf3a01
     para: CRM y finanzas en Obsidian
     opcional: true
-    nota: Fork MIT de wesswart77/obsidian-cadence incluido en el repo (ver stack/vendor/cognilab-cadence/CAMBIOS.md)
+    nota: Fork MIT de wesswart77/obsidian-cadence incluido en el repo (ver stack/vendor/lab-cadence/CAMBIOS.md)
   task-atlas:
     nombre: Task Atlas (plugin) — mapa de tareas
     tipo: obsidian-plugin
@@ -254,7 +254,7 @@ perfiles:
     apps:
     - tasknotes
     - task-atlas
-    - cognilab-cadence
+    - lab-cadence
     - syncthing
     - pandoc
     - ffmpeg
@@ -305,9 +305,9 @@ por_modulo:
 por_modulo_desde_escala:
   A2:
     '2':
-    - cognilab-cadence
+    - lab-cadence
 plantillas:
-  cognilab-cadence: stack/plantillas/cadence-crm/data.json
+  lab-cadence: stack/plantillas/cadence-crm/data.json
 cuentas_manuales:
   telegram: Cuenta o bot de Telegram (BotFather). Gratis.
   whatsapp-business: 'WhatsApp Business: la app es gratis; la API oficial tiene costo.'

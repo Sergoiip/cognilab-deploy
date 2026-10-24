@@ -1,0 +1,10 @@
+{
+  "id": "lab-cadence",
+  "name": "Lab Cadence",
+  "version": "0.15.0-lab.1",
+  "minAppVersion": "1.4.0",
+  "description": "Cadence modificado por CogniLab (fork MIT de wesswart77/obsidian-cadence): CRM, planner, Finanzas y alerta de estancados configurables.",
+  "author": "CogniLab",
+  "authorUrl": "https://cognilab.org",
+  "isDesktopOnly": false
+}

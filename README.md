@@ -55,7 +55,7 @@ Los skills del producto siempre se instalan; las apps nunca se imponen.
 - `modo: cliente`: se respeta lo que ya usa (`ya_usa`) y solo se ofrece lo que los módulos piden.
 - `modo: asignar`: el cliente no sabe qué usar; se le propone el perfil de su escala.
 
-**Cadence modificado.** Va en `stack/vendor/cognilab-cadence/` (fork MIT de wesswart77, con reporte de Finanzas y alerta de estancados a 15 días). Es una versión neutra, sin nombres de clientes; cambios y pendientes en su `CAMBIOS.md`.
+**Cadence modificado.** Va en `stack/vendor/lab-cadence/` (fork MIT de wesswart77, con reporte de Finanzas y alerta de estancados a 15 días). Es una versión neutra, sin nombres de clientes; cambios y pendientes en su `CAMBIOS.md`.
 
 **Ampliar el stack con la operación.**
 1. Agregar una app en `stack/extras.yaml` (hay un ejemplo comentado). Se funde con el catálogo al cargar.
