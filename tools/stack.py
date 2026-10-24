@@ -28,6 +28,15 @@ def cargar():
 CAT = cargar()
 
 
+def estado_hermes():
+    """'instalado' (hay ejecutable), 'incompleto' (hay carpeta pero no ejecutable) o 'falta'."""
+    import os
+    home = pathlib.Path(os.environ.get("HERMES_HOME") or pathlib.Path.home() / ".hermes")
+    if shutil.which("hermes") or (home / "hermes-agent/venv/bin/hermes").exists():
+        return "instalado"
+    return "incompleto" if home.is_dir() else "falta"
+
+
 def resolver(man, excluir_extra=()):
     mods = man.get("modulos", []) or []
     esc = max([m.get("escala", 1) for m in mods] or [1])
@@ -77,7 +86,10 @@ def cmd_lista(a):
     print(f"INFO|perfil={perfil} escala={esc} modo={modo}")
     for x in apps:
         d = CAT["apps"][x]
-        estado = "instalada" if d["tipo"] == "sistema" and shutil.which(d["bin"]) else "falta"
+        if d["tipo"] == "hermes":
+            estado = {"instalado": "instalada", "incompleto": "incompleta", "falta": "falta"}[estado_hermes()]
+        else:
+            estado = "instalada" if d["tipo"] == "sistema" and shutil.which(d["bin"]) else "falta"
         print(f"APP|{x}|{d['nombre']}|{d.get('para', '')}|{estado}")
 
 
@@ -92,7 +104,13 @@ def cmd_plan(a):
         d = CAT["apps"][x]
         t = d["tipo"]
         if t == "hermes":
-            print("HERMES|" + d["url"])
+            eh = estado_hermes()
+            if eh == "instalado":
+                print(f"SKIP|{x}|ya instalado")
+            elif eh == "incompleto":
+                print(f"SKIP|{x}|hay carpeta de Hermes pero no el ejecutable: revisar a mano, no se reinstala solo")
+            else:
+                print("HERMES|" + d["url"])
         elif t == "obsidian-plugin":
             plug.append(x)
         elif t == "pip":
