@@ -42,7 +42,7 @@ cambió desde el último `--sellar`.
 | Perfil | Escala | Incluye |
 |---|---|---|
 | ligero | 1 | Hermes, Obsidian, Git, GitHub CLI, plugins obsidian-git y Templater |
-| negocio | 2 | + TaskNotes, Cadence (CRM y finanzas), Syncthing, Pandoc, FFmpeg |
+| negocio | 2 | + TaskNotes, Task Atlas (metas y tareas en canvas), Cadence (CRM y finanzas), Syncthing, Pandoc, FFmpeg |
 | equipo | 3 | + rclone (espejo en nube), Excalidraw |
 
 Además, cada módulo suma lo suyo (por ejemplo C1 trae Inkscape y GIMP; D2 trae Kdenlive).
@@ -54,6 +54,8 @@ Los skills del producto siempre se instalan; las apps nunca se imponen.
 **Cómo se asigna.** En la ficha de ingreso se anota qué ya usa el cliente.
 - `modo: cliente`: se respeta lo que ya usa (`ya_usa`) y solo se ofrece lo que los módulos piden.
 - `modo: asignar`: el cliente no sabe qué usar; se le propone el perfil de su escala.
+
+**Task Atlas.** Plugin propio (MIT) en `stack/vendor/task-atlas/`, con hash. Depende de TaskNotes y lee `Roadmap/Metas/` y `TaskNotes/Tasks/`. Sus textos y campos están en español.
 
 **Cadence modificado.** Va en `stack/vendor/cognilab-cadence/` (fork MIT de wesswart77, con reporte de Finanzas y alerta de estancados a 15 días). Es una versión neutra, sin nombres de clientes; cambios y pendientes en su `CAMBIOS.md`.
 
