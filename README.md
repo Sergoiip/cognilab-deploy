@@ -36,6 +36,9 @@ cambió desde el último `--sellar`.
 - Sin credenciales, sin precios, sin datos de clientes.
 - Un módulo no es "hecho" hasta cumplir su criterio y los comunes (`criterios/`).
 
+## Plugins: metodología y uso
+`docs/plugins/` tiene una ficha por plugin (Git, Templater, TaskNotes, Task Atlas, Cadence, Excalidraw): metodología según su documentación, recomendación de uso y cuidados.
+
 ## Stack de aplicaciones (todo gratis)
 `stack/catalogo.yaml` define las apps, los 3 perfiles y qué módulo necesita qué.
 
