@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Deja un PC listo según el manifiesto del cliente. Idempotente: se puede repetir sin romper nada.
-#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si]
+#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si] [--espacio]
 # Las apps son OPCIONALES: sin --si pregunta cuáles instalar (sin terminal, no instala ninguna).
 # Instala los módulos pedidos (más E2, siempre) y las aplicaciones que el manifiesto resuelve.
 set -euo pipefail
 
-MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0
+MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0; ESPACIO=0
 for a in "$@"; do
   case "$a" in
     --dry-run) DRY=1 ;;
     --sin-apps) SIN_APPS=1 ;;
     --si) SI=1 ;;
+    --espacio) ESPACIO=1 ;;
     *) MANIFIESTO="$a" ;;
   esac
 done
@@ -117,6 +118,16 @@ else
     esac
   done <<<"$PLAN"
   if [[ ${#MANUALES[@]} -gt 0 ]]; then echo "  A mano (no se pueden automatizar):"; for m in "${MANUALES[@]}"; do echo "    [ ] $m"; done; fi
+fi
+
+if [[ $ESPACIO -eq 1 ]]; then
+  echo "== 4b Espacio de trabajo (patrón ICM)"
+  EV="$("$PY" -c 'import sys,yaml,os;print(os.path.expanduser(yaml.safe_load(open(sys.argv[1])).get("vault","")))' "$MANIFIESTO")"
+  if [[ -z "$EV" ]]; then echo "  (omitido: el manifiesto no trae 'vault:')"
+  else
+    EDRY=""; [[ $DRY -eq 1 ]] && EDRY="--dry-run"
+    "$PY" "$REPO/tools/espacio.py" crear "$MANIFIESTO" --destino "$EV/Espacio CogniLab" $EDRY | sed 's/^/  /'
+  fi
 fi
 
 echo "== 5/5 Registrar versión instalada"
