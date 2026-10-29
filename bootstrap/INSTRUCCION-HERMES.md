@@ -4,19 +4,21 @@ Para cuando el equipo del cliente ya tiene Hermes y quieres que **él** corra el
 
 ## Cómo le llega el repo al cliente (lo haces tú antes)
 
+El repo `cognilab-deploy` es **público** (acceso de solo lectura para cualquiera, sin token ni login). Esto resuelve el problema recurrente de *fine-grained tokens* que vencían o no se generaban bien. Lo único privado sigue siendo el manifiesto del cliente (`manifiestos/cliente-X.yaml`), que nunca está en el repo: se lo entregas aparte.
+
 | Opción | Cuándo | Qué le entregas | Por qué canal |
 |---|---|---|---|
-| **A · Token de solo lectura** | El cliente tiene `git` y puede usar GitHub | Un *fine-grained token* limitado al repo `cognilab-deploy`, permiso *Contents: read-only*, vence en 14 a 30 días | Canal privado (no por chat de grupo ni correo abierto). Se revoca al terminar |
-| **B · Paquete firmado** | El cliente no tiene GitHub, o prefieres cero credenciales | `cognilab-deploy-<versión>.tar.gz` y su `.sha256` (los genera `tools/empaquetar.sh`) | Enlace temporal (Drive, Syncthing). Lo borras al terminar |
+| **A · Clon directo (repo público)** | El cliente tiene `git` | Nada que entregar salvo el manifiesto de cliente | El manifiesto por canal privado (no por chat de grupo ni correo abierto) |
+| **B · Paquete firmado** | El cliente no tiene `git`/GitHub, o la máquina no tiene salida a internet fiable | `cognilab-deploy-<versión>.tar.gz` y su `.sha256` (los genera `tools/empaquetar.sh`) | Enlace temporal (Drive, Syncthing). Lo borras al terminar |
 
-Nunca pegues el token dentro de la instrucción ni lo mandes por el chat con el Hermes: el cliente lo escribe él mismo cuando git se lo pida.
+El manifiesto de cliente nunca se pega dentro de esta instrucción ni se sube al repo: se entrega aparte, por canal privado.
 
-## Instrucción · Opción A (token)
+## Instrucción · Opción A (clon directo)
 
 ```
 Vas a dejar este equipo listo con el paquete de CogniLab. Sigue estos pasos en orden y NO saltes la aprobación del paso 4.
 
-1. Trae el repo: `git clone https://github.com/Sergoiip/cognilab-deploy.git ~/cognilab-deploy` (si ya existe, `git -C ~/cognilab-deploy pull`). Git pedirá usuario y contraseña: el usuario es `Sergoiip` y la contraseña es un token que escribiré yo en la terminal. NO guardes ni muestres ese token, no lo escribas en ningún archivo ni en la config de git. Si falla el acceso, detente y avísame.
+1. Trae el repo (es público, no pide usuario ni contraseña): `git clone https://github.com/Sergoiip/cognilab-deploy.git ~/cognilab-deploy` (si ya existe, `git -C ~/cognilab-deploy pull`). Si falla el acceso, detente y avísame.
 2. Revisa que existan PyYAML y mi manifiesto `~/cognilab-deploy/manifiestos/cliente-X.yaml`. Si falta algo, dímelo y detente.
 3. Corre en simulación, sin instalar nada:
    bash ~/cognilab-deploy/bootstrap/instala.sh ~/cognilab-deploy/manifiestos/cliente-X.yaml --dry-run
@@ -50,7 +52,7 @@ cd ~/cognilab-deploy && tools/empaquetar.sh
 Deja el `.tar.gz` y el `.sha256` en `~/Documents/cognilab-deploy-paquetes/`. Se niega a empaquetar si hay cambios sin commit o si `verificar.py` falla. Solo incluye lo que git versiona: nunca manifiestos de clientes ni archivos locales.
 
 ## Después de la instalación
-- Opción A: revoca el token en GitHub (Settings → Developer settings → Fine-grained tokens) y pide al cliente borrar el clon si no lo necesita.
+- Opción A: pide al cliente borrar el clon si no lo necesita (el repo sigue público, no hay credencial que revocar).
 - Opción B: borra el enlace temporal.
 - Anota en Cadence la versión instalada.
 
@@ -58,9 +60,8 @@ Deja el `.tar.gz` y el `.sha256` en `~/Documents/cognilab-deploy-paquetes/`. Se 
 - **Dry-run primero y aprobación explícita:** el script instala software y puede pedir `sudo` en un equipo ajeno.
 - **No tocar config ni claves:** el Hermes del cliente tiene sus propias claves; el setup solo agrega la carpeta `skills/cognilab-deploy/` y los plugins.
 - **Sin `--si`:** las apps son opcionales y el cliente decide cuáles.
-- **Token de solo lectura, por cliente y con vencimiento:** si se filtra, solo se puede leer ese repo y se revoca sin afectar a nadie más.
+- **Repo público, manifiesto privado aparte:** lo que es código/metodología (módulos, criterios, instrucciones) es público; lo único específico de cada cliente (nombre, datos, configuración) vive en un manifiesto que nunca se sube al repo.
 
 ## Límites conocidos
 - Solo se ha probado la simulación (`--dry-run`). La instalación real aún no se ha corrido en un equipo de cliente; la primera vez, hazla acompañando.
-- La Opción A depende de que el token no quede en el historial de la conversación con el Hermes del cliente. Por eso lo escribe el cliente en la terminal, no el agente.
 - El manifiesto no está en el repo ni en el paquete (lleva datos del cliente): se entrega aparte y se pega en el chat o se copia al equipo.
