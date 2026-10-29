@@ -1,7 +1,7 @@
 # cognilab-deploy
 
 Paquetes instalables para dejar el equipo de un cliente listo, según el modelo de **entregables en 90 días**.
-Repo privado. Es el producto técnico; **los precios, cuotas y condiciones viven en Cadence**, no aquí:
+Repo público (solo lectura, sin token). Es el producto técnico; **los precios, cuotas y condiciones viven en Cadence**, no aquí:
 `Cadence/Services/Paquete Del caos al sistema en 90 días`.
 
 ## Dos ejes
