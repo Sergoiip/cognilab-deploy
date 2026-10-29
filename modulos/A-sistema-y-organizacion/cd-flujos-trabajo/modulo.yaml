@@ -6,6 +6,8 @@ ms: MS-12
 estado: esqueleto-desde-meta-skill
 requiere_skills_hermes:
 - weekly-review-planning
+- daily-startup-today-plan
+- daily-close-wrapup
 hecho:
 - Ciclo captura → tarea → revisión funcionando durante 2 semanas.
 - Una automatización recurrente corriendo, con ejecución comprobada en log.

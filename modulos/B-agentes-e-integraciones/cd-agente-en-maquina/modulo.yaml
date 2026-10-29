@@ -4,7 +4,8 @@ slug: cd-agente-en-maquina
 bloque: B
 ms: null
 estado: esqueleto-sin-fuente
-requiere_skills_hermes: []
+requiere_skills_hermes:
+- agent-playbook-and-handoff
 hecho:
 - Instalado, arranca tras reiniciar y el cliente sabe abrirlo.
 - Tres tareas reales del cliente resueltas en sesión.

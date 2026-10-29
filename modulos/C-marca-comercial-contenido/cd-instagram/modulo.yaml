@@ -4,7 +4,8 @@ slug: cd-instagram
 bloque: C
 ms: MS-16
 estado: esqueleto-desde-meta-skill
-requiere_skills_hermes: []
+requiere_skills_hermes:
+- bandeja-social-respuestas-composio
 hecho:
 - Banco de al menos 30 ideas.
 - Parrilla de 4 semanas.
