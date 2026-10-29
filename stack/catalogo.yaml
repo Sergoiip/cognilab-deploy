@@ -1,4 +1,4 @@
-version_catalogo: 0.6.0
+version_catalogo: 0.7.0
 _nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
   qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
   se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
@@ -221,7 +221,7 @@ apps:
       styles.css: 765b28503cc5cf9045bb906524db925eb87ab06024c8a3175b040320daaf3a01
     para: CRM y finanzas en Obsidian
     opcional: true
-    nota: Fork MIT de wesswart77/obsidian-cadence incluido en el repo (ver stack/vendor/lab-cadence/CAMBIOS.md)
+    nota: 'Fork MIT de wesswart77/obsidian-cadence incluido en el repo (ver stack/vendor/lab-cadence/CAMBIOS.md). Metodología y recomendaciones de uso: stack/vendor/lab-cadence/METODOLOGIA.md'
   task-atlas:
     nombre: Task Atlas (plugin) — mapa de tareas
     tipo: obsidian-plugin
@@ -235,7 +235,7 @@ apps:
       styles.css: 612ce73db7067d0ceef17e9a8c3a0e49c3a311e31865ec789f301c4dd50388fc
     para: mapa visual de las tareas de TaskNotes
     opcional: true
-    nota: Depende de TaskNotes. Plugin propio incluido en el repo (ver stack/vendor/task-atlas/README.md)
+    nota: 'Depende de TaskNotes. Plugin propio incluido en el repo (ver stack/vendor/task-atlas/README.md). Metodología y recomendaciones de uso: stack/vendor/task-atlas/METODOLOGIA.md'
 perfiles:
   ligero:
     escala: 1

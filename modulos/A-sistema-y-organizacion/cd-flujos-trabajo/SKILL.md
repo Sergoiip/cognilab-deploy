@@ -44,6 +44,11 @@ Cierre de semana, y todo lo que se repite igual cada día o semana.
 Revisión: calendario -> bandejas -> proyectos -> pendientes de otros -> plan -> cambios aprobados
 ```
 
+## Plugin asociado
+
+Este módulo se apoya en **Task Atlas** para visualizar el ritmo de tareas — ver metodología y
+recomendaciones de uso en `stack/vendor/task-atlas/METODOLOGIA.md`.
+
 ## Para replicarla en otro negocio
 
 Universal.

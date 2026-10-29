@@ -48,6 +48,11 @@ projects:
   - "[[Nota padre]]"
 ```
 
+## Plugin asociado
+
+A escala 2+ este módulo se apoya en **Lab Cadence** — ver metodología y recomendaciones de uso en
+`stack/vendor/lab-cadence/METODOLOGIA.md`.
+
 ## Para replicarla en otro negocio
 
 Cualquier negocio de servicios: cambia las entidades y la moneda.
