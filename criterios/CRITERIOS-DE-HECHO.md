@@ -8,7 +8,7 @@ Fuente de los entregables: `Cadence/Services/Paquete Del caos al sistema en 90 d
 
 - C1. Verificado: se probó en real antes de entregar, con evidencia (captura, log o archivo).
 - C2. Faltante declarado: lista escrita de lo que no quedó hecho y de las limitaciones.
-- C3. Documentado: una página de uso con los nombres, rutas y tono del cliente.
+- C3. Documentado: una página de uso con los nombres, rutas y tono del cliente. Si el manifiesto marca `acompanamiento: tecnico`, la página explica el cómo y el porqué de cada pieza; si marca `integral`, es una hoja simple de "así se usa", sin mecánica interna.
 - C4. Aceptado: el cliente confirma por escrito (mensaje o acta). Esa aceptación dispara el hito.
 - C5. Sin datos ajenos: nada de otro cliente ni de Sergio en lo entregado.
 

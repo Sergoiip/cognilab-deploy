@@ -1,5 +1,9 @@
 cliente: "[cliente]"
 paquete: esencial
+acompanamiento: tecnico   # tecnico = explica el cómo y el porqué, para quien quiere dominar su agente | integral = resultados simples, sin tecnicismo, Sergio opera por ellos
+agente:
+  nombre: "[nombre con el que el cliente se dirige a su agente]"
+  personalidad: "[texto libre corto, ej. 'cálido, directo, sin jerga técnica']"
 vault: ~/Documents/Obsidian/Bóveda-cliente      # dónde vive su bóveda
 modulos:
   - {id: A1, escala: 1}

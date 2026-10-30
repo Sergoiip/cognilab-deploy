@@ -62,6 +62,13 @@ for l in "${SLUGS[@]}"; do
   run "rm -rf '$DEST/$slug' && cp -r '$src' '$DEST/$slug'"
 done
 
+echo "== Personalizar agente (nombre y personalidad)"
+if [[ $DRY -eq 1 ]]; then
+  "$PY" "$REPO/tools/personalizar_agente.py" "$MANIFIESTO" "$HH" --dry-run
+else
+  "$PY" "$REPO/tools/personalizar_agente.py" "$MANIFIESTO" "$HH"
+fi
+
 echo "== 4/5 Aplicaciones"
 if [[ $SIN_APPS -eq 1 ]]; then
   echo "  (omitido por --sin-apps)"

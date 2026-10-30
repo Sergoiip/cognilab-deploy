@@ -24,11 +24,30 @@ tools/         verificar.py: estructura + sincronía con Cadence
 ## Flujo con un cliente
 0. **Radiografía** (`fases/0-radiografia.md`, 1 semana): entrevistas, observación, `tools/inventario.sh` (con permiso), línea base, Mapa vivo v1. Sale `radiografia.yaml`.
    `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
-1. Fase 1: llenar `fichas/ingreso.md` → sale el manifiesto (paquete + módulos + escala).
+1. Fase 1: llenar `fichas/ingreso.md` → sale el manifiesto (paquete + módulos + escala + acompañamiento + agente).
 2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
    Si el cliente ya tiene Hermes, él mismo puede correr el setup: la instrucción lista para pegar está en `bootstrap/INSTRUCCION-HERMES.md`.
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.
 4. Anotar en Cadence la versión instalada (`VERSION` en el equipo del cliente).
+
+## Nivel de acompañamiento (independiente del paquete y la escala)
+El manifiesto trae `acompanamiento: tecnico | integral`, decidido en la ficha de ingreso, no en el
+paquete ni en la escala — dos clientes con el mismo paquete Esencial pueden querer acompañamientos
+distintos:
+- **tecnico:** el cliente quiere entender su agente y sacarle el máximo provecho. La entrega
+  (criterio común C3 "Documentado") explica el cómo y el porqué de cada pieza, no solo el qué.
+- **integral:** el cliente quiere resultados sin tecnicismo. La misma entrega se documenta como
+  una hoja simple de "así se usa", sin explicar mecánica interna; Sergio sigue operando/ajustando
+  lo técnico por su cuenta cuando haga falta.
+
+Este campo no cambia qué módulos se instalan, solo cómo se explican y documentan al entregarlos.
+
+## Nombre y personalidad del agente
+El manifiesto admite un bloque opcional `agente: {nombre, personalidad}` (texto libre corto, p. ej.
+"cálido, directo, sin jerga técnica"). `bootstrap/instala.sh` lo escribe en el `SOUL.md` del
+cliente (vía `tools/personalizar_agente.py`) como un bloque marcado e idempotente — no reemplaza
+el resto del `SOUL.md` por defecto de Hermes, solo inserta/actualiza ese bloque. Si el manifiesto
+no trae ninguno de los dos campos, el `SOUL.md` no se toca.
 
 ## Mantener la sincronía
 `python3 tools/verificar.py` falla si hay precios, nombres de clientes o rastros de otros clientes en el repo,
