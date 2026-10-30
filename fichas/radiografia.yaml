@@ -1,5 +1,5 @@
 # Ficha estructurada de la Radiografía. Se copia a la carpeta del cliente (NO se versiona aquí con datos reales).
-# Alimenta tools/plan.py. Reemplaza en la práctica a fichas/ingreso.md (que sigue como guion de entrevista).
+# Alimenta tools/plan.py y tools/roster_sugerido.py. Reemplaza en la práctica a fichas/ingreso.md (que sigue como guion de entrevista).
 cliente: "[cliente]"
 tipo: negocio              # negocio | proyecto
 paquete_objetivo: integral # esencial | integral | piloto
@@ -7,6 +7,14 @@ vault: ~/Documents/Obsidian/Bóveda-cliente
 
 personas:                  # quién toca el trabajo (roles, no nombres)
   - {rol: dueño, usa_pc: true}
+
+# Identidad de la agencia/empresa de agentes que se va a construir con ellos — alimenta el
+# "universo de agentes" (roster de Bots) y cómo se habla con el cliente del proyecto, no el
+# look & feel de CogniLab. Texto libre, corto; no inventar nada que el cliente no haya dicho.
+identidad_agentes:
+  narrativa_lore: ""        # cómo se imaginan a su "equipo de agentes": nombre de la agencia/mundo, tono, metáfora que usan ellos mismos
+  motivacion: ""             # qué los mueve de verdad en el negocio (no la misión de cartón: lo que SÍ les quita el sueño o los emociona)
+  estetica_favorita: ""      # referencias visuales/de marca que ya les gustan (puede ser "ninguna preferencia")
 
 # Dolores: máximo 5. Sin 3 evidencias no entra al plan.
 # categoria: ver criterios/dolor-a-modulo.yaml

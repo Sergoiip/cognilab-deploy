@@ -35,6 +35,20 @@ tools/         verificar.py: estructura + sincronía con Cadence
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.
 4. Anotar en Cadence la versión instalada (`VERSION` en el equipo del cliente).
 
+## El universo de agentes (empleados-agente del cliente)
+
+Además del agente principal (B1/B2, el que coordina), el manifiesto puede activar
+**empleados-agente** por departamento — Bot Mode de Hermes (perfiles con su propio rol, modelo,
+memoria y skills, que se mencionan entre sí), no un orquestador externo. La línea base
+replicable vive en `stack/roles-agentes.yaml` (Finanzas, Crecimiento, Edición y Producción —
+cada uno se activa solo si el manifiesto trae los módulos correspondientes).
+
+`python3 tools/roster_sugerido.py manifiestos/cliente-X.yaml --radiografia <radiografia.yaml>`
+propone el roster y, si la radiografía ya tiene `identidad_agentes` (narrativa/lore, motivación,
+estética — se capturan en el día 1 de la Fase 0), muestra cómo ese cliente en particular debería
+flavorizar el SOUL.md de cada Bot. Solo propone — crear los perfiles de verdad (`hermes profile
+create <rol>`) es una decisión aparte, confirmada con el cliente.
+
 ## Nivel de acompañamiento (independiente del paquete y la escala)
 El manifiesto trae `acompanamiento: tecnico | integral`, decidido en la ficha de ingreso, no en el
 paquete ni en la escala — dos clientes con el mismo paquete Esencial pueden querer acompañamientos

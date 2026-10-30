@@ -1,0 +1,45 @@
+# Línea base replicable del "universo de agentes" (empleados-agente) de un cliente.
+# NO es obligatorio instalar nada de aquí: es la PROPUESTA estándar que se activa según qué
+# módulos trae el manifiesto. Capa de personalización (narrativa/lore, motivación, estética)
+# viene de `identidad_agentes` en radiografia.yaml — se aplica al SOUL.md de cada Bot, nunca a
+# si el rol se crea o no (eso lo decide el manifiesto).
+#
+# Implementado como Hermes Bot Mode (perfiles), no con un orquestador externo: cada rol de aquí
+# es un perfil de Hermes (`hermes profile create <rol>`), con su propio SOUL.md, memoria y
+# skills — se mencionan entre sí y pueden tener rutinas (cron) propias. Ver la skill
+# `autonomous-ai-agents/hermes-agent`, sección Bot Mode.
+#
+# version_roles sube cada vez que se agrega/quita un rol o se cambia su mapeo de módulos.
+version_roles: 0.1.0
+
+roles:
+  finanzas:
+    nombre: Empleado-agente de Finanzas
+    activa_con: [C2]              # Propuestas, cotizaciones y cobros
+    tambien_si: [E1]              # Medición (línea base/cierre) si el cliente lo pide para finanzas
+    titulo_base: Finanzas
+    descripcion_base: Propuestas, cotizaciones, cobros y seguimiento de lo pendiente.
+    skills_sugeridas: [service-catalog-pricing, propuestas-persuasivas-neuroventa]
+
+  crecimiento:
+    nombre: Empleado-agente de Crecimiento
+    activa_con: [C1, C5]          # Identidad de marca / Flujo de Instagram (con cualquiera de los dos alcanza)
+    tambien_si: [C3, C4]          # Reportes con marca, Universo de cliente y guiones
+    titulo_base: Crecimiento
+    descripcion_base: Marca, contenido y presencia — lo que atrae clientes nuevos.
+    skills_sugeridas: [content-pillars, hashtag-strategy, caption-writer, content-calendar]
+
+  edicion-produccion:
+    nombre: Empleado-agente de Edición y Producción
+    activa_con: [D1, D2]          # Captura multipista y respaldo / Edición asistida y automatizada
+    tambien_si: [C6]               # Reels con subtítulos, sonido y marca
+    titulo_base: Edición y Producción
+    descripcion_base: Deja el material grabado listo para publicar — edición, subtítulos, respaldo.
+    skills_sugeridas: [davinci-resolve-linux, edicion-reels-ffmpeg-subtitulos, video-asset-workflow]
+
+# Lo que NO es un "rol" nuevo, a propósito:
+# - B1/B2 (agente instalado + conectado a mensajería) es la infraestructura base de CUALQUIER
+#   Bot, no un departamento — es quien coordina a los demás (el perfil `default`/`@hermes`).
+# - B5 (Big Picture) es una vista transversal sobre todos los roles, no uno más.
+# - A1-A6, E1-E3 son del método de CogniLab (diagnóstico, medición, entrega), no roles del
+#   cliente — salvo E1 cuando el propio cliente quiere que Finanzas lo use para su seguimiento.

@@ -14,11 +14,33 @@
 ## Semana
 | Día | Qué se hace | Sale con |
 |---|---|---|
-| 1 | Entrevista al dueño (contexto, dolores con ejemplo real, qué ya intentó). Un día normal contado paso a paso. | Dolores con evidencia dicha, borrador del flujo |
+| 1 | Entrevista al dueño (contexto, dolores con ejemplo real, qué ya intentó). Un día normal contado paso a paso. También: cómo se imaginan su "equipo de agentes" (narrativa/lore, si ya tienen una idea), qué los mueve de verdad y sus referencias estéticas favoritas (`identidad_agentes` de la ficha) — sin inventar nada que no digan ellos. | Dolores con evidencia dicha, borrador del flujo, `identidad_agentes` con lo que de verdad dijeron (vacío si no dijeron nada) |
 | 2 | Observar el trabajo real (ver cómo lo hace, no cómo dice que lo hace). Entrevista corta a cada rol. | Evidencia mostrada, diferencias entre lo dicho y lo hecho |
 | 3 | Inventario del equipo (`tools/inventario.sh`, con permiso) y de herramientas que ya usa. | `inventario.yaml`, tabla «ya usa» |
 | 4 | Línea base: máximo 5 indicadores medibles, con fecha y fuente (E1). Causas de raíz: por cada dolor, preguntar «¿por qué?» hasta llegar a algo que se pueda arreglar. | Línea base, causas priorizadas |
 | 5 | Mapa vivo v1, `tools/plan.py` → manifiesto borrador, sesión de devolución con el cliente. | Mapa vivo, plan, decisión |
+
+## Variante: Radiografía exprés (1 día)
+
+Cuando el cliente no tiene margen para 5 días separados, se puede pasar por **todas** las
+preguntas de los días 1 a 4 en una sola sesión larga (medio día a un día completo) y producir el
+manifiesto borrador al cierre de esa misma sesión — el manifiesto preliminar de Fase 1 nace ahí
+mismo, no después.
+
+Lo que NO cambia:
+- El **cron "Radiografía — guía diaria" sigue corriendo toda la semana igual**, aunque la
+  sesión presencial ya haya terminado. Activarlo igual (`tools/radiografia_activa.py start`) —
+  su trabajo ahora es **complementar** lo que se capturó en un solo día: observación real (lo que
+  el día 2 normalmente cubre sin prisa), evidencia que no salió en la entrevista, e indicadores
+  de línea base que necesitan unos días de uso real para medirse bien.
+- El criterio de 3 evidencias por dolor y el test humano (`Cómo se decide qué entra`, abajo) se
+  mantienen exactos — exprés no significa menos evidencia, significa comprimir el calendario.
+- El manifiesto que sale ese mismo día sigue siendo **preliminar**: se afina igual durante la
+  semana con `tools/plan.py` si el cron detecta evidencia nueva relevante (ver `bootstrap/PRIMEROS-PASOS.md`).
+
+Cuándo NO usar la exprés: si el cliente tiene más de ~5 personas tocando el trabajo, o si los
+dolores declarados no coinciden con lo observable en una sola visita — ahí el día 2 (observación
+separada) sí hace falta para no decidir el manifiesto solo con lo dicho.
 
 ## Cómo se decide qué entra
 1. Cada dolor lleva **3 evidencias** (dichas o mostradas) y una prioridad 1–3. Sin evidencia no entra.
