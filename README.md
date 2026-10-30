@@ -24,7 +24,10 @@ tools/         verificar.py: estructura + sincronía con Cadence
 ## Flujo con un cliente
 0. **Radiografía** (`fases/0-radiografia.md`, 1 semana): entrevistas, observación, `tools/inventario.sh` (con permiso), línea base, Mapa vivo v1. Sale `radiografia.yaml`.
    `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
-1. Fase 1: llenar `fichas/ingreso.md` → sale el manifiesto (paquete + módulos + escala + acompañamiento + agente).
+1. Fase 1 — el manifiesto (paquete + módulos + escala + acompañamiento + agente) sale de una encuesta, no se escribe el YAML a mano:
+   - **El cliente la llena solo, antes de la sesión:** abrir `bootstrap/encuesta.html` (doble clic, cualquier navegador, sin internet ni servidor) y enviar el YAML resultante (copiarlo o descargarlo) a Sergio.
+   - **O se llena en vivo junto al cliente:** `python3 tools/encuesta_manifiesto.py` — mismo cuestionario por terminal, guarda directo en `manifiestos/cliente-X.yaml`.
+   - La encuesta web se regenera con `python3 tools/generar_encuesta_html.py` cada vez que cambien `modulos/` o `paquetes/` (lee los datos reales, nunca queda con una lista vieja).
 2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
    Si el cliente ya tiene Hermes, él mismo puede correr el setup: la instrucción lista para pegar está en `bootstrap/INSTRUCCION-HERMES.md`.
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.
