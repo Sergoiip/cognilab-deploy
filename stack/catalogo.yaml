@@ -1,4 +1,4 @@
-version_catalogo: 0.7.0
+version_catalogo: 0.8.0
 _nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
   qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
   se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
@@ -306,6 +306,9 @@ por_modulo_desde_escala:
   A2:
     '2':
     - lab-cadence
+  A3:
+    '2':
+    - task-atlas
 plantillas:
   lab-cadence: stack/plantillas/cadence-crm/data.json
 cuentas_manuales:
