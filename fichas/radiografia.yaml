@@ -16,6 +16,26 @@ identidad_agentes:
   motivacion: ""             # qué los mueve de verdad en el negocio (no la misión de cartón: lo que SÍ les quita el sueño o los emociona)
   estetica_favorita: ""      # referencias visuales/de marca que ya les gustan (puede ser "ninguna preferencia")
 
+# Componente humano de la persona principal (dueño/a u otro rol clave) — OPCIONAL y solo si hay
+# confianza/tiempo real para preguntarlo; no es un cuestionario a rellenar por obligación. La
+# persona sabe que esto se está preguntando y para qué (autorización de "Antes de empezar", día
+# 0) — nunca inferir ni completar lo que no dijo. Vive bajo el mismo acuerdo que `datos_sensibles`.
+perfil_humano:
+  aplica: false              # true solo si de verdad se tuvo esta conversación
+  miedos: ""
+  ilusiones_y_sueños: ""
+  metas: ""
+  proyectos_personales: ""
+  fracasos_pasados: ""       # como aprendizaje, no como juicio
+  red_de_apoyo: ""           # con quién se rodea, quién lo sostiene
+  relacion_con_su_trabajo: ""  # cómo se siente frente a lo que hace, no solo qué hace
+  quiere_aprender: ""
+  vision:
+    3_meses: ""
+    1_año: ""
+    5_años: ""
+  avenidas_creativas: ""     # otras cosas que quiere explorar o consolidar, aparte del negocio
+
 # Dolores: máximo 5. Sin 3 evidencias no entra al plan.
 # categoria: ver criterios/dolor-a-modulo.yaml
 dolores:
