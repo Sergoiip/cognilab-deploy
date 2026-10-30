@@ -49,8 +49,8 @@ hermes gateway install && hermes gateway start                          # en el 
 hermes config set platforms.api_server.host <ip-tailscale-del-servidor>
 ```
 Fijar usuario/contraseña del backend (o `HERMES_DASHBOARD_BASIC_AUTH_SECRET`) para no pedir
-login en cada reinicio. **Nunca** `--host 0.0.0.0` expuesto directo a internet — Tailscale es
-la opción limpia, documentada por Hermes mismo para este caso exacto.
+login en cada reinicio. **Nunca** enlazar a todas las interfaces (bind-all) expuesto directo a
+internet — Tailscale es la opción limpia, documentada por Hermes mismo para este caso exacto.
 
 ## Conectar el otro equipo como CLIENTE — Desktop y terminal, las dos
 
