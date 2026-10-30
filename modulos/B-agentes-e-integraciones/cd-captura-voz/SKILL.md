@@ -30,6 +30,21 @@ El usuario dicta pedidos (sesiones, gastos, tareas, ideas) por mensajería.
 3. Registrar en el sistema de registro (ver MS-09) y devolver un resumen corto.
 4. Si el adjunto no baja, buscar el archivo en la carpeta de descargas de la app de mensajería.
 
+## Dictado por voz en el propio equipo (según sistema operativo)
+
+Esto es aparte del dictado por mensajería arriba — es para escribir con la voz en cualquier app
+del equipo del cliente, directamente.
+
+- **Linux:** Voxtype (push-to-talk, MIT, 100% local — ver `stack/catalogo.yaml`). Elegir el
+  motor/modelo según el hardware real del cliente, nunca el mismo para todos:
+  - Pocos recursos (CPU sin GPU, <8GB RAM) → **Moonshine** (modelo diminuto, más rápido en CPU débil).
+  - Equipo normal → **Whisper** (motor por defecto, 99 idiomas, el más probado).
+  - CPU moderno con AVX-512 y se quiere máxima velocidad → **Parakeet** (más pesado, solo inglés).
+- **Mac/Windows:** Wispr Flow (gratis con límite de uso semanal/mensual, Pro de pago para
+  ilimitado; procesa en la nube de Wispr, no es local). Este instalador no soporta macOS/Windows
+  (ver "Límites conocidos" del README), así que siempre queda como paso a mano — nunca prometer
+  que `instala.sh` lo deja listo en esos sistemas.
+
 ## Principios
 
 - Transcripción local = datos del cliente no salen del equipo.

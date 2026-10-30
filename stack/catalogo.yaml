@@ -1,4 +1,4 @@
-version_catalogo: 0.9.0
+version_catalogo: 0.10.0
 _nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
   qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
   se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
@@ -160,6 +160,21 @@ apps:
     paquete: faster-whisper
     para: captura por voz
     opcional: true
+  voxtype:
+    nombre: Voxtype (dictado local push-to-talk)
+    tipo: manual
+    url: https://github.com/aisensiy/voxtype/releases/latest
+    licencia: MIT
+    para: captura por voz en cualquier app (Linux, Wayland o X11)
+    opcional: true
+    nota: 'Sin automatizar: no hay versión/sha256 fijados todavía para verificar la descarga (a diferencia de los plugins de Obsidian de este catálogo). Instalar a mano con el AppImage, .deb o .rpm del release, o AUR. Elegir motor/modelo según el hardware del cliente: pocos recursos (CPU sin GPU, <8GB RAM) -> Moonshine (modelo diminuto); equipo normal -> Whisper (el motor por defecto, 99 idiomas); CPU moderno con AVX-512 y se quiere máxima velocidad -> Parakeet (más pesado, solo inglés). Todo corre localmente, sin nube.'
+  wispr-flow:
+    nombre: Wispr Flow (dictado por voz)
+    tipo: manual
+    url: 'Mac Apple Silicon: https://dl.wisprflow.ai/mac-apple/latest · Mac Intel: https://dl.wisprflow.ai/mac-intel/latest · Windows: https://dl.wisprflow.ai/windows/latest'
+    para: captura por voz en cualquier app (macOS, Windows)
+    opcional: true
+    nota: 'Solo Mac/Windows — este instalador no soporta esos sistemas (ver "Límites conocidos"), así que queda siempre como paso a mano. No es local: procesa el audio en la nube de Wispr. Gratis con límite de uso semanal/mensual (sin tarjeta); plan Pro de pago para uso ilimitado. Mencionar el límite al cliente antes de prometerlo como solución definitiva.'
   tasknotes:
     nombre: TaskNotes (plugin)
     tipo: obsidian-plugin
@@ -282,6 +297,8 @@ por_modulo:
   B3:
   - faster-whisper
   - ffmpeg
+  - voxtype
+  - wispr-flow
   B4:
   - gh
   B5:

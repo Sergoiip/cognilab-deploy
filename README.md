@@ -99,3 +99,4 @@ Los skills del producto siempre se instalan; las apps nunca se imponen.
 - Los paquetes del sistema piden `sudo`.
 - Las cuentas (Telegram, WhatsApp Business, Discord, Drive) las crea el cliente; el script las deja en una lista "a mano".
 - Obsidian pide desactivar el modo restringido una vez, a mano, para activar plugins.
+- Solo Linux (pacman/apt/dnf). Este instalador no soporta macOS ni Windows — si el cliente está en esos sistemas, los módulos siguen siendo entregables (manuales, con quien opere ahí), pero `instala.sh` no corre. Las apps del catálogo marcadas `tipo: manual` (ej. Wispr Flow) existen justo para documentar ese caso sin fingir automatización que no hay.

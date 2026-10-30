@@ -124,6 +124,8 @@ def cmd_plan(a):
                 print(f"MANUAL|{d['nombre']}: sin paquete para {a.pm}, instalar a mano")
                 continue
             (fp if n.startswith("flatpak:") else pk).append(n.split(":", 1)[-1])
+        elif t == "manual":
+            print(f"MANUAL|{d['nombre']}: {d.get('url', '')} — {d.get('nota', '')}")
     if pk:
         print(f"PKG|{' '.join(pk)}")
     for f in fp:
