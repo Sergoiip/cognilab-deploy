@@ -9,6 +9,7 @@
 - Autorización escrita del cliente para mirar su equipo, archivos y conversaciones **solo lo necesario**. Datos sensibles: se acuerda dónde viven y no se copian.
 - Elegir la persona del cliente que responde dudas durante la semana.
 - Crear la carpeta del cliente (fuera del repo) y `radiografia.yaml` desde `fichas/radiografia.yaml`.
+- Activar el seguimiento: `python3 tools/radiografia_activa.py start "<cliente>" <ruta-radiografia.yaml>` y reanudar el cron **"Radiografía — guía diaria"** (`cronjob_manage` → `resume`, id en Hermes). Cada día hábil 9am avisa qué toca ese día y qué quedó incompleto del anterior, leyendo esta misma tabla y el `radiografia.yaml` real — nunca inventa avances.
 
 ## Semana
 | Día | Qué se hace | Sale con |
