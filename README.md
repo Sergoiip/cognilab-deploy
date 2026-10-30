@@ -30,6 +30,7 @@ tools/         verificar.py: estructura + sincronía con Cadence
    - La encuesta web se regenera con `python3 tools/generar_encuesta_html.py` cada vez que cambien `modulos/` o `paquetes/` (lee los datos reales, nunca queda con una lista vieja).
 2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
    Si el cliente ya tiene Hermes, él mismo puede correr el setup: la instrucción lista para pegar está en `bootstrap/INSTRUCCION-HERMES.md`.
+   La bóveda se personaliza **desde el momento en que existe el manifiesto, no al final**: el paso 3/6 de `instala.sh` (`tools/scaffold_vault.py`) escribe `00 - Bienvenida.md` con el nombre del cliente, su agente y sus módulos elegidos, y crea las carpetas que esos módulos ya necesitan. Si el manifiesto es preliminar y cambia durante la Radiografía, correr `instala.sh` de nuevo (o solo `scaffold_vault.py`) refleja el cambio de inmediato — nunca hay que esperar a la semana completa para que se vea algo personalizado.
    Justo después de instalar: `bootstrap/PRIMEROS-PASOS.md` — qué verificar y, si el manifiesto es preliminar (vino de la encuesta, no de una Radiografía completa), cómo afinarlo esa misma semana.
 3. Fase 3: `fichas/cierre.md`, medición contra línea base, aceptación.
 4. Anotar en Cadence la versión instalada (`VERSION` en el equipo del cliente).

@@ -23,7 +23,7 @@ run() { if [[ $DRY -eq 1 ]]; then echo "  [dry-run] $*"; else eval "$@"; fi; }
 
 [[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh <manifiesto.yaml> [--dry-run] [--sin-apps]"
 
-echo "== 1/5 Preflight"
+echo "== 1/6 Preflight"
 PY=""
 for c in /usr/bin/python3 python3 "$HH/hermes-agent/venv/bin/python"; do
   if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import yaml' 2>/dev/null; then PY="$c"; break; fi
@@ -35,7 +35,7 @@ for c in pacman apt-get dnf; do command -v "$c" >/dev/null 2>&1 && { PM="$c"; br
 [[ -n "$PM" ]] || die "gestor de paquetes no soportado (solo pacman, apt, dnf)"
 echo "  SO: $(uname -sr) · gestor: $PM · Hermes en: $HH · disco libre: $(df -h "$HOME" | awk 'NR==2{print $4}')"
 
-echo "== 2/5 Resolver módulos del manifiesto"
+echo "== 2/6 Resolver módulos del manifiesto"
 RESUELTO="$("$PY" - "$MANIFIESTO" "$REPO" <<'PY'
 import sys, yaml, pathlib
 man = yaml.safe_load(open(sys.argv[1], encoding="utf-8"))
@@ -55,7 +55,14 @@ PY
 mapfile -t SLUGS <<<"$RESUELTO"
 for l in "${SLUGS[@]}"; do echo "  - ${l%%|*}"; done
 
-echo "== 3/5 Instalar skills en $DEST"
+echo "== 3/6 Estructura de la bóveda (se refleja de inmediato)"
+if [[ $DRY -eq 1 ]]; then
+  "$PY" "$REPO/tools/scaffold_vault.py" "$MANIFIESTO" --dry-run
+else
+  "$PY" "$REPO/tools/scaffold_vault.py" "$MANIFIESTO"
+fi
+
+echo "== 4/6 Instalar skills en $DEST"
 run "mkdir -p '$DEST'"
 for l in "${SLUGS[@]}"; do
   IFS='|' read -r id slug src <<<"$l"
@@ -69,7 +76,7 @@ else
   "$PY" "$REPO/tools/personalizar_agente.py" "$MANIFIESTO" "$HH"
 fi
 
-echo "== 4/5 Aplicaciones"
+echo "== 5/6 Aplicaciones"
 if [[ $SIN_APPS -eq 1 ]]; then
   echo "  (omitido por --sin-apps)"
 else
@@ -126,7 +133,7 @@ else
   if [[ ${#MANUALES[@]} -gt 0 ]]; then echo "  A mano (no se pueden automatizar):"; for m in "${MANUALES[@]}"; do echo "    [ ] $m"; done; fi
 fi
 
-echo "== 5/5 Registrar versión instalada"
+echo "== 6/6 Registrar versión instalada"
 VER="$(git -C "$REPO" describe --tags --always 2>/dev/null || echo sin-git)"
 run "cp '$MANIFIESTO' '$DEST/MANIFIESTO.yaml' && printf '%s\n' '$VER' > '$DEST/VERSION'"
 echo "Listo. Versión del repo: $VER. Anótala en Cadence junto al cliente."
