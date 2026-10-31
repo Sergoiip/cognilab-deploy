@@ -98,3 +98,29 @@ por cliente (el host/usuario son específicos de cada instalación, no van hardc
 **Límite real, no cosmético:** si la tarea ya estaba corriendo en una máquina y esa máquina se
 apaga a mitad de camino, esa tarea específica no "migra" sola — hay que relanzarla en el nuevo
 backend. El switch solo decide dónde arrancan las tareas NUEVAS.
+
+## Cuando el cliente es más de una persona — perfiles por rol, no por nombre
+
+Un negocio de dos o más socios que comparten una sola máquina/instalación necesita más de un
+perfil de Hermes, pero **nunca se decide por nombre propio** — se decide por lo que ya está en
+`personas:` del manifiesto (`fichas/radiografia.yaml`), que ya se captura por **rol**, no por
+nombre.
+
+**El patrón:**
+- **Un perfil por cada persona con `usa_pc: true`** — su propio contexto, su propia memoria,
+  sus propios skills. Lo que uno gestiona no se mezcla con lo que gestiona el otro.
+- **Un perfil compartido adicional** (`agencia`/`negocio`) cuando `tipo: negocio` y hay más de
+  una persona — es el que redacta hacia clientes externos según directrices conjuntas de
+  ambos, igual que un equipo comparte una sola cuenta de WhatsApp de atención aunque cada
+  persona tenga la suya propia.
+- Los perfiles personales **alimentan** al compartido (las decisiones que cada persona toma en
+  su propio perfil pueden terminar reflejadas en lo que el perfil de agencia le dice al
+  cliente), pero el compartido no sustituye a ninguno de los dos.
+
+**Por qué por rol y no por nombre:** el manifiesto vive fuera del repo y nunca lleva nombres
+propios de clientes (ver `criterios/`) — pero el PATRÓN de cuántos perfiles crear y cómo se
+relacionan entre sí sí es reusable, y vive aquí en genérico.
+
+`tools/perfiles_equipo.py manifiesto.yaml` lee `personas:` y `tipo:` y propone los perfiles a
+crear (solo propone, igual que `roster_sugerido.py` — crear el perfil de verdad en la máquina
+del cliente es una decisión aparte).
