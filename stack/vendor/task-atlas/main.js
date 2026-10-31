@@ -629,6 +629,7 @@ class TaskSpaceView extends ItemView {
       const m = this.model.nodes.get(n.meta); if (m) hd.createDiv({ cls: 'tka-pl-sub', text: '🎯 Aporta a: ' + m.title });
     } else if (n.type === 'meta') (n.medida || []).forEach((x) => hd.createDiv({ cls: 'tka-pl-sub', text: '📏 ' + x }));
     const ob = hd.createEl('button', { text: '↗ Abrir la nota', cls: 'tka-obtn' }); ob.addEventListener('click', () => this.app.workspace.getLeaf('tab').openFile(n.file));
+    const zb = hd.createEl('button', { text: '⤢ Desprender', cls: 'tka-obtn' }); zb.addEventListener('click', () => this.plugin.openPanel(n.path));
     if (n.type === 'task' && this.S.scope === 'roadmap') this.planPanel(box, n);
     const sec = (label, ids) => {
       if (!ids.length) return;
@@ -1001,6 +1002,226 @@ class TaskSpaceSettings extends PluginSettingTab {
   }
 }
 
+
+/* ===== Task Atlas · Panel (fase 4-5 del revamp): Hoy / Lista / Tablero / Calendario + desprendible por meta o tarea ===== */
+const PANEL = 'task-atlas-panel';
+const CLASES = [['prioritaria', 'Prioritarias'], ['avanza', 'Avanzan'], ['miscelanea', 'Útiles / misceláneas']];
+const DIASS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+class TaskPanelView extends ItemView {
+  constructor(leaf, plugin) {
+    super(leaf); this.plugin = plugin; this.tab = 'hoy'; this.owner = ''; this.q = ''; this.group = 'meta'; this.weekOff = 0;
+    this.open = null; this.amb = ''; this.events = []; this.showCron = false; this.showDone = false;
+    this.refreshSoon = debounce(() => { if (!this.busy) this.render(); }, 400, true);
+  }
+  getViewType() { return PANEL; }
+  getDisplayText() { return 'Task Atlas · Panel'; }
+  getIcon() { return 'layout-dashboard'; }
+  async onOpen() {
+    this.contentEl.empty(); this.contentEl.addClass('tkp-root');
+    this.registerEvent(this.app.metadataCache.on('changed', () => this.refreshSoon()));
+    this.registerEvent(this.app.vault.on('delete', () => this.refreshSoon()));
+    await this.loadEvents(); this.render();
+  }
+  async loadEvents() {
+    try {
+      const p = this.app.vault.configDir + '/plugins/task-atlas/eventos.json';
+      this.events = (await this.app.vault.adapter.exists(p)) ? JSON.parse(await this.app.vault.adapter.read(p)) : [];
+    } catch (e) { this.events = []; }
+  }
+  // ---------- datos ----------
+  load() {
+    const MC = this.app.metadataCache, S = this.plugin.data.settings, folder = S.tasksFolder.replace(/\/+$/, ''), mf = (S.metasFolder || 'Roadmap/Metas').replace(/\/+$/, '');
+    const fmOf = (f) => (MC.getFileCache(f) || {}).frontmatter || {};
+    const dest = (v, from) => { const l = parseLink(String(flat(v)[0] || '')); return l ? MC.getFirstLinkpathDest(l, from) : null; };
+    const all = this.app.vault.getMarkdownFiles(), T = new Map(), M = new Map();
+    for (const f of all) {
+      const fm = fmOf(f);
+      if (f.path.startsWith(mf + '/') && (fm.type === 'meta' || fm.type === 'norte')) { M.set(f.path, { path: f.path, file: f, type: fm.type, title: fm.nombre || f.basename, medida: flat(fm.medida), color: fm.color }); continue; }
+      if (!f.path.startsWith(folder + '/') || fm.status === 'cancelled') continue;
+      const md = dest(fm.meta, f.path), pd = dest(fm.paso, f.path);
+      const parents = [...projectLinks(fm.projects).map((l) => { const lp = parseLink(l); return lp && MC.getFirstLinkpathDest(lp, f.path); }), pd].filter((d) => d && d.path !== f.path).map((d) => d.path);
+      const deps = flat(fm.depende_de).map((l) => { const lp = parseLink(String(l)); return lp && MC.getFirstLinkpathDest(lp, f.path); }).filter(Boolean).map((d) => d.path);
+      T.set(f.path, { path: f.path, file: f, title: fm.title || f.basename, st: fm.status === 'none' ? 'idea' : (fm.status || 'open'), pr: fm.priority || 'none',
+        sch: String(fm.scheduled || '').slice(0, 10), due: String(fm.due || '').slice(0, 10), hora: fm.hora || '', resp: fm.responsable || '', ej: fm.ejecuta || 'humano',
+        amb: fm.ambito === 'negocio' ? 'negocio' : 'operacion', clase: fm.clase || '', dia: String(fm.dia || '').slice(0, 10), puntaje: Number(fm.puntaje || 0), valor: fm.valor || '', imp: fm.impacto, esf: fm.esfuerzo,
+        clave: fm.clave === true, tipo: fm.tipo || '', meta: md ? md.path : null, paso: pd ? pd.path : null, parents, deps, cliente: (dest(fm.cliente, f.path) || {}).basename || '', area: (dest(fm.area, f.path) || {}).basename || '' });
+    }
+    for (const t of T.values()) { t.kids = []; t.unlocks = []; }
+    for (const t of T.values()) { t.parents.forEach((p) => { if (T.has(p)) T.get(p).kids.push(t.path); }); t.deps.forEach((d) => { if (T.has(d)) T.get(d).unlocks.push(t.path); }); }
+    for (const t of T.values()) t.blocked = t.deps.some((d) => T.has(d) && T.get(d).st !== 'done');
+    return { T, M };
+  }
+  vis(t) {
+    if (!this.showCron && (t.ej === 'cron' || t.tipo === 'habito')) return false;
+    if (!this.showDone && t.st === 'done') return false;
+    if (this.owner && (t.resp || 'Sebas') !== this.owner) return false;
+    if (this.amb && t.amb !== this.amb) return false;
+    if (this.q && !t.title.toLowerCase().includes(this.q.toLowerCase())) return false;
+    return true;
+  }
+  async edit(path, fn) { const f = this.app.vault.getAbstractFileByPath(path); if (!f) return; this.busy = true; try { await this.app.fileManager.processFrontMatter(f, (fm) => { fn(fm); fm.dateModified = isoNow(); }); } finally { this.busy = false; } this.render(); }
+  setStatus(path, st) { return this.edit(path, (fm) => { fm.status = st; if (st === 'done') fm.completedDate = today(); else delete fm.completedDate; }); }
+  setField(path, k, v) { return this.edit(path, (fm) => { if (v === '' || v == null) delete fm[k]; else fm[k] = v; }); }
+  openItem(path) { this.open = path; this.render(); }
+  // ---------- render ----------
+  render() {
+    const root = this.embedHost || this.contentEl, sc = (this.body || {}).scrollTop || 0, dsc = (this.drawerEl || {}).scrollTop || 0;
+    root.empty(); const D = this.D = this.load();
+    if (this.embedHost) { root.addClass('tkp-embed'); this.body = root.createDiv('tkp-body'); this.viewHoy(); return; }
+    const head = root.createDiv('tkp-head');
+    head.createEl('b', { text: 'Task Atlas', cls: 'tkp-brand' });
+    const tabs = head.createDiv('tkp-tabs');
+    [['hoy', '☀ Hoy'], ['lista', '☰ Lista'], ['tablero', '▦ Tablero'], ['calendario', '▤ Calendario']].forEach(([k, l]) => {
+      const b = tabs.createEl('button', { text: l, cls: 'tkp-tab' + (this.tab === k ? ' is-on' : '') }); b.onclick = () => { this.tab = k; this.render(); };
+    });
+    const tools = head.createDiv('tkp-tools');
+    const os = tools.createEl('select'); [['', 'Todos'], ['Sebas', 'Sebas'], ['Sergio', 'Sergio'], ['Shaco', 'Shaco'], ['Ocean', 'Ocean']].forEach(([v, l]) => os.createEl('option', { value: v, text: l })); os.value = this.owner; os.onchange = () => { this.owner = os.value; this.render(); };
+    const as = tools.createEl('select'); [['', 'Negocio + Operación'], ['negocio', '💼 Negocio'], ['operacion', '⚙ Operación']].forEach(([v, l]) => as.createEl('option', { value: v, text: l })); as.value = this.amb; as.onchange = () => { this.amb = as.value; this.render(); };
+    if (this.tab === 'lista') { const gs = tools.createEl('select'); [['meta', 'Agrupar: Meta'], ['st', 'Agrupar: Estado'], ['resp', 'Agrupar: Responsable'], ['cliente', 'Agrupar: Cliente'], ['clase', 'Agrupar: Clase'], ['amb', 'Agrupar: Ámbito']].forEach(([v, l]) => gs.createEl('option', { value: v, text: l })); gs.value = this.group; gs.onchange = () => { this.group = gs.value; this.render(); }; }
+    const q = tools.createEl('input', { type: 'text', placeholder: 'Buscar…' }); q.value = this.q; q.oninput = () => { this.q = q.value; clearTimeout(this._qt); this._qt = setTimeout(() => { this.render(); const n = this.contentEl.querySelector('.tkp-tools input'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } }, 250); };
+    const tg = (txt, key) => { const l = tools.createEl('label', { cls: 'tkp-chk' }); const c = l.createEl('input', { type: 'checkbox' }); c.checked = this[key]; c.onchange = () => { this[key] = c.checked; this.render(); }; l.createSpan({ text: txt }); };
+    tg('repetibles', 'showCron'); tg('hechas', 'showDone');
+    const main = root.createDiv('tkp-main' + (this.open ? ' has-drawer' : ''));
+    this.body = main.createDiv('tkp-body');
+    ({ hoy: () => this.viewHoy(), lista: () => this.viewLista(), tablero: () => this.viewTablero(), calendario: () => this.viewCal() })[this.tab]();
+    if (this.open) this.drawer(main);
+    this.body.scrollTop = sc; if (this.drawerEl) this.drawerEl.scrollTop = dsc;
+  }
+  card(parent, t, opts = {}) {
+    const c = parent.createDiv('tkp-card' + (t.st === 'done' ? ' is-done' : '') + (t.blocked ? ' is-blocked' : '') + (this.open === t.path ? ' is-sel' : ''));
+    c.style.setProperty('--pc', prColor(t.pr));
+    const cb = c.createEl('input', { type: 'checkbox', cls: 'tkp-cb' }); cb.checked = t.st === 'done';
+    cb.onclick = (e) => e.stopPropagation(); cb.onchange = () => this.setStatus(t.path, cb.checked ? 'done' : 'open');
+    const tx = c.createDiv('tkp-card-t'); tx.createDiv({ cls: 'tkp-title', text: t.title });
+    const ch = tx.createDiv('tkp-chips');
+    if (t.blocked) ch.createSpan({ cls: 'tkp-chip is-lock', text: '🔒' });
+    ch.createSpan({ cls: 'tkp-chip is-amb is-' + t.amb, text: t.amb === 'negocio' ? '💼 Negocio' : '⚙ Operación' });
+    if (t.resp && !opts.noResp) ch.createSpan({ cls: 'tkp-chip', text: t.resp });
+    if (t.valor) ch.createSpan({ cls: 'tkp-chip is-val', text: t.valor });
+    if (t.due) ch.createSpan({ cls: 'tkp-chip' + (t.due < today() && t.st !== 'done' ? ' is-late' : ''), text: '⏰ ' + t.due.slice(5) });
+    if (t.esf) ch.createSpan({ cls: 'tkp-chip', text: '~' + t.esf + ' h' });
+    c.onclick = () => (this.embedHost ? this.plugin.openPanel(t.path) : this.openItem(t.path));
+    c.draggable = true; c.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', t.path); });
+    return c;
+  }
+  viewHoy() {
+    const { T } = this.D, hoy = today(), b = this.body;
+    const dayEv = this.events.filter((e) => String(e.s).slice(0, 10) === hoy).sort((x, y) => String(x.s).localeCompare(String(y.s)));
+    const list = [...T.values()].filter((t) => t.dia === hoy && (!this.owner || (t.resp || 'Sebas') === this.owner));
+    const done = list.filter((t) => t.st === 'done').length, pct = list.length ? Math.round(100 * done / list.length) : 0;
+    const hero = b.createDiv('tkp-hero');
+    const ring = hero.createDiv('tkp-ring'); ring.style.setProperty('--p', pct); ring.createSpan({ text: pct + '%' });
+    const ht = hero.createDiv('tkp-hero-t'); const dd = new Date();
+    ht.createEl('h2', { text: dd.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' }) });
+    const hrs = list.reduce((s, t) => s + (Number(t.esf) || 0), 0), neg = list.filter((t) => t.amb === 'negocio').length;
+    ht.createDiv({ cls: 'tkp-muted', text: `${done} de ${list.length} hechas · ~${hrs} h de trabajo · 💼 ${neg} negocio · ⚙ ${list.length - neg} operación` });
+    if (!this.embedHost) { const pb = ht.createEl('button', { text: '⤢ Abrir Task Atlas completo', cls: 'tkp-mini' }); pb.onclick = () => this.plugin.activate(); } else { const pb = ht.createEl('button', { text: '⤢ Panel completo', cls: 'tkp-mini' }); pb.onclick = () => this.plugin.openPanel(); }
+    if (dayEv.length) {
+      const e = b.createDiv('tkp-agenda'); e.createDiv({ cls: 'tkp-h', text: '📅 Agenda' }); const row = e.createDiv('tkp-agenda-row');
+      dayEv.forEach((x) => { const s = String(x.s), c = row.createDiv('tkp-evcard'); c.createDiv({ cls: 'tkp-evtime', text: s.includes('T') ? s.slice(11, 16) + '–' + String(x.e).slice(11, 16) : 'Todo el día' }); c.createDiv({ text: x.t }); });
+    }
+    if (!list.length) { b.createDiv({ cls: 'tkp-empty', text: 'Aún no hay día armado. El ciclo diario (6:30) elige las 10.' }); return; }
+    const lanes = b.createDiv('tkp-lanes');
+    [['negocio', '💼 Negocio', 'Cobros, propuestas, seguimiento, sesiones'], ['operacion', '⚙ Operación e infraestructura', 'Lo que mueve el negocio hacia adelante']].forEach(([k, l, sub]) => {
+      const ts0 = list.filter((t) => t.amb === k); const lane = lanes.createDiv('tkp-lane is-' + k);
+      const lh = lane.createDiv('tkp-lane-h'); lh.createEl('b', { text: l }); lh.createSpan({ cls: 'tkp-muted', text: `${ts0.filter((t) => t.st === 'done').length}/${ts0.length}` }); lane.createDiv({ cls: 'tkp-muted tkp-lane-sub', text: sub });
+      CLASES.forEach(([c, cl]) => {
+        const ts = ts0.filter((t) => t.clase === c).sort((x, y) => y.puntaje - x.puntaje); if (!ts.length) return;
+        lane.createDiv({ cls: 'tkp-h tkp-h-s', text: cl }); const col = lane.createDiv('tkp-col'); ts.forEach((t) => this.card(col, t, { noResp: !!this.owner }));
+      });
+      if (!ts0.length) lane.createDiv({ cls: 'tkp-empty', text: 'Nada hoy' });
+    });
+  }
+  groupKey(t, T, M) {
+    if (this.group === 'meta') return t.meta && M.has(t.meta) ? M.get(t.meta).title : 'Sin meta';
+    if (this.group === 'st') return { 'in-progress': '2 · En progreso', open: '1 · Abierta', done: '3 · Hecha', idea: '4 · Idea' }[t.st] || t.st;
+    if (this.group === 'resp') return t.resp || 'Sebas';
+    if (this.group === 'cliente') return t.cliente || t.area || 'Sin cliente / área';
+    if (this.group === 'amb') return t.amb === 'negocio' ? '1 · 💼 Negocio' : '2 · ⚙ Operación e infraestructura';
+    return { prioritaria: '1 · Prioritarias', avanza: '2 · Avanzan', miscelanea: '3 · Útiles' }[t.clase] || '4 · Fuera del día';
+  }
+  viewLista() {
+    const { T, M } = this.D, groups = new Map();
+    [...T.values()].filter((t) => this.vis(t)).forEach((t) => { const k = this.groupKey(t, T, M); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); });
+    [...groups.keys()].sort().forEach((k) => {
+      const ts = groups.get(k).sort((a, c) => (c.puntaje || 0) - (a.puntaje || 0) || (a.due || '9').localeCompare(c.due || '9'));
+      const h = this.body.createDiv({ cls: 'tkp-h', text: `${k.replace(/^\d · /, '')} (${ts.length})` });
+      const col = this.body.createDiv('tkp-col'); ts.forEach((t) => this.card(col, t));
+    });
+    if (!groups.size) this.body.createDiv({ cls: 'tkp-empty', text: 'Sin tareas con estos filtros.' });
+  }
+  viewTablero() {
+    const { T } = this.D, cols = [['open', 'Abierta'], ['in-progress', 'En progreso'], ['done', 'Hecha']];
+    const wrap = this.body.createDiv('tkp-board');
+    cols.forEach(([st, lab]) => {
+      const c = wrap.createDiv('tkp-bcol'); const ts = [...T.values()].filter((t) => t.st === st && (st === 'done' ? (this.showDone || t.dia === today() || t.sch === today()) : true) && (this.vis({ ...t, st: st === 'done' ? 'open' : t.st }))).sort((a, b) => (b.puntaje || 0) - (a.puntaje || 0));
+      c.createDiv({ cls: 'tkp-h', text: `${lab} (${ts.length})` });
+      const body = c.createDiv('tkp-bbody');
+      body.addEventListener('dragover', (e) => { e.preventDefault(); body.addClass('is-over'); }); body.addEventListener('dragleave', () => body.removeClass('is-over'));
+      body.addEventListener('drop', (e) => { e.preventDefault(); const p = e.dataTransfer.getData('text/plain'); if (T.has(p) && T.get(p).st !== st) this.setStatus(p, st); });
+      ts.slice(0, 60).forEach((t) => this.card(body, t));
+    });
+  }
+  viewCal() {
+    const { T } = this.D, now = new Date(), mon = new Date(now); mon.setDate(now.getDate() - ((now.getDay() + 6) % 7) + this.weekOff * 7);
+    const nav = this.body.createDiv('tkp-calnav');
+    const nb = (t, f) => { const b = nav.createEl('button', { text: t }); b.onclick = f; };
+    nb('◀', () => { this.weekOff--; this.render(); }); nb('Esta semana', () => { this.weekOff = 0; this.render(); }); nb('▶', () => { this.weekOff++; this.render(); });
+    const end = new Date(mon); end.setDate(mon.getDate() + 6); nav.createSpan({ cls: 'tkp-muted', text: `${ymd(mon)} → ${ymd(end)}` });
+    const grid = this.body.createDiv('tkp-week');
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(mon); d.setDate(mon.getDate() + i); const key = ymd(d);
+      const col = grid.createDiv('tkp-day' + (key === today() ? ' is-today' : '')); col.createDiv({ cls: 'tkp-dayh', text: `${DIASS[i]} ${d.getDate()}` });
+      this.events.filter((e) => String(e.s).slice(0, 10) === key).sort((a, c) => String(a.s).localeCompare(String(c.s))).forEach((e) => { const s = String(e.s); col.createDiv({ cls: 'tkp-ev', text: (s.includes('T') ? s.slice(11, 16) + ' ' : '') + e.t }); });
+      const ts = [...T.values()].filter((t) => this.vis(t) && t.st !== 'done' && ((t.dia === key) || (!t.dia && (t.sch === key && key >= today())) || (t.due === key && key >= today())));
+      ts.forEach((t) => this.card(col, t, { noResp: !!this.owner }));
+      col.addEventListener('dragover', (e) => { e.preventDefault(); col.addClass('is-over'); }); col.addEventListener('dragleave', () => col.removeClass('is-over'));
+      col.addEventListener('drop', (e) => { e.preventDefault(); const p = e.dataTransfer.getData('text/plain'); if (T.has(p)) this.edit(p, (fm) => { fm.scheduled = key; delete fm.dia; delete fm.clase; delete fm.puntaje; }); });
+    }
+  }
+  // ---------- desprendible (zoom local de una meta o tarea) ----------
+  drawer(main) {
+    const { T, M } = this.D, p = this.open, t = T.get(p), m = M.get(p);
+    const dr = this.drawerEl = main.createDiv('tkp-drawer tkp-zoom');
+    const x = dr.createEl('button', { text: '✕', cls: 'tkp-x' }); x.onclick = () => { this.open = null; this.render(); };
+    if (!t && !m) { dr.createDiv({ text: 'No encontrado' }); return; }
+    const title = (t || m).title; dr.createEl('h3', { text: title });
+    const file = (t || m).file;
+    const bar = dr.createDiv('tkp-actions');
+    const b1 = bar.createEl('button', { text: '↗ Abrir la nota' }); b1.onclick = () => this.app.workspace.getLeaf('tab').openFile(file);
+    const b2 = bar.createEl('button', { text: '🗺 Ver en el mapa' }); b2.onclick = async () => { await this.plugin.activate(); const v = this.app.workspace.getLeavesOfType(VIEW)[0]; if (v && v.view.focusNode) v.view.focusNode(p); };
+    const item = (parent, path) => { const o = T.get(path) || M.get(path); if (!o) return; const r = parent.createDiv('tkp-link'); r.setText((o.st === 'done' ? '✅ ' : o.blocked ? '🔒 ' : '• ') + o.title); r.onclick = () => this.openItem(path); };
+    const sec = (label, paths) => { paths = paths.filter((q) => T.has(q) || M.has(q)); if (!paths.length) return; dr.createDiv({ cls: 'tkp-h', text: label }); const bx = dr.createDiv('tkp-links'); paths.forEach((q) => item(bx, q)); };
+    if (m) {
+      (m.medida || []).forEach((x) => dr.createDiv({ cls: 'tkp-sub', text: '📏 ' + x }));
+      const ts = [...T.values()].filter((q) => q.meta === p && q.st !== 'idea'), dn = ts.filter((q) => q.st === 'done').length;
+      const pg = dr.createDiv('tkp-prog'); pg.createDiv('tkp-prog-bar').style.width = (ts.length ? 100 * dn / ts.length : 0) + '%'; dr.createSpan({ cls: 'tkp-muted', text: `${dn}/${ts.length} tareas hechas` });
+      const steps = ts.filter((q) => q.clave);
+      steps.forEach((s) => { dr.createDiv({ cls: 'tkp-h', text: '🎯 ' + s.title + (s.st === 'done' ? ' ✅' : '') }); const bx = dr.createDiv('tkp-links'); item(bx, s.path); s.kids.forEach((k) => item(bx, k)); });
+      sec('Otras tareas de la meta', ts.filter((q) => !q.clave && !q.paso).map((q) => q.path).slice(0, 25));
+      return;
+    }
+    const chips = dr.createDiv('tkp-chips'); chips.createSpan({ cls: 'tkp-chip', text: ({ 'in-progress': 'En progreso', open: 'Abierta', done: 'Hecha', idea: 'Idea' })[t.st] || t.st });
+    if (t.blocked) chips.createSpan({ cls: 'tkp-chip is-lock', text: '🔒 espera dependencias' });
+    if (t.clase) chips.createSpan({ cls: 'tkp-chip is-val', text: t.clase + (t.puntaje ? ' · ' + t.puntaje : '') });
+    if (t.meta && M.has(t.meta)) { const a = dr.createDiv({ cls: 'tkp-link', text: '🎯 Aporta a: ' + M.get(t.meta).title }); a.onclick = () => this.openItem(t.meta); }
+    const form = dr.createDiv('tkp-form');
+    const sel = (label, key, opts, cur, fn) => { const r = form.createDiv('tkp-row'); r.createSpan({ text: label }); const s = r.createEl('select'); opts.forEach(([v, l]) => s.createEl('option', { value: v, text: l })); s.value = cur; s.onchange = () => fn ? fn(s.value) : this.setField(p, key, s.value); };
+    const inp = (label, key, type, cur) => { const r = form.createDiv('tkp-row'); r.createSpan({ text: label }); const i = r.createEl('input', { type }); i.value = cur == null ? '' : cur; i.onchange = () => this.setField(p, key, type === 'number' ? (i.value === '' ? '' : Number(i.value)) : i.value); };
+    sel('Estado', 'status', [['open', 'Abierta'], ['in-progress', 'En progreso'], ['done', 'Hecha'], ['none', 'Idea']], t.st === 'idea' ? 'none' : t.st, (v) => this.setStatus(p, v));
+    sel('Prioridad', 'priority', PRIOS.map((x) => [x.id, x.label]), t.pr);
+    sel('Ámbito', 'ambito', [['negocio', '💼 Negocio (cobros, propuestas, sesiones)'], ['operacion', '⚙ Operación e infraestructura']], t.amb);
+    sel('Ejecuta', 'ejecuta', [['humano', 'Humano'], ['agente', 'Agente'], ['cron', 'Cron'], ['externo', 'Externo']], t.ej);
+    inp('Programada', 'scheduled', 'date', t.sch); inp('Vence', 'due', 'date', t.due); inp('Hora (bloquea calendario)', 'hora', 'time', t.hora);
+    inp('Impacto 1-5', 'impacto', 'number', t.imp); inp('Esfuerzo (h)', 'esfuerzo', 'number', t.esf);
+    sel('Valor', 'valor', [['', '—'], ...['Sostenibilidad', 'Cumplimiento', 'Calidad', 'Crecimiento', 'Orden'].map((v) => [v, v])], t.valor);
+    sec('⬅ Depende de', t.deps); sec('➡ Al cerrarla desbloquea', t.unlocks); sec('Subtareas', t.kids); sec('Parte de', t.parents.filter((q) => T.has(q)));
+    const rl = (this.app.metadataCache.resolvedLinks || {})[p] || {}; const notes = Object.keys(rl).filter((q) => !q.startsWith(this.plugin.data.settings.tasksFolder) && q.endsWith('.md')).slice(0, 8);
+    if (notes.length) { dr.createDiv({ cls: 'tkp-h', text: 'Notas enlazadas' }); const bx = dr.createDiv('tkp-links'); notes.forEach((q) => { const f = this.app.vault.getAbstractFileByPath(q); if (!f) return; const r = bx.createDiv('tkp-link'); r.setText('📄 ' + f.basename); r.onclick = () => this.app.workspace.getLeaf('tab').openFile(f); }); }
+  }
+}
+
 module.exports = class TaskAtlas extends Plugin {
   async onload() {
     const d = (await this.loadData()) || {};
@@ -1009,9 +1230,24 @@ module.exports = class TaskAtlas extends Plugin {
     if (!d.v08) { this.data.pos = {}; this.data.fitted = false; this.data.settings.filter = ''; this.data.settings.scope = 'roadmap'; this.data.v08 = true; }
     this.saveSoon = debounce(() => this.saveData(this.data), 600, true);
     this.registerView(VIEW, (leaf) => new TaskSpaceView(leaf, this));
+    this.registerView(PANEL, (leaf) => new TaskPanelView(leaf, this));
+    this.addRibbonIcon('layout-dashboard', 'Task Atlas · Panel', () => this.openPanel());
+    this.addCommand({ id: 'open-panel', name: 'Abrir Task Atlas · Panel (Hoy, Lista, Tablero, Calendario)', callback: () => this.openPanel() });
     this.addRibbonIcon('network', 'Task Atlas', () => this.activate());
     this.addCommand({ id: 'open', name: 'Abrir Task Atlas', callback: () => this.activate() });
     this.addSettingTab(new TaskSpaceSettings(this.app, this));
+  }
+  embedHoy(host) {
+    const v = new TaskPanelView({ app: this.app }, this); v.embedHost = host;
+    const go = async () => { await v.loadEvents(); v.render(); };
+    const ref = this.app.metadataCache.on('changed', () => { if (!host.isConnected) { this.app.metadataCache.offref(ref); return; } v.refreshSoon(); });
+    go(); return v;
+  }
+  async openPanel(path) {
+    let leaf = this.app.workspace.getLeavesOfType(PANEL)[0];
+    if (!leaf) { leaf = this.app.workspace.getLeaf('tab'); await leaf.setViewState({ type: PANEL, active: true }); }
+    this.app.workspace.revealLeaf(leaf);
+    if (path && leaf.view && leaf.view.openItem) leaf.view.openItem(path);
   }
   async activate() {
     let leaf = this.app.workspace.getLeavesOfType(VIEW)[0];

@@ -1,4 +1,4 @@
-version_catalogo: 0.15.0
+version_catalogo: 0.16.0
 _nota: 'Todo es opcional y gratis. Los perfiles son SUGERENCIAS: el instalador pregunta
   qué instalar. Para ampliar sin tocar este archivo, usar stack/extras.yaml. Plugins:
   se verifican por sha256 (release oficial, o la carpeta vendor del repo para el fork
@@ -245,9 +245,9 @@ apps:
     version: 0.4.0
     licencia: Propia (CogniLab)
     sha256:
-      main.js: c66dc0d358d2eacf2a1c4af26f5afe5ca2a0c9f23d982e6790b166a1dd68384d
-      manifest.json: e520ab5058130b48436b1a473395c0a24f9f630a70bed2b3f5b2b098f8143e61
-      styles.css: 612ce73db7067d0ceef17e9a8c3a0e49c3a311e31865ec789f301c4dd50388fc
+      main.js: bd04d32446cbe941f488f80f1a0c6cc86860c4b2609ad85553166546ffccdd8e
+      manifest.json: b74f5a763d18c46f922d3c7dc64fbb4092abed997abec57c0e8b788e11b4590c
+      styles.css: 24d62d1a4f4aa5e4e3c51964f5ba0afe7721d399324d2169b01326a8e78ac5de
     para: mapa visual de las tareas de TaskNotes
     opcional: true
     nota: 'Depende de TaskNotes. Plugin propio incluido en el repo (ver stack/vendor/task-atlas/README.md). Metodología y recomendaciones de uso: stack/vendor/task-atlas/METODOLOGIA.md'
