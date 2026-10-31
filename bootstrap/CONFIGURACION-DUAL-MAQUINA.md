@@ -99,6 +99,47 @@ por cliente (el host/usuario son específicos de cada instalación, no van hardc
 apaga a mitad de camino, esa tarea específica no "migra" sola — hay que relanzarla en el nuevo
 backend. El switch solo decide dónde arrancan las tareas NUEVAS.
 
+## Acceso universal desde cualquier dispositivo — Tailscale Serve + navegador
+
+Lo de arriba (Remote gateway del Desktop, `HERMES_TUI_GATEWAY_URL`) sirve para un equipo
+concreto que va a instalar Hermes Desktop o usar la CLI. Pero cuando hay **tres o más
+dispositivos distintos** (ej. el servidor Linux, un Mac, un PC con Windows, y encima una
+tablet o un celular) pedirle a cada uno que instale algo es innecesario — el dashboard web de
+Hermes ya resuelve esto sin instalar nada más allá de un navegador.
+
+**En el servidor (Linux, el que queda siempre encendido):**
+```bash
+# Una sola vez — deja operar Tailscale sin sudo cada comando
+sudo tailscale set --operator=$USER
+
+# Publica el dashboard (que ya corre en 127.0.0.1:9119) dentro del tailnet, por HTTPS
+tailscale serve --bg --yes 9119
+```
+Esto da una URL del tipo `https://<nombre-del-equipo>.<tailnet>.ts.net` — solo alcanzable
+desde dentro del tailnet, nunca expuesta a internet abierto.
+
+```bash
+hermes config set dashboard.public_url "https://<esa-url>"
+hermes dashboard --stop
+hermes dashboard --no-open
+```
+El último comando corre en una terminal real (no por script) porque pide crear
+usuario/contraseña de forma interactiva la primera vez que hace falta auth — ver
+`hermes dashboard --help` y la doc de autenticación del dashboard.
+
+**Desde Mac, Windows, una tablet o cualquier dispositivo en el mismo tailnet:** abrir esa URL
+en el navegador, iniciar sesión con el usuario/contraseña del paso anterior. Nada que instalar
+— ni Hermes Desktop, ni la CLI, ni Tailscale siquiera si el dispositivo ya está en el tailnet
+por otra vía. Funciona igual en los tres sistemas operativos porque es solo HTTP(S).
+
+**Por qué esto y no el Desktop app en cada dispositivo:** el Desktop app da más superficie
+(terminal embebida, drag-and-drop, Bot Mode) pero exige instalar y mantener una app nativa por
+plataforma. El dashboard web da chat completo con acceso a terminal/archivos del servidor
+desde cualquier navegador — correcto cuando los dispositivos son variados (Windows + Mac +
+tablet) y lo que importa es poder entrar rápido, no la experiencia de escritorio completa.
+Las dos vías conviven sin problema: el Desktop en el equipo que lo use a diario, el navegador
+para todo lo demás.
+
 ## Cuando el cliente es más de una persona — perfiles por rol, no por nombre
 
 Un negocio de dos o más socios que comparten una sola máquina/instalación necesita más de un

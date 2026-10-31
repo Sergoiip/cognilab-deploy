@@ -49,14 +49,16 @@ estética — se capturan en el día 1 de la Fase 0), muestra cómo ese cliente 
 flavorizar el SOUL.md de cada Bot. Solo propone — crear los perfiles de verdad (`hermes profile
 create <rol>`) es una decisión aparte, confirmada con el cliente.
 
-## Configuración dual (dos equipos, un solo agente)
+## Configuración dual o triple (varios equipos, un solo agente)
 
-Cuando el cliente tiene un equipo siempre encendido (servidor) y otro más potente que se usa
-solo cuando está prendido — ver `bootstrap/CONFIGURACION-DUAL-MAQUINA.md`: cómo migrar un
-perfil ya configurado en uno de los dos al que va a quedar como servidor, cómo conectar el otro
-como cliente (Desktop y terminal, sin bifurcar memoria), y `tools/elegir_terminal_backend.py`
-para que las tareas de terminal usen el hardware/software del equipo secundario cuando está
-disponible y caigan al servidor cuando no.
+Cuando el cliente tiene un equipo siempre encendido (servidor) y uno o más equipos que usa
+solo cuando están prendidos — ver `bootstrap/CONFIGURACION-DUAL-MAQUINA.md`: cómo migrar un
+perfil ya configurado en uno de los equipos al que va a quedar como servidor, cómo conectar
+cada equipo adicional como cliente (Desktop app + terminal para uno concreto, o el dashboard
+web por Tailscale Serve cuando son varios dispositivos distintos — Mac, Windows, tablets —
+sin instalar nada en cada uno), y `tools/elegir_terminal_backend.py` para que las tareas de
+terminal usen el hardware/software del equipo secundario cuando está disponible y caigan al
+servidor cuando no.
 
 ## Nivel de acompañamiento (independiente del paquete y la escala)
 El manifiesto trae `acompanamiento: tecnico | integral`, decidido en la ficha de ingreso, no en el
