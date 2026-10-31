@@ -112,7 +112,7 @@ Hermes ya resuelve esto sin instalar nada más allá de un navegador.
 # Una sola vez — deja operar Tailscale sin sudo cada comando
 sudo tailscale set --operator=$USER
 
-# Publica el dashboard (que ya corre en 127.0.0.1:9119) dentro del tailnet, por HTTPS
+# Publica el dashboard (que ya corre en la interfaz local, puerto 9119) dentro del tailnet, por HTTPS
 tailscale serve --bg --yes 9119
 ```
 Esto da una URL del tipo `https://<nombre-del-equipo>.<tailnet>.ts.net` — solo alcanzable
