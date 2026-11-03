@@ -111,6 +111,8 @@ Los skills del producto siempre se instalan; las apps nunca se imponen.
 
 **Task Atlas.** Va en `stack/vendor/task-atlas/` (plugin propio de CogniLab). Metodología y recomendaciones de uso en su `METODOLOGIA.md`.
 
+**Método Del Caos al Sistema.** Metodología de planeación visual por cliente (canvas en reversa, 9 grupos, auditoría de mecanismos base) en `bootstrap/METODO-DEL-CAOS-AL-SISTEMA.md`. Referenciada desde los módulos A1 (Diagnóstico) y A3 (Flujos de trabajo y ritmo semanal).
+
 **Ampliar el stack con la operación.**
 1. Agregar una app en `stack/extras.yaml` (hay un ejemplo comentado). Se funde con el catálogo al cargar.
 2. Sumarla a un perfil o a un módulo desde el mismo archivo.

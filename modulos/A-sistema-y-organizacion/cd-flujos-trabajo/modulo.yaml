@@ -18,4 +18,5 @@ escalas:
 - 2-negocio
 - 3-equipo
 cadence_ref: Cadence/Services/Paquete Del caos al sistema en 90 días
+metodologia_ref: bootstrap/METODO-DEL-CAOS-AL-SISTEMA.md
 pendiente_generalizar: []
