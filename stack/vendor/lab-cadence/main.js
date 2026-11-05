@@ -12,11 +12,13 @@ const VIEW_TYPE_CADENCE_APP = 'lab-cadence-app';
 /* Lab Cadence: reglas configurables (data.json -> "lab"). Se rellena en onload. */
 const LAB_DEFAULTS = {
   staleDays: 15,                                   // dias sin tocar para marcar un deal/contacto como estancado
+  cadenceRoot: 'Cadence',                           // carpeta raíz del CRM (Lab: configurable)
   expensesFolder: 'Cadence/Gastos',                // carpeta de egresos para Finanzas
   ownerPaymentPattern: '^pago a (socio|socia|propietari[oa]|due[ñn][oa]|titular|fundador|fundadora)',
   ownerLabel: 'socio',                             // como se nombra al dueño en Finanzas
 };
 let LAB_CFG = Object.assign({}, LAB_DEFAULTS);
+let CAD_ROOT = 'Cadence';                           // se ajusta en loadSettings con lab.cadenceRoot
 const labStaleMs = () => (Number(LAB_CFG.staleDays) || 15) * 86400000;
 
 /* ─────────── Nav structure ─────────── */
@@ -104,7 +106,7 @@ const SURFACE_BY_ID = Object.fromEntries(ALL_SURFACES.map((s) => [s.id, s]));
    (Pipeline kanban, Dashboard, Reports) compose on top of the same data. */
 let ENTITIES = {
   contact: {
-    folder: 'Cadence/Contacts',
+    folder: (CAD_ROOT + '/Contacts'),
     label: 'Contact', plural: 'Contacts',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -118,7 +120,7 @@ let ENTITIES = {
     columns: ['name', 'company', 'email', 'phone', 'role', 'lastContact'],
   },
   company: {
-    folder: 'Cadence/Companies',
+    folder: (CAD_ROOT + '/Companies'),
     label: 'Company', plural: 'Companies',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -131,7 +133,7 @@ let ENTITIES = {
     columns: ['name', 'domain', 'industry', 'size', 'owner'],
   },
   partner: {
-    folder: 'Cadence/Partners',
+    folder: (CAD_ROOT + '/Partners'),
     label: 'Partner', plural: 'Partners',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -143,7 +145,7 @@ let ENTITIES = {
     columns: ['name', 'tier', 'status', 'region', 'owner'],
   },
   registration: {
-    folder: 'Cadence/Registrations',
+    folder: (CAD_ROOT + '/Registrations'),
     label: 'Registration', plural: 'Registrations',
     fields: [
       { key: 'title', label: 'Title', primary: true },
@@ -156,7 +158,7 @@ let ENTITIES = {
     columns: ['title', 'partner', 'status', 'value', 'expires'],
   },
   commission: {
-    folder: 'Cadence/Commissions',
+    folder: (CAD_ROOT + '/Commissions'),
     label: 'Commission', plural: 'Commissions',
     fields: [
       { key: 'reference', label: 'Ref', primary: true },
@@ -169,7 +171,7 @@ let ENTITIES = {
     columns: ['reference', 'partner', 'amount', 'status', 'period', 'paidOn'],
   },
   lead: {
-    folder: 'Cadence/Leads',
+    folder: (CAD_ROOT + '/Leads'),
     label: 'Lead', plural: 'Leads',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -181,7 +183,7 @@ let ENTITIES = {
     columns: ['name', 'company', 'source', 'status', 'assigned'],
   },
   certification: {
-    folder: 'Cadence/Certifications',
+    folder: (CAD_ROOT + '/Certifications'),
     label: 'Certification', plural: 'Certifications',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -193,7 +195,7 @@ let ENTITIES = {
     columns: ['name', 'partner', 'level', 'issued', 'expires'],
   },
   activity: {
-    folder: 'Cadence/Activities',
+    folder: (CAD_ROOT + '/Activities'),
     label: 'Activity', plural: 'Activities',
     fields: [
       { key: 'subject', label: 'Subject', primary: true },
@@ -206,7 +208,7 @@ let ENTITIES = {
     columns: ['when', 'type', 'subject', 'with', 'company', 'related'],
   },
   sequence: {
-    folder: 'Cadence/Sequences',
+    folder: (CAD_ROOT + '/Sequences'),
     label: 'Sequence', plural: 'Sequences',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -218,7 +220,7 @@ let ENTITIES = {
     columns: ['name', 'audience', 'steps', 'active', 'status'],
   },
   project: {
-    folder: 'Cadence/Projects',
+    folder: (CAD_ROOT + '/Projects'),
     label: 'Project', plural: 'Projects',
     fields: [
       { key: 'name', label: 'Name', primary: true },
@@ -232,7 +234,7 @@ let ENTITIES = {
     columns: ['name', 'status', 'owner', 'due'],
   },
   deal: {
-    folder: 'Cadence/Pipeline',
+    folder: (CAD_ROOT + '/Pipeline'),
     label: 'Deal', plural: 'Deals',
     fields: [
       { key: 'title', label: 'Title', primary: true },
@@ -313,7 +315,7 @@ const DEFAULT_SETTINGS = {
       { key: 'name', label: 'Name', primary: true, type: 'text' },
       { key: 'status', label: 'Status', type: 'enum', options: ['active', 'on_hold', 'backlog', 'done', 'cancelled'] },
       { key: 'priority', label: 'Priority', type: 'enum', options: ['low', 'medium', 'high'] },
-      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' },
+      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') },
       { key: 'started', label: 'Started', type: 'date' },
       { key: 'due', label: 'Due', type: 'date' },
       { key: 'tags', label: 'Tags', type: 'tags' }
@@ -322,9 +324,9 @@ const DEFAULT_SETTINGS = {
       { key: 'name', label: 'Name', primary: true, type: 'text' },
       { key: 'email', label: 'Email', type: 'multitext', isList: true, suggestionSource: 'none' },
       { key: 'phone', label: 'Phone', isList: true, type: 'multitext', suggestionSource: 'none' },
-      { key: 'company', label: 'Company', isList: true, type: 'multitext', suggestionSource: 'folder:Cadence/Companies' },
+      { key: 'company', label: 'Company', isList: true, type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Companies') },
       { key: 'role', label: 'Role', isList: true, type: 'multitext' },
-      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: 'folder:Cadence/Projects' },
+      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Projects') },
       { key: 'lastContact', label: 'Last contact', type: 'date' },
       { key: 'tags', label: 'Tags', type: 'tags' }
     ],
@@ -332,33 +334,33 @@ const DEFAULT_SETTINGS = {
       { key: 'title', label: 'Title', primary: true, type: 'text' },
       { key: 'stage', label: 'Stage', type: 'enum', options: ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'] },
       { key: 'value', label: 'Value', type: 'currency' },
-      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: 'folder:Cadence/Companies' },
-      { key: 'contact', label: 'Contact', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' },
+      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Companies') },
+      { key: 'contact', label: 'Contact', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') },
       { key: 'closeBy', label: 'Close by', type: 'date' },
-      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: 'folder:Cadence/Projects' },
-      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' }
+      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Projects') },
+      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') }
     ],
     company: [
       { key: 'name', label: 'Name', primary: true, type: 'text' },
       { key: 'domain', label: 'Domain', isList: true, type: 'multitext' },
       { key: 'industry', label: 'Industry', isList: true, type: 'multitext' },
       { key: 'size', label: 'Size', type: 'text' },
-      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' },
+      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') },
       { key: 'tags', label: 'Tags', type: 'tags' }
     ],
     activity: [
       { key: 'subject', label: 'Subject', primary: true, type: 'text' },
       { key: 'type', label: 'Type', type: 'enum', options: ['Call', 'Email', 'Meeting', 'Note', 'Task'] },
       { key: 'when', label: 'When', type: 'date' },
-      { key: 'with', label: 'With', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' },
-      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: 'folder:Cadence/Companies' },
-      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: 'folder:Cadence/Projects' }
+      { key: 'with', label: 'With', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') },
+      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Companies') },
+      { key: 'project', label: 'Project', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Projects') }
     ],
     partner: [
       { key: 'name', label: 'Name', primary: true },
       { key: 'tier', label: 'Tier', type: 'enum', options: ['Gold', 'Silver', 'Bronze', 'Standard'] },
       { key: 'status', label: 'Status', type: 'enum', options: ['Active', 'Onboarding', 'Inactive', 'Churned'] },
-      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: 'folder:Cadence/Contacts' },
+      { key: 'owner', label: 'Owner', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Contacts') },
       { key: 'region', label: 'Region' }
     ],
     registration: [
@@ -379,7 +381,7 @@ const DEFAULT_SETTINGS = {
     ],
     lead: [
       { key: 'name', label: 'Name', primary: true },
-      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: 'folder:Cadence/Companies' },
+      { key: 'company', label: 'Company', type: 'multitext', suggestionSource: ('folder:' + CAD_ROOT + '/Companies') },
       { key: 'source', label: 'Source' },
       { key: 'status', label: 'Status', type: 'enum', options: ['New', 'Contacted', 'Qualified', 'Disqualified', 'Converted'] },
       { key: 'assigned', label: 'Assigned' }
@@ -553,7 +555,7 @@ async function ensureFolderSync(app, path) {
 }
 
 async function ensureDefaultTemplates(app) {
-  const templatesFolder = 'Cadence/Templates';
+  const templatesFolder = (CAD_ROOT + '/Templates');
   await ensureFolderSync(app, templatesFolder);
   for (const [entityKey, def] of Object.entries(ENTITIES)) {
     const targetPath = `${templatesFolder}/${entityKey}.md`;
@@ -1050,7 +1052,7 @@ async function createEntity(app, entityKeyOrFolder, rawName) {
   let template = '';
   let customTemplateContent = null;
   if (isEntity) {
-    const templatesFolder = 'Cadence/Templates';
+    const templatesFolder = (CAD_ROOT + '/Templates');
     await ensureFolderSync(app, templatesFolder);
 
     const def = ENTITIES[entityKeyOrFolder];
@@ -1099,7 +1101,7 @@ async function ensureDailyNote(app, settings, date = new Date()) {
   }
 
   let template = '';
-  const dailyTemplatePath = 'Cadence/Templates/daily.md';
+  const dailyTemplatePath = (CAD_ROOT + '/Templates/daily.md');
   const dailyTemplateFile = app.vault.getAbstractFileByPath(dailyTemplatePath);
   if (dailyTemplateFile && dailyTemplateFile instanceof obsidian.TFile) {
     const rawTemplate = await app.vault.read(dailyTemplateFile);
@@ -2867,7 +2869,7 @@ class CadenceAppView extends obsidian.ItemView {
     if (!path) return false;
     // Most surfaces read entity folders; refresh whenever a touched file
     // sits under any Cadence/* folder. Cheap enough.
-    return path.startsWith('Cadence/');
+    return path.startsWith((CAD_ROOT + '/'));
   }
 
   async render() {
@@ -3375,7 +3377,7 @@ class CadenceAppView extends obsidian.ItemView {
               } else {
                 const sugSrc = f.suggestionSource || getFieldSuggestionSource(f);
                 if (f.type === 'multitext' && sugSrc && sugSrc !== 'none' && sugSrc !== 'tags' && sugSrc !== 'history') {
-                  const targetSrc = sugSrc === 'history' ? 'folder:Cadence/Shared' : sugSrc;
+                  const targetSrc = sugSrc === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : sugSrc;
                   this._renderEntityLinks(td, val, targetSrc);
                 } else if (f.key === 'company') {
                   this._renderEntityLinks(td, val, 'company');
@@ -4039,7 +4041,7 @@ class CadenceAppView extends obsidian.ItemView {
               const targetFile = this.app.vault.getMarkdownFiles().find(cFile => cFile.basename.toLowerCase() === name.toLowerCase());
               if (!targetFile) {
                 try {
-                  const creationSource = suggestionSource === 'history' ? 'folder:Cadence/Shared' : (targetEntityKey || suggestionSource);
+                  const creationSource = suggestionSource === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : (targetEntityKey || suggestionSource);
                   await createEntity(this.app, creationSource, name);
                   const label = ENTITIES[targetEntityKey] ? ENTITIES[targetEntityKey].label : 'Note';
                   new obsidian.Notice(`Created new ${label}: ${name}`);
@@ -4166,7 +4168,7 @@ class CadenceAppView extends obsidian.ItemView {
         } else {
           const sugSrc = f.suggestionSource || getFieldSuggestionSource(f);
           if (f.type === 'multitext' && sugSrc && sugSrc !== 'none' && sugSrc !== 'tags' && sugSrc !== 'history') {
-            const targetSrc = sugSrc === 'history' ? 'folder:Cadence/Shared' : sugSrc;
+            const targetSrc = sugSrc === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : sugSrc;
             this._renderEntityLinks(td, val, targetSrc);
           } else if (f.key === 'company') {
             this._renderEntityLinks(td, val, 'company');
@@ -4492,7 +4494,7 @@ class CadenceAppView extends obsidian.ItemView {
             const targetFile = this.app.vault.getMarkdownFiles().find(cFile => cFile.basename.toLowerCase() === name.toLowerCase());
             if (!targetFile) {
               try {
-                const creationSource = suggestionSource === 'history' ? 'folder:Cadence/Shared' : (targetEntityKey || suggestionSource);
+                const creationSource = suggestionSource === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : (targetEntityKey || suggestionSource);
                 await createEntity(this.app, creationSource, name);
                 const label = ENTITIES[targetEntityKey] ? ENTITIES[targetEntityKey].label : 'Note';
                 new obsidian.Notice(`Created new ${label}: ${name}`);
@@ -4941,7 +4943,7 @@ class CadenceAppView extends obsidian.ItemView {
             const targetFile = this.app.vault.getMarkdownFiles().find(cFile => cFile.basename.toLowerCase() === name.toLowerCase());
             if (!targetFile) {
               try {
-                const creationSource = suggestionSource === 'history' ? 'folder:Cadence/Shared' : (targetEntityKey || suggestionSource);
+                const creationSource = suggestionSource === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : (targetEntityKey || suggestionSource);
                 await createEntity(this.app, creationSource, name);
                 const label = ENTITIES[targetEntityKey] ? ENTITIES[targetEntityKey].label : 'Note';
                 new obsidian.Notice(`Created new ${label}: ${name}`);
@@ -6744,7 +6746,7 @@ priority: normal
 
     // Render Daily Note Template Card
     {
-      const templatesFolder = 'Cadence/Templates';
+      const templatesFolder = (CAD_ROOT + '/Templates');
       await ensureFolderSync(this.app, templatesFolder);
       const dailyTemplatePath = `${templatesFolder}/daily.md`;
       const dailyTFile = this.app.vault.getAbstractFileByPath(dailyTemplatePath);
@@ -6828,7 +6830,7 @@ priority: normal
     }
 
     for (const [entityKey, def] of Object.entries(ENTITIES)) {
-      const templatesFolder = 'Cadence/Templates';
+      const templatesFolder = (CAD_ROOT + '/Templates');
       await ensureFolderSync(this.app, templatesFolder);
 
       let foundPath = null;
@@ -8723,7 +8725,7 @@ priority: normal
     // ── Egresos ──
     let ownerRe; try { ownerRe = new RegExp(LAB_CFG.ownerPaymentPattern, 'i'); } catch (e) { ownerRe = new RegExp(LAB_DEFAULTS.ownerPaymentPattern, 'i'); }
     const isOwner = (name) => ownerRe.test(String(name || '').trim());
-    const expFolder = String(LAB_CFG.expensesFolder || 'Cadence/Gastos').replace(/\/+$/, '') + '/';
+    const expFolder = String(LAB_CFG.expensesFolder || (CAD_ROOT + '/Gastos')).replace(/\/+$/, '') + '/';
     const expensesAll = [];
     this.app.vault.getMarkdownFiles().forEach((f) => {
       if (!f.path.startsWith(expFolder)) return;
@@ -9396,7 +9398,7 @@ priority: normal
     tooltip.style.boxShadow = 'var(--shadow-s)';
 
     // Gather Nodes & Links
-    const rawFiles = this.app.vault.getMarkdownFiles().filter(f => f.path.startsWith('Cadence/'));
+    const rawFiles = this.app.vault.getMarkdownFiles().filter(f => f.path.startsWith((CAD_ROOT + '/')));
     const resolvedLinks = this.app.metadataCache.resolvedLinks || {};
 
     const nodes = [];
@@ -9404,13 +9406,13 @@ priority: normal
 
     rawFiles.forEach((file) => {
       let type = 'note';
-      if (file.path.startsWith('Cadence/Contacts/')) type = 'contact';
-      else if (file.path.startsWith('Cadence/Companies/')) type = 'company';
-      else if (file.path.startsWith('Cadence/Partners/')) type = 'partner';
-      else if (file.path.startsWith('Cadence/Pipeline/')) type = 'deal';
-      else if (file.path.startsWith('Cadence/Projects/')) type = 'project';
-      else if (file.path.startsWith('Cadence/Activities/')) type = 'activity';
-      else if (file.path.startsWith('Cadence/Leads/')) type = 'lead';
+      if (file.path.startsWith((CAD_ROOT + '/Contacts/'))) type = 'contact';
+      else if (file.path.startsWith((CAD_ROOT + '/Companies/'))) type = 'company';
+      else if (file.path.startsWith((CAD_ROOT + '/Partners/'))) type = 'partner';
+      else if (file.path.startsWith((CAD_ROOT + '/Pipeline/'))) type = 'deal';
+      else if (file.path.startsWith((CAD_ROOT + '/Projects/'))) type = 'project';
+      else if (file.path.startsWith((CAD_ROOT + '/Activities/'))) type = 'activity';
+      else if (file.path.startsWith((CAD_ROOT + '/Leads/'))) type = 'lead';
 
       const node = {
         id: file.path,
@@ -10114,7 +10116,7 @@ priority: normal
                 const names = parts.map(n => n.replace(/^\[\[|\]\]$/g, '').trim()).filter(Boolean);
                 extras[key] = names.map(n => `[[${n}]]`);
 
-                const creationSource = suggestionSource === 'history' ? 'folder:Cadence/Shared' : suggestionSource;
+                const creationSource = suggestionSource === 'history' ? ('folder:' + CAD_ROOT + '/Shared') : suggestionSource;
                 let targetEntityKey = ENTITIES[suggestionSource] ? suggestionSource : null;
                 if (suggestionSource.startsWith('folder:')) {
                   const customFolderPath = suggestionSource.slice('folder:'.length);
@@ -10958,7 +10960,7 @@ class CadenceSettingTab extends obsidian.PluginSettingTab {
 
         // Re-register inside ENTITIES
         ENTITIES[entityKey] = {
-          folder: `Cadence/${val}`,
+          folder: `${CAD_ROOT}/${val}`,
           label: capitalize(singular),
           plural: val,
           fields: newFields,
@@ -11917,6 +11919,13 @@ class CadencePlugin extends obsidian.Plugin {
     const loadedData = await this.loadData() || {};
     this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
     LAB_CFG = Object.assign({}, LAB_DEFAULTS, this.settings.lab || {});
+    {                                                   // Lab: mover la raíz del CRM sin tocar el código
+      const root = String(LAB_CFG.cadenceRoot || 'Cadence').replace(/\/+$/, '');
+      if (root !== CAD_ROOT) {
+        for (const d of Object.values(ENTITIES)) if (d && typeof d.folder === 'string' && d.folder.startsWith(CAD_ROOT + '/')) d.folder = root + d.folder.slice(CAD_ROOT.length);
+        CAD_ROOT = root;
+      }
+    }
 
     // Deep default customEntities if missing or empty
     if (!this.settings.customEntities) {
@@ -11988,7 +11997,7 @@ class CadencePlugin extends obsidian.Plugin {
           }
 
           ENTITIES[entityKey] = {
-            folder: `Cadence/${plural}`,
+            folder: `${CAD_ROOT}/${plural}`,
             label: label,
             plural: plural,
             fields: customFields,
@@ -12089,7 +12098,7 @@ class CadencePlugin extends obsidian.Plugin {
           const fdef = ENTITIES[ek].fields.find(field => field.key === key);
           if (fdef) {
             const sug = fdef.suggestionSource || getFieldSuggestionSource(fdef);
-            if (sug === 'contact' || sug === 'folder:Cadence/Contacts') return true;
+            if (sug === 'contact' || sug === ('folder:' + CAD_ROOT + '/Contacts')) return true;
           }
         }
         return false;
@@ -12101,7 +12110,7 @@ class CadencePlugin extends obsidian.Plugin {
           const fdef = ENTITIES[ek].fields.find(field => field.key === key);
           if (fdef) {
             const sug = fdef.suggestionSource || getFieldSuggestionSource(fdef);
-            if (sug === 'project' || sug === 'folder:Cadence/Projects') return true;
+            if (sug === 'project' || sug === ('folder:' + CAD_ROOT + '/Projects')) return true;
           }
         }
         return false;
@@ -12399,7 +12408,7 @@ class CadencePlugin extends obsidian.Plugin {
     if (!file || !file.path || !file.path.toLowerCase().endsWith('.md')) return;
 
     // Check if the deleted file was inside the Projects folder
-    const projectFolder = ENTITIES.project ? ENTITIES.project.folder : 'Cadence/Projects';
+    const projectFolder = ENTITIES.project ? ENTITIES.project.folder : (CAD_ROOT + '/Projects');
     if (!file.path.startsWith(projectFolder + '/')) return;
 
     const projectName = file.basename;

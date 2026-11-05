@@ -1,0 +1,335 @@
+{
+  "generado_utc": "2026-11-03T13:47:07.065928+00:00",
+  "archivos": [
+    {
+      "ruta": "Herramientas/Exportación/Uso.md",
+      "bytes": 2854,
+      "sha256": "c79591fafc251fd5f5e124d625e6c5abd7fce51c8eb456d50ee199d909315d16"
+    },
+    {
+      "ruta": "Herramientas/Exportación/exportar.py",
+      "bytes": 7850,
+      "sha256": "083422bbe1cb12a19d99448e7d004ffc0632984b7e6a3c129fefca3096216c0b"
+    },
+    {
+      "ruta": "Herramientas/Exportación/probar-exportador.py",
+      "bytes": 8393,
+      "sha256": "3d4409c088c207b75e3120ce553543fad0ac563b0617e33af40a7316c6ef477b"
+    },
+    {
+      "ruta": "Herramientas/LEEME herramientas revisadas.md",
+      "bytes": 1780,
+      "sha256": "4d08b14af9aadab39d638031dbe2863324db15242966d27b748fdb9802cad48a"
+    },
+    {
+      "ruta": "Herramientas/Medición/Uso.md",
+      "bytes": 2278,
+      "sha256": "18a17176969adabfc05f422943b1f5374a99bcbec2be33f8c5ad79dbc08fd94a"
+    },
+    {
+      "ruta": "Herramientas/Medición/agregar-actividad.py",
+      "bytes": 3004,
+      "sha256": "cfb5f8c5e301ded2f0811bcadd12ac0b44796ac8c52d99abd79fab3f06b7399d"
+    },
+    {
+      "ruta": "Herramientas/Medición/probar-actividad.py",
+      "bytes": 3952,
+      "sha256": "75be587fc7624562295b51ceafb82f4982fe3c70d390a1518f01ca9aa0f6b8f4"
+    },
+    {
+      "ruta": "Herramientas/probar-canvas.py",
+      "bytes": 2683,
+      "sha256": "683cd0c8118453dfb3617466a2e437644d1db7c03a9cc3597295c4daaed38db2"
+    },
+    {
+      "ruta": "Herramientas/validar-canvas.py",
+      "bytes": 2512,
+      "sha256": "5f929fa5c47bc22c9665f2e0fa706dc23840992e08911b19bb926e76112fa89b"
+    },
+    {
+      "ruta": "LEEME.md",
+      "bytes": 1442,
+      "sha256": "b3d20119969e20fc16f4cdd6a276025bc61cd2e27da48d49cbf0fca551a73eed"
+    },
+    {
+      "ruta": "Métodos/Adaptadores de escritorio y periféricos con alcance mínimo.md",
+      "bytes": 3067,
+      "sha256": "7c63d7e6bb6a93b6263a2dfb09ee61e563443f740d3b7b879cd00412a9763b08"
+    },
+    {
+      "ruta": "Métodos/Administración remota acotada por contexto confiable.md",
+      "bytes": 2870,
+      "sha256": "617cfa60621e1772d6b7de5354d78d3fab88b188fee478ab1e6d71c5abb95fb4"
+    },
+    {
+      "ruta": "Métodos/Experimentos y evidencia antes de automatizar.md",
+      "bytes": 1677,
+      "sha256": "60ad6ce18c58c2160065d7fef5bfd3da68cedd4c87ba13afbdfd1f0b0b9d8ca6"
+    },
+    {
+      "ruta": "Métodos/Integración acumulativa y puertas de autorización.md",
+      "bytes": 4177,
+      "sha256": "66e7d4851c99bbb222b1c4ed448d41d87d663c2a486ef6ddcdb3566882f35a6b"
+    },
+    {
+      "ruta": "Métodos/Integración del aprendizaje acumulado.md",
+      "bytes": 4227,
+      "sha256": "255351b5b291cecab42e55807515fbe0ce55913a7ae4069ded097dee9cb8e9b3"
+    },
+    {
+      "ruta": "Métodos/Mapas verificables y tareas canónicas.md",
+      "bytes": 2476,
+      "sha256": "7d85414f3c5d508d706e027f888666960a70109db1a5395405e8d216b56cd03d"
+    },
+    {
+      "ruta": "Métodos/Medición local sin atribución inventada.md",
+      "bytes": 1796,
+      "sha256": "fbf4e9f023a51d2aa69e16de202293bd716802518d993aa6acafab84b1787199"
+    },
+    {
+      "ruta": "Métodos/Operación dual.md",
+      "bytes": 11159,
+      "sha256": "b5990a8683b77e244fc532b028512883182a39d61e0cbb7d4f9172e150f8d4ca"
+    },
+    {
+      "ruta": "Métodos/Sesiones a evidencias sin ejecución implícita.md",
+      "bytes": 2722,
+      "sha256": "8d948dc015417c0d744cda1296ce571c19e01f2590cff71653087b8567ef2d93"
+    },
+    {
+      "ruta": "Métodos/Sincronización y recuperación sin promoción automática.md",
+      "bytes": 2175,
+      "sha256": "d1ee066c9b54b45d84d7dcfb301da09a303a79c9506b7e6d06aee982debd27ed"
+    },
+    {
+      "ruta": "Referencias/Alcance de la exportación.md",
+      "bytes": 2348,
+      "sha256": "80d50e33141367d6138d9f9777943ae0cb478bd2dbb43cabdd7b98901b3d3573"
+    },
+    {
+      "ruta": "Referencias/Fuentes técnicas de las implementaciones.md",
+      "bytes": 1584,
+      "sha256": "befc767b8f2891e1b3352fa0793b6ae3de50b46a12edf592036f6e26f38005de"
+    },
+    {
+      "ruta": "Skills replicables/activity-process-evidence/SKILL.md",
+      "bytes": 4851,
+      "sha256": "5baa32543660dd48ee873f3ae8942790a0f0dd9c52e381081aba206039407f6a"
+    },
+    {
+      "ruta": "Skills replicables/activity-process-evidence/references/Implementación de referencia.md",
+      "bytes": 1730,
+      "sha256": "1e930550ce4f0ed6cc68299343bf802d81873228ad960badc206b417ffbfe79b"
+    },
+    {
+      "ruta": "Skills replicables/agent-runtime-boundaries/SKILL.md",
+      "bytes": 4760,
+      "sha256": "0a10b7c58c326838ef11fc485eb702823bf86d4bb145d17c3d66df887cf5942b"
+    },
+    {
+      "ruta": "Skills replicables/agent-runtime-boundaries/references/migracion-y-continuidad.md",
+      "bytes": 2167,
+      "sha256": "0786dbc6916c91a4112a82e7a0018e5d07942471514284bdb41d2dd966f5d5dd"
+    },
+    {
+      "ruta": "Skills replicables/agent-runtime-boundaries/references/procedencia.md",
+      "bytes": 2152,
+      "sha256": "92b48d760591da24b860174766c0184b8ff67f24359a4c79cf76cc5b7541a2c9"
+    },
+    {
+      "ruta": "Skills replicables/agent-runtime-boundaries/references/runtime-y-voz.md",
+      "bytes": 2898,
+      "sha256": "09a622e85d6cad1be1b0ef5df7819a242dba89ac2036d8053789b7933e63c89d"
+    },
+    {
+      "ruta": "Skills replicables/bounded-review-snapshots/SKILL.md",
+      "bytes": 3611,
+      "sha256": "c90d6e335b3c55879fb2b00bfa7ad076566d86dac2aa0b128b2778ba247e5c11"
+    },
+    {
+      "ruta": "Skills replicables/bounded-review-snapshots/references/procedencia.md",
+      "bytes": 1256,
+      "sha256": "dfb1d6c1e26fb2341b69f30b19f247c91e5cd6832607865333035904b0c3f02a"
+    },
+    {
+      "ruta": "Skills replicables/calendar-and-sync-safety/SKILL.md",
+      "bytes": 4475,
+      "sha256": "8f71408ec4e2797aef760052916acef3e88743f0db27105028c1b4e1410d3874"
+    },
+    {
+      "ruta": "Skills replicables/calendar-and-sync-safety/references/procedencia.md",
+      "bytes": 1988,
+      "sha256": "e7970886d0fd1b30b1dce78b41585c4c81e1cc7b7ebbaa7503f9f61fe4bc392a"
+    },
+    {
+      "ruta": "Skills replicables/calendar-and-sync-safety/references/sync-contrato.md",
+      "bytes": 3062,
+      "sha256": "729ab922ca7a06071314ca3e642f5103465cfab1d1dfed406e1258c43d327a52"
+    },
+    {
+      "ruta": "Skills replicables/dual-node-agent-operations/SKILL.md",
+      "bytes": 9914,
+      "sha256": "c5aa6222433a548a8878420a756cb50f9846f34f9ea88f0fa3f314292b4871b2"
+    },
+    {
+      "ruta": "Skills replicables/dual-node-agent-operations/references/Aceptación y evidencia.md",
+      "bytes": 2457,
+      "sha256": "f7eb429b43274341daabeb1bf4f0cd1c74152a6a3703af81d7f1ed22d07edcb7"
+    },
+    {
+      "ruta": "Skills replicables/dual-node-agent-operations/references/Implementación de referencia.md",
+      "bytes": 1786,
+      "sha256": "ce31d207ce85ab65bf93ace95b3a2373a329f9cfcc972333630c22cda393d3bc"
+    },
+    {
+      "ruta": "Skills replicables/dual-node-agent-operations/references/Procedimiento operativo.md",
+      "bytes": 2809,
+      "sha256": "3facb224b6df7d92478374a9cdaa024ae254aa80568892b9da5792b40371c91b"
+    },
+    {
+      "ruta": "Skills replicables/dual-node-agent-operations/references/Recuperación y rollback.md",
+      "bytes": 2480,
+      "sha256": "70237f21c0c57fa209b61b650a641b12038e3586de506dea4175950545887f82"
+    },
+    {
+      "ruta": "Skills replicables/installed-client-auth-diagnosis/SKILL.md",
+      "bytes": 3456,
+      "sha256": "609cd2db2a65c302ecf6081d40ec61aa6d24feee32c19eae825e9fedb9ac4976"
+    },
+    {
+      "ruta": "Skills replicables/installed-client-auth-diagnosis/references/procedencia.md",
+      "bytes": 1339,
+      "sha256": "e3062e8f5ebec9ea4f93ac7a95d0afb0f501f767f0fe1f92e837fb33d022515a"
+    },
+    {
+      "ruta": "Skills replicables/knowledge-package-export/SKILL.md",
+      "bytes": 7232,
+      "sha256": "1562e57db5cd5ba8ccd3e7ee5aa62823c5ce6070012a3d4115d53dd747105196"
+    },
+    {
+      "ruta": "Skills replicables/knowledge-package-export/references/Implementación de referencia.md",
+      "bytes": 2801,
+      "sha256": "462ae1f5d95484da4e7aa73128543839fcd36b6990a8627b6c94b56442fb8b14"
+    },
+    {
+      "ruta": "Skills replicables/local-meeting-transcription/SKILL.md",
+      "bytes": 7558,
+      "sha256": "1c3afc5b908112ee1baf5a22bbb1a73d3f45dba79a1153c05f065886789be598"
+    },
+    {
+      "ruta": "Skills replicables/local-meeting-transcription/references/Implementación de referencia.md",
+      "bytes": 4620,
+      "sha256": "1c2c72a39b62197d893682e8c19ddfdf61939d336c133cbf1d47537a7794d5c7"
+    },
+    {
+      "ruta": "Skills replicables/paginated-report-integrity/SKILL.md",
+      "bytes": 3250,
+      "sha256": "ee9c30087cbdc1ec6f89771995ac551f4791044e87a9cfbb8cdb5dec795bbade"
+    },
+    {
+      "ruta": "Skills replicables/paginated-report-integrity/references/procedencia.md",
+      "bytes": 1305,
+      "sha256": "74157cda69059aac324586a4d96775195611fb0954ccf8e94ae3ce7d9e5ef6a8"
+    },
+    {
+      "ruta": "Skills replicables/passive-host-recovery/SKILL.md",
+      "bytes": 6335,
+      "sha256": "27e583b289ae5d5a9edeac995afcdf6d8a0e032c7d533c3ca2fb9cbdf8a0e949"
+    },
+    {
+      "ruta": "Skills replicables/passive-host-recovery/references/Implementación de referencia.md",
+      "bytes": 2601,
+      "sha256": "8e2788814f812074eefdafc04699038af889e4e6b3526233c05d9f5777515295"
+    },
+    {
+      "ruta": "Skills replicables/product-evidence-consolidation/SKILL.md",
+      "bytes": 5495,
+      "sha256": "1b59e7c4fa7205f5ac69e8fd46afc80c33d1742a97b0f8f12e29ba519cbcaf24"
+    },
+    {
+      "ruta": "Skills replicables/product-evidence-consolidation/references/Implementación de referencia.md",
+      "bytes": 2256,
+      "sha256": "dad03f3ca8df864ffac388db61e7d332c7925514d9b7b1c94bc076cc5e717831"
+    },
+    {
+      "ruta": "Skills replicables/selective-audio-routing/SKILL.md",
+      "bytes": 5163,
+      "sha256": "976eda45e0545772693833e7264c636ee50818f2b6b5db05396acfb3dfa7fee2"
+    },
+    {
+      "ruta": "Skills replicables/selective-audio-routing/references/Implementación de referencia.md",
+      "bytes": 2635,
+      "sha256": "e80bef6264a0203ae17e1f87744851a2421e99c72dc92da65b4be21dc8fde55e"
+    },
+    {
+      "ruta": "Skills replicables/session-evidence-propagation/SKILL.md",
+      "bytes": 4262,
+      "sha256": "48c4bb733c9f5fddd651124d83aaa1fbad01d20987691e85095862763f3ae343"
+    },
+    {
+      "ruta": "Skills replicables/session-evidence-propagation/references/procedencia.md",
+      "bytes": 1372,
+      "sha256": "c46f717bda589e5dfe6fb0b9306f053da66f1d51b1984226d27d8e4ed3a785ba"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/SKILL.md",
+      "bytes": 5999,
+      "sha256": "38a0de0ac141afcc2a32c73ec5d12d5398aadeaf287532a887022f9e06e87572"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/actualizaciones-plugins.md",
+      "bytes": 3242,
+      "sha256": "d1b341edd3280338ea65cd7a3e75cd323080710a994b38d59b2b9322ef3358d4"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/conflictos-sync.md",
+      "bytes": 2274,
+      "sha256": "5e12d101735b07aee7314da6eb4fb6b65246694813d08d55284e2997859b2c79"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/mapas-y-evidencia.md",
+      "bytes": 3193,
+      "sha256": "99a6efb7eb9c9323e6d474281297a944ce617e2ca253ed1b2513b0b4a991663f"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/procedencia.md",
+      "bytes": 2251,
+      "sha256": "4221bd3dc8ee491845a99458b7fd3d251128d5138d3291f7561f87b1c88f210d"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/retornos-seguros.md",
+      "bytes": 2196,
+      "sha256": "5dd6e0bb5e34ddc3ed0a31204226b331d5d3772301085e0dae066aa5b1a2580f"
+    },
+    {
+      "ruta": "Skills replicables/vault-operational-truth/references/tareas-y-superficies.md",
+      "bytes": 4457,
+      "sha256": "d26e67bd727bbe474b25cb30a1c693720c93ce2abebc5cfe511d8597e7604605"
+    },
+    {
+      "ruta": "Skills replicables/visual-direction-safe-rollout/SKILL.md",
+      "bytes": 3548,
+      "sha256": "feca86ef85c0d2437dca4474c61ef2c1706b5fa873287b6294b3fb3386b217c5"
+    },
+    {
+      "ruta": "Skills replicables/visual-direction-safe-rollout/references/procedencia.md",
+      "bytes": 1340,
+      "sha256": "d77b47c86532f917c70cb0e01141b54e2b16f769042956280eaab60d8c2c181e"
+    },
+    {
+      "ruta": "Skills replicables/workspace-shortcut-management/SKILL.md",
+      "bytes": 6012,
+      "sha256": "3ce190c0b311085405bed0976b7f7ed0b4f0c5e5dc333a94b8970b7d0bb78436"
+    },
+    {
+      "ruta": "Skills replicables/workspace-shortcut-management/references/Implementación de referencia.md",
+      "bytes": 4109,
+      "sha256": "36d90e7ad119886bd622db5b1ed9e0bcc6f098e41550a0d5aacc499552ab28a9"
+    },
+    {
+      "ruta": "Referencias/Cobertura de fuentes.json",
+      "bytes": 238940,
+      "sha256": "d1065a4753602079b342848cee3411725128038827d651050c3b70c4b55efbe0"
+    }
+  ]
+}

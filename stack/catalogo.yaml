@@ -228,11 +228,11 @@ apps:
     tipo: obsidian-plugin
     fuente: vendor
     ruta: stack/vendor/lab-cadence
-    version: 0.15.0-lab.1
+    version: 0.15.0-lab.2
     licencia: 'MIT (base: wesswart77/obsidian-cadence)'
     sha256:
-      main.js: d8af79c736b5aaaa646a2b465a4aba0fc73720401aef2ed31ef75c1a2327e7e4
-      manifest.json: 4372626b5bd18722862b8d3d307f83695ee32c605c72209b4ff455cf617209c1
+      main.js: 94bda630865e50dcd50aac41384ddbba7da5cc2ee84c7e891ecdbc4b6635aa67
+      manifest.json: 64b8532f729b10def3ccdc26d8008c57cae5addd3335a0a5590f7d0fb33bfaac
       styles.css: 765b28503cc5cf9045bb906524db925eb87ab06024c8a3175b040320daaf3a01
     para: CRM y finanzas en Obsidian
     opcional: true

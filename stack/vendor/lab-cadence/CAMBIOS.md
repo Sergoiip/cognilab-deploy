@@ -12,6 +12,7 @@ Id del plugin: `lab-cadence` (el original usa `cadence-planner`; no se activan l
 | Clave | Por defecto | Para qué |
 |---|---|---|
 | `staleDays` | 15 | Días para marcar estancado |
+| `cadenceRoot` | `Cadence` | Carpeta raíz del CRM (0.15.0-lab.2). Permite moverlo, por ejemplo a `04 - Infraestructura/Cadence`, sin tocar el código: entidades, plantillas, sugerencias y el mapa se resuelven desde aquí. Al cambiarlo, actualizar también los `suggestionSource: folder:…` de `customEntities` y `expensesFolder` |
 | `expensesFolder` | `Cadence/Gastos` | Carpeta de egresos |
 | `ownerPaymentPattern` | `^pago a (socio\|socia\|propietari[oa]\|due[ñn][oa]\|titular\|fundador\|fundadora)` | Regex (sin distinguir mayúsculas) de los gastos que son pagos al dueño y se excluyen con el botón |
 | `ownerLabel` | `socio` | Reservado para etiquetas |
