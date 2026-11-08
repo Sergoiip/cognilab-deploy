@@ -1,0 +1,153 @@
+<!-- Bloques reutilizables para una propuesta de servicio con precio.
+     Pegar el <style> en una copia de templates/a4-dark-layout.html
+     (hereda --bg, --panel, --line, --ink*, --accent, --on-accent, --font-mono).
+     Precios y moneda: solo los que dio el usuario ({{PRECIO_*}}, {{MONEDA}});
+     si faltan, dejar el marcador visible. Mismo render con Chromium. -->
+
+<style>
+  /* ---------- PRICE TIERS: stacked rows, price right-aligned ---------- */
+  .tiers{ display:flex; flex-direction:column; gap:4mm; margin:6mm 0 0; }
+  .tier{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:2.5mm; padding:5.5mm 6mm;
+    display:grid; grid-template-columns:1fr auto; align-items:center; gap:6mm;
+  }
+  .tier.launch{ border-color:var(--accent); }
+  .tier .tk{
+    font-family:var(--font-mono); font-size:7.2pt;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3);
+    margin-bottom:1.8mm;
+  }
+  .tier .tt{ font-size:11.5pt; font-weight:500; color:var(--ink); margin-bottom:1.8mm; }
+  .tier .td{ font-size:9.2pt; color:var(--ink-2); margin:0; max-width:118mm; line-height:1.5; }
+  .tier .tp{ text-align:right; white-space:nowrap;
+             font-family:var(--font-mono); font-weight:500; }
+  .tier .pv{ font-size:15pt; color:var(--ink); display:block; }
+  .tier .pu{ font-size:7.4pt; color:var(--ink-3); letter-spacing:.14em; text-transform:uppercase; }
+  .tier.launch .pv{ color:var(--accent); }
+  .tier .flag{
+    display:inline-block; font-family:var(--font-mono);
+    font-size:6.4pt; letter-spacing:.14em; text-transform:uppercase;
+    background:var(--accent); color:var(--on-accent); padding:.9mm 2.2mm;
+    border-radius:1mm; font-weight:600; margin-bottom:2.2mm;
+  }
+
+  /* ---------- CASE CARDS: anonymized prior work ---------- */
+  .cases{ margin:6mm 0 0; }
+  .case{
+    background:var(--bg-2); border:1px solid var(--line);
+    border-left:2.5px solid var(--accent); border-radius:0 2mm 2mm 0;
+    padding:5.5mm 6mm; margin-bottom:4mm;
+  }
+  .case .ch{ display:flex; align-items:baseline; gap:3.5mm; margin-bottom:2.5mm; }
+  .case .ct{ font-size:10.8pt; font-weight:500; color:#fff; }
+  .case .cw{
+    font-family:var(--font-mono); font-size:6.8pt;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
+    border:1px solid var(--accent-dim); padding:.7mm 2mm; border-radius:1mm;
+  }
+  .case .cd{ font-size:9.4pt; color:var(--ink-2); margin:0; line-height:1.55; }
+  .case .cx{ font-size:9pt; color:var(--ink-3); margin:2.5mm 0 0; }
+  .case .cx strong{ color:var(--ink-2); font-weight:500; }
+
+  /* ---------- MARKET PRICE TABLE: real infrastructure costs ---------- */
+  .ref{
+    background:var(--bg-2); border:1px solid var(--line);
+    border-radius:2mm; padding:5mm 5.5mm; margin:5mm 0 0;
+  }
+  .ref .rk{
+    font-family:var(--font-mono); font-size:7.2pt;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--accent);
+    margin-bottom:3.5mm;
+  }
+  .ref table{ width:100%; border-collapse:collapse; }
+  .ref th{
+    font-family:var(--font-mono); font-size:6.9pt;
+    letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3);
+    text-align:left; padding:0 3mm 2.5mm 0; font-weight:500;
+    border-bottom:1px solid var(--line);
+  }
+  .ref th:last-child, .ref td:last-child{ text-align:right; padding-right:0; }
+  .ref td{
+    font-size:9.2pt; color:var(--ink-2); padding:2.6mm 3mm 2.6mm 0;
+    border-bottom:1px solid rgba(35,44,56,.55);
+  }
+  .ref tr:last-child td{ border-bottom:none; }
+  .ref td b{ color:var(--ink); font-weight:500; }
+  .ref .note{ font-size:8.6pt; color:var(--ink-3); margin:3.5mm 0 0; line-height:1.5; }
+
+  /* ---------- FLOW LIST: concrete agent behaviours ---------- */
+  .flow{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:2.5mm; padding:6mm 6.5mm; margin:6mm 0 0;
+  }
+  .flow .fk{
+    font-family:var(--font-mono); font-size:7.4pt;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--accent);
+    margin-bottom:4mm;
+  }
+  .flow .fr{ display:grid; grid-template-columns:auto 1fr; gap:3.5mm;
+             margin-bottom:4mm; align-items:baseline; }
+  .flow .fr:last-child{ margin-bottom:0; }
+  .flow .fn{ font-family:var(--font-mono); font-size:8pt;
+             color:var(--accent); font-weight:500; padding-top:.4mm; }
+  .flow .fv{ font-size:9.5pt; color:var(--ink-2); margin:0; }
+  .flow .fv b{ color:var(--ink); font-weight:500; }
+</style>
+
+<!-- ===== TIERS ===== -->
+<div class="tiers">
+  <div class="tier launch">
+    <div>
+      <div class="flag">Precio de lanzamiento</div>
+      <div class="tk">Plan inicial</div>
+      <div class="tt">Nombre del plan</div>
+      <p class="td">Qué incluye y para quién es. Una frase por idea.</p>
+    </div>
+    <div class="tp"><span class="pv">[ {{PRECIO_PLAN_1}} ]</span><span class="pu">{{MONEDA}} · una vez</span></div>
+  </div>
+  <div class="tier">
+    <div>
+      <div class="tk">Plan personal</div>
+      <div class="tt">Nombre del plan</div>
+      <p class="td">Qué cambia respecto al anterior.</p>
+    </div>
+    <div class="tp"><span class="pv">[ {{PRECIO_PLAN_2}} ]</span><span class="pu">{{MONEDA}} · por equipo</span></div>
+  </div>
+</div>
+
+<!-- ===== CASES ===== -->
+<div class="cases">
+  <div class="case">
+    <div class="ch">
+      <span class="ct">Descripción del trabajo, sin nombre</span>
+      <span class="cw">Completado</span>
+    </div>
+    <p class="cd">Qué se construyó, sobre qué, y cómo se verificó. Sin nombres ni relaciones.</p>
+    <p class="cx"><strong>Lo que demuestra:</strong> la capacidad concreta que prueba.</p>
+  </div>
+</div>
+
+<!-- ===== MARKET PRICE REFERENCE ===== -->
+<div class="ref">
+  <div class="rk">Sobre el costo de infraestructura</div>
+  <table>
+    <thead>
+      <tr><th>Proveedor</th><th>Especificación</th><th>Precio mensual aprox.</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Proveedor real del país</td><td>CPU · RAM · disco</td><td><b>[ {{PRECIO_REFERENCIA}} ]</b></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Cifras reales consultadas para el mercado del cliente, con su moneda.
+     Cierra diciendo: el precio lo define la mano de obra, no el servidor.</p>
+</div>
+
+<!-- ===== FLOWS ===== -->
+<div class="flow">
+  <div class="fk">Ejemplos concretos de lo que hace</div>
+  <div class="fr"><span class="fn">01</span>
+    <p class="fv"><b>Flujo.</b> Qué hace, con qué datos, qué devuelve.</p></div>
+  <div class="fr"><span class="fn">02</span>
+    <p class="fv"><b>Flujo.</b> Qué hace, con qué datos, qué devuelve.</p></div>
+</div>

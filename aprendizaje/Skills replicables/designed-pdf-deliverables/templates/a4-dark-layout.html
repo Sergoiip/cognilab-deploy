@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Documento</title>
+<style>
+  /* Estética oscura tipo consultoría. Copiar y reemplazar contenido.
+     PALETA: sobrescribir las variables de :root con la paleta de la marca
+     ({{COLOR_FONDO}}, {{COLOR_ACENTO}}, {{COLOR_ACENTO_2}}). Los valores de abajo
+     son neutros por defecto; nunca entregar el documento con ellos sin revisar.
+     Render: chromium --headless --no-sandbox --disable-gpu \
+       --no-pdf-header-footer --virtual-time-budget=12000 --print-to-pdf=out.pdf file://<abs> */
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root{
+    /* fondo y superficies */
+    --bg:#0d1117;        /* {{COLOR_FONDO}} — casi negro, no #000 */
+    --bg-2:#131a24; --panel:#161d27; --line:#232c38;
+    /* tintas: medir contraste en el render, no a ojo */
+    --ink:#e8edf4; --ink-2:#9aa7b8; --ink-3:#6b7889;
+    /* acentos */
+    --accent:#4a9eff;    /* {{COLOR_ACENTO}} */
+    --accent-2:var(--accent); /* {{COLOR_ACENTO_2}} — opcional, gánatelo */
+    --accent-dim:#1e3a5f; --good:#4ade80;
+    --on-accent:#071019; /* texto sobre fondo de acento */
+    /* tipografías */
+    --font-body:'Inter',system-ui,-apple-system,sans-serif;  /* {{FUENTE_CUERPO}} */
+    --font-mono:'JetBrains Mono',ui-monospace,monospace;     /* {{FUENTE_ETIQUETAS}} */
+  }
+
+  @page{ size:A4; margin:0; }
+  *{ box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  html,body{
+    margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body);
+    font-weight:300; font-size:10.5pt; line-height:1.62;
+  }
+
+  /* height (not min-height) + overflow:hidden keeps pagination exact */
+  .page{
+    position:relative; width:210mm; height:297mm;
+    padding:18mm 20mm 16mm 20mm;
+    page-break-after:always; overflow:hidden; background:var(--bg);
+  }
+  .page:last-child{ page-break-after:auto; }
+
+  .page::before{
+    content:''; position:absolute; top:0; left:0; width:3.2mm; height:100%;
+    background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dim) 60%,transparent 100%);
+  }
+  .pagenum{
+    position:absolute; bottom:11mm; right:20mm;
+    font-family:var(--font-mono); font-size:8pt;
+    color:var(--ink-3); letter-spacing:.08em;
+  }
+  .pagenum::before{ content:'— '; color:var(--accent); }
+
+  .eyebrow,.sec-tag{
+    font-family:var(--font-mono); font-size:7.6pt;
+    letter-spacing:.22em; text-transform:uppercase;
+    color:var(--accent); font-weight:500;
+  }
+  .rule{ height:1px; width:38mm; margin:7mm 0 9mm;
+         background:linear-gradient(90deg,var(--accent-2),var(--accent) 62%,transparent); }
+
+  h1{ font-size:31pt; line-height:1.12; font-weight:300;
+      letter-spacing:-.022em; margin:0 0 6mm; color:#fff; }
+  h1 .dim{ color:var(--ink-2); }
+  h2{ font-size:19pt; font-weight:300; letter-spacing:-.015em;
+      color:#fff; margin:0 0 6mm; line-height:1.2; }
+  h3{ font-size:11pt; font-weight:500; color:var(--accent); margin:0 0 3mm; }
+
+  p{ margin:0 0 4.2mm; color:var(--ink-2); }
+  p strong{ color:var(--ink); font-weight:500; }
+  .subtitle{ font-size:12.5pt; color:var(--ink-2); max-width:135mm; line-height:1.55; }
+  .lede{ font-size:10.8pt; color:var(--ink); border-left:2px solid var(--accent);
+         padding-left:6mm; margin:0 0 7mm; }
+
+  /* cover: title block top, meta grid bottom */
+  .cover{ display:flex; flex-direction:column; justify-content:space-between; }
+  .meta-grid{ display:grid; grid-template-columns:auto 1fr; gap:3.2mm 9mm;
+              padding-top:9mm; border-top:1px solid var(--line); max-width:135mm; }
+  .meta-k{ font-family:var(--font-mono); font-size:7.6pt;
+           letter-spacing:.16em; text-transform:uppercase;
+           color:var(--ink-3); padding-top:.6mm; }
+  .meta-v{ font-size:10pt; color:var(--ink); font-weight:400; }
+
+  /* option cards: two tiers side by side */
+  .options{ display:grid; grid-template-columns:1fr 1fr; gap:6mm; margin:7mm 0 0; }
+  .opt{ background:var(--panel); border:1px solid var(--line);
+        border-radius:2.5mm; padding:7mm 6.5mm 7.5mm; position:relative; }
+  .opt.featured{ border-color:var(--accent); }
+  .opt-badge{ position:absolute; top:-3.2mm; right:6mm; font-family:var(--font-mono);
+              font-size:6.6pt; letter-spacing:.16em; text-transform:uppercase;
+              background:var(--accent); color:var(--on-accent); padding:1.1mm 2.6mm;
+              border-radius:1.2mm; font-weight:600; }
+  .opt-num{ font-family:var(--font-mono); font-size:7.6pt;
+            color:var(--ink-3); letter-spacing:.16em; margin-bottom:2.5mm; }
+  .opt h3{ color:var(--ink); font-size:12.5pt; font-weight:400; margin-bottom:4.5mm; }
+  .opt.featured h3{ color:#fff; }
+  .opt-price{ font-family:var(--font-mono); font-size:9pt; letter-spacing:.1em;
+              text-transform:uppercase; color:var(--accent);
+              margin-bottom:5mm; padding-bottom:4.5mm; border-bottom:1px solid var(--line); }
+  .opt-price .free{ color:var(--good); }
+  .opt ul{ margin:0; padding:0; list-style:none; }
+  .opt li{ position:relative; padding-left:5.5mm; margin-bottom:2.8mm;
+           font-size:9.4pt; color:var(--ink-2); line-height:1.5; }
+  .opt li::before{ content:''; position:absolute; left:0; top:1.85mm;
+                   width:2.4mm; height:2.4mm; border-radius:50%; background:var(--accent); }
+
+  /* numbered scope list */
+  .inc{ margin:0; padding:0; list-style:none; }
+  .inc li{ position:relative; padding:0 0 6mm 15mm; border-bottom:1px solid var(--line); }
+  .inc li:last-child{ border-bottom:none; }
+  .inc .n{ position:absolute; left:0; top:-.5mm; font-family:var(--font-mono);
+           font-size:8pt; color:var(--accent); font-weight:500; }
+  .inc .t{ font-size:11.5pt; font-weight:500; color:var(--ink); margin-bottom:2.5mm; }
+  .inc .d{ font-size:9.8pt; color:var(--ink-2); margin:0; max-width:140mm; }
+
+  /* numbered steps */
+  .steps{ counter-reset:s; margin:0; padding:0; list-style:none; }
+  .steps li{ counter-increment:s; position:relative;
+             padding:0 0 4mm 13mm; margin-bottom:4mm; border-bottom:1px solid var(--line); }
+  .steps li:last-child{ border-bottom:none; margin-bottom:0; }
+  .steps li::before{ content:counter(s,decimal-leading-zero); position:absolute; left:0; top:-.8mm;
+                     font-family:var(--font-mono); font-size:8.4pt;
+                     color:var(--accent); font-weight:500; }
+  .steps .t{ font-size:10.6pt; color:var(--ink); font-weight:500; }
+  .steps .d{ font-size:9.5pt; color:var(--ink-2); margin:1.6mm 0 0; }
+
+  /* callout + two-up cost breakdown */
+  .callout{ background:var(--panel); border-left:2.5px solid var(--accent);
+            padding:5mm 6mm; margin:5mm 0 0; border-radius:0 2mm 2mm 0; }
+  .callout .k{ font-family:var(--font-mono); font-size:7.4pt;
+               letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:2.8mm; }
+  .callout p{ margin:0; font-size:9.8pt; }
+  .cost{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; margin:6mm 0 0; }
+  .cost .c{ background:var(--bg-2); border:1px solid var(--line);
+            border-radius:2mm; padding:6mm 5.5mm; }
+  .cost .ck{ font-family:var(--font-mono); font-size:7.4pt;
+             letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:3mm; }
+  .cost .cv{ font-size:10.4pt; color:var(--ink); font-weight:400; margin:0; }
+  .cost .cs{ font-size:9pt; color:var(--ink-3); margin:2mm 0 0; }
+
+  /* closing */
+  .closing{ display:flex; flex-direction:column; justify-content:center; min-height:150mm; }
+  .closing h2{ font-size:26pt; }
+  .contact{ margin-top:9mm; padding-top:7mm; border-top:1px solid var(--line);
+            display:grid; grid-template-columns:auto 1fr; gap:3mm 9mm; }
+  .contact .k{ font-family:var(--font-mono); font-size:7.4pt;
+               letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3); padding-top:.7mm; }
+  .contact .v{ font-size:10pt; color:var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<section class="page cover">
+  <div>
+    <div class="eyebrow">Tipo de documento</div>
+    <div class="rule"></div>
+    <h1>Título principal<br><span class="dim">segunda línea atenuada</span></h1>
+    <p class="subtitle">Una frase que explica la propuesta en términos del cliente,
+       no del servicio.</p>
+  </div>
+  <div>
+    <div class="meta-grid">
+      <div class="meta-k">Preparada para</div><div class="meta-v">{{NOMBRE_CLIENTE}}</div>
+      <div class="meta-k">Fecha</div><div class="meta-v">{{FECHA}}</div>
+      <div class="meta-k">Propone</div><div class="meta-v">{{NOMBRE_EMISOR}}</div>
+      <div class="meta-k">Rol</div><div class="meta-v">Rol · {{ORGANIZACION}}</div>
+    </div>
+  </div>
+  <div class="pagenum">01</div>
+</section>
+
+<!-- ===== OPTIONS: two tiers ===== -->
+<section class="page">
+  <div class="sec-tag">01 — La propuesta</div>
+  <h2>Título de sección</h2>
+
+  <p class="lede">La idea central, destacada. Una o dos frases.</p>
+  <p>Texto de apoyo que desarrolla la propuesta.</p>
+
+  <div class="options">
+    <div class="opt">
+      <div class="opt-num">OPCIÓN 01</div>
+      <h3>Nombre de la opción</h3>
+      <div class="opt-price">Costo: <span class="free">[ {{PRECIO_OPCION_1}} ]</span></div>
+      <ul>
+        <li>Ventaja concreta y verificable.</li>
+        <li>Segunda ventaja.</li>
+        <li>Tercera ventaja.</li>
+      </ul>
+    </div>
+    <div class="opt featured">
+      <div class="opt-badge">Etiqueta corta</div>
+      <div class="opt-num">OPCIÓN 02</div>
+      <h3>Nombre de la opción</h3>
+      <div class="opt-price">Precio: [ {{PRECIO_OPCION_2}} ]</div>
+      <ul>
+        <li>Ventaja concreta.</li>
+        <li>Segunda ventaja.</li>
+        <li>Tercera ventaja.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="k">Una nota sobre esto</div>
+    <p>El punto que evita la objeción obvia.</p>
+  </div>
+  <div class="pagenum">02</div>
+</section>
+
+<!-- ===== SCOPE: numbered list ===== -->
+<section class="page">
+  <div class="sec-tag">02 — Alcance</div>
+  <h2>Qué incluye</h2>
+  <ul class="inc">
+    <li>
+      <span class="n">01</span>
+      <div class="t">Primer componente</div>
+      <p class="d">Descripción de una o dos frases.</p>
+    </li>
+    <li>
+      <span class="n">02</span>
+      <div class="t">Segundo componente</div>
+      <p class="d">Descripción de una o dos frases.</p>
+    </li>
+  </ul>
+  <div class="pagenum">03</div>
+</section>
+
+<!-- ===== METHOD + COST ===== -->
+<section class="page">
+  <div class="sec-tag">03 — Método</div>
+  <h2>Cómo trabajamos</h2>
+  <ol class="steps">
+    <li><div class="t">Primer paso</div><p class="d">Qué pasa.</p></li>
+    <li><div class="t">Segundo paso</div><p class="d">Qué pasa.</p></li>
+    <li><div class="t">Tercer paso</div><p class="d">Qué pasa.</p></li>
+    <li><div class="t">Cuarto paso</div><p class="d">Qué pasa.</p></li>
+  </ol>
+
+  <div class="callout">
+    <div class="k">Por qué esto importa</div>
+    <p>La objeción que este paso previene.</p>
+  </div>
+
+  <div class="sec-tag" style="margin-top:9mm">04 — Costo</div>
+  <h2>Cómo se cobra</h2>
+  <p>Descomposición del precio en sus componentes reales.</p>
+  <div class="cost">
+    <div class="c">
+      <div class="ck">Componente A</div>
+      <p class="cv">Qué es y qué paga el cliente.</p>
+      <p class="cs">Aclaración secundaria.</p>
+    </div>
+    <div class="c">
+      <div class="ck">Componente B</div>
+      <p class="cv">Qué es y cuándo aplica.</p>
+      <p class="cs">Aclaración secundaria.</p>
+    </div>
+  </div>
+  <div class="pagenum">04</div>
+</section>
+
+<!-- ===== CLOSING ===== -->
+<section class="page closing">
+  <div class="sec-tag">05 — Siguiente paso</div>
+  <h2>Llamado a la acción<br>concreto.</h2>
+  <p class="lede">Qué pasa después, sin compromiso.</p>
+  <div class="contact">
+    <div class="k">Nombre</div><div class="v">{{NOMBRE_EMISOR}}</div>
+    <div class="k">Rol</div><div class="v">Rol · {{ORGANIZACION}}</div>
+    <div class="k">Correo</div><div class="v">[ {{CONTACTO}} ]</div>
+  </div>
+  <div class="pagenum">05</div>
+</section>
+
+</body>
+</html>

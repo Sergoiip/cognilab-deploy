@@ -5,7 +5,7 @@ bloque: C
 ms: MS-06
 estado: esqueleto-desde-meta-skill
 requiere_skills_hermes:
-- brand-identity-and-collateral
+- designed-pdf-deliverables
 - pdf
 - weekly-review-planning
 - metricas-retencion-y-reciclaje-de-contenido
