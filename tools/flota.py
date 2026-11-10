@@ -232,7 +232,7 @@ def aplicar(args):
             continue
         cmd = [HERMES] + (["-p", perfil] if perfil != "default" else []) + [
             "cron", "create", sched, "--name", nombre, "--script", dest.name, "--no-agent",
-            "--deliver", man["entrega"], "--timezone", man.get("zona", "America/Bogota"), "--catch-up", "off"]
+            "--deliver", man["entrega"], "--timezone", man.get("zona", "America/Bogota"), "--catch-up", "on"]  # un aviso tarde > un aviso perdido
         ok, out = run(cmd, si, pasos)
         if not ok:
             fallos.append(f"nave {n['id']}: {out[-300:]}")
