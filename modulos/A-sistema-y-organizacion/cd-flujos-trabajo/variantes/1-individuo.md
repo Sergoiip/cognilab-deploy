@@ -4,7 +4,9 @@
 
 ## Qué cambia en esta escala
 
-POR DESARROLLAR.
+**Organización temporal:** El ritmo es de una sola persona: ella declara inicio, duración de bloque y franjas; el agente arma su semana y protege su ventana profunda. Ver `bootstrap/ORGANIZACION-TEMPORAL.md`.
+
+Resto: POR DESARROLLAR.
 
 ## Pasos
 

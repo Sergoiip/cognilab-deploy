@@ -4,7 +4,9 @@
 
 ## Qué cambia en esta escala
 
-POR DESARROLLAR.
+**Organización temporal:** El ritmo del dueño ordena el del negocio: reuniones con clientes y horarios de atención fuera de su ventana profunda siempre que se pueda. Ver `bootstrap/ORGANIZACION-TEMPORAL.md`.
+
+Resto: POR DESARROLLAR.
 
 ## Pasos
 

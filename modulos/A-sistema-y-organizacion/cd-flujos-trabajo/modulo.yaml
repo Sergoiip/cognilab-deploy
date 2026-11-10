@@ -12,6 +12,7 @@ hecho:
 - Ciclo captura → tarea → revisión funcionando durante 2 semanas.
 - Una automatización recurrente corriendo, con ejecución comprobada en log.
 - Una revisión semanal hecha una vez junto al cliente.
+- Organización temporal configurada (carga, ritmo, semana en calendario, ventana profunda respetada).
 hecho_comun: ver criterios/CRITERIOS-DE-HECHO.md
 escalas:
 - 1-individuo
@@ -19,4 +20,5 @@ escalas:
 - 3-equipo
 cadence_ref: Cadence/Services/Paquete Del caos al sistema en 90 días
 metodologia_ref: bootstrap/METODO-DEL-CAOS-AL-SISTEMA.md
+organizacion_temporal_ref: bootstrap/ORGANIZACION-TEMPORAL.md
 pendiente_generalizar: []

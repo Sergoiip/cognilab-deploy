@@ -27,7 +27,7 @@ en un solo documento visual.
 6. **Metas por acción orientada** — metas basadas en el HACER, no en el resultado.
 7. **Brújula de valores (ACT)** — ámbitos de vida → 5 valores nucleares → conducta funcional (voto diario). La llena la persona, nunca se inventa desde un diagnóstico.
 8. **Abiertos, riesgos y notas fuente** — supuestos sin confirmar, riesgos, enlaces a documentos fuente.
-9. **Mecanismos base (auditoría)** — estado real de 4 mecanismos: autorregistro conductual, carga biológica-cognitiva, sistema de 3 carpetas (Inbox/Notas/Proyectos) y rutinas nucleares AM/PM. Cada uno se marca ✅ hecho y registrado / 🟡 mencionado sin registro formal / 🔴 no existe — nunca se asume que ya está hecho sin evidencia.
+9. **Mecanismos base (auditoría)** — estado real de 4 mecanismos: autorregistro conductual, carga biológica-cognitiva, sistema de 3 carpetas (Inbox/Notas/Proyectos) y rutinas nucleares AM/PM. Cada uno se marca ✅ hecho y registrado / 🟡 mencionado sin registro formal / 🔴 no existe — nunca se asume que ya está hecho sin evidencia. La carga biológica-cognitiva se convierte en calendario con `bootstrap/ORGANIZACION-TEMPORAL.md`.
 
 ## Filtro de Priorización Intencional
 

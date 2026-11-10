@@ -1,0 +1,121 @@
+# Organización temporal: carga, energía y horarios
+
+> Parte de la **Organización Intencional** (CogniLab). Es la versión general, sin datos de
+> ningún cliente. Explica cómo el agente arma y protege la semana de una persona a partir de su
+> energía real, no de las horas libres del calendario. La usa el módulo A3 (Flujos de trabajo y
+> ritmo semanal) y se alimenta del mecanismo «carga biológica-cognitiva» del grupo 9 del canvas
+> (ver `bootstrap/METODO-DEL-CAOS-AL-SISTEMA.md`).
+
+## Fundamento
+
+- **El tiempo es fijo y la energía es dinámica.** Se planea pensando en una persona que funciona
+  por ciclos biológicos, no en una máquina constante. Por eso cada tarea se ubica según el tipo
+  de carga que impone, no según el primer hueco libre.
+- **La atención es un recurso finito y un músculo que se entrena.** Se trabaja en bloques cortos
+  con pausas, y se amplían de forma progresiva. La fuerza de voluntad no se exige en bruto: se
+  diseñan los activadores.
+- **Entrar en foco cuesta energía.** Hay que romper una barrera inicial (la «muralla»). Para
+  bajar ese costo, cada bloque profundo arranca con una **pregunta invitadora**: una pregunta
+  curiosa, tipo experimento, que genera tensión y que solo se responde haciendo el trabajo.
+  Funciona por la curiosidad y por el efecto Zeigarnik. El bloque también lleva un
+  **entregable** concreto que dice cuándo está terminado.
+- **El sistema libera, no restringe.** Nunca se llenan todas las horas. Si un día no hay
+  energía, el plan se adapta y la persona no tiene que forzarse.
+
+## 1. Clasificar la carga (triple clasificación)
+
+Toda actividad recurrente entra en una de tres categorías antes de planear:
+
+| Carga | Qué es | Ejemplos |
+|---|---|---|
+| **Analítica** (foco profundo) | Concentración alta, novedad, problemas complejos, decisiones críticas, escritura o código intenso | Presupuesto, propuesta, estrategia, preparar una negociación |
+| **Operativa** (flujo ligero) | Necesaria pero mecánica o semiautomática | Registrar pagos, actualizar el CRM, publicar, responder correos de rutina |
+| **Restauradora** (recarga activa) | Repone energía y atención | Movimiento, pausas activas, actividades creativas de bajo estrés, rituales de transición |
+
+Lo creativo con poca exigencia de decisión (edición, diseño repetitivo) suele ir en la franja
+operativa y creativa de la tarde, salvo que la persona diga otra cosa.
+
+## 2. Encontrar la curva de energía (autorregistro de 7 días)
+
+Durante una semana se registran dos variables por momento del día: el **nivel de energía** y la
+**carga de la tarea**. Con eso se identifican:
+
+- **Ventanas de flow:** foco alto y tiempo disponible. Ahí va lo analítico.
+- **Valles:** baja la energía. Ahí va lo operativo o, mejor, lo restaurador.
+
+Mientras no haya registro, se parte del patrón más común (lo analítico por la mañana; desde la
+media tarde, lo operativo y creativo) **y se le pregunta a la persona**. Nunca se asume.
+
+## 3. Parámetros del ritmo (se configuran por persona)
+
+Cada parámetro tiene un valor por defecto del método. Se ajusta con el autorregistro y con lo
+que la persona declare:
+
+| Parámetro | Por defecto | Notas |
+|---|---|---|
+| Activación previa | 20–30 min antes del primer bloque | Movilidad, hidratación, journaling breve |
+| Inicio del trabajo profundo | El que declare la persona | Es el ancla del día |
+| Duración del bloque | 37–50 min | La persona decide en el momento. En el calendario se reserva la duración máxima |
+| Pausa entre bloques | 7–10 min | Restauradora: moverse, hidratarse, sin pantalla |
+| Bloques profundos por día | 3–4 | Se amplían de forma progresiva cuando el foco se sostiene |
+| Franja operativa y creativa | Desde media tarde | Tareas mecánicas, repetitivas o creativas de baja exigencia |
+
+Estos valores van en el campo opcional `ritmo:` del manifiesto (ver más abajo).
+
+## 4. Cómo el agente arma la semana en el calendario
+
+1. **Juntar lo pendiente** de todas las fuentes de verdad (tablero de tareas, CRM, compromisos
+   con clientes y reuniones confirmadas) y clasificar cada ítem por carga.
+2. **Ubicar primero las reuniones confirmadas**, con su hora real.
+   - **Si una reunión todavía no tiene hora,** se marca el día completo con una nota («hora por
+     confirmar») y esa franja se deja liviana. Se actualiza cuando la confirmen; nunca se inventa
+     una hora.
+   - **Si una reunión no tiene día,** queda como tarea («confirmar día y hora»), no como evento.
+3. **Poner la activación previa** y, después, los **bloques profundos** desde la hora de inicio:
+   una tarea analítica por bloque. Si una tarea es grande, se reparte en varios bloques
+   numerados (1/2, 2/2).
+4. **Cada bloque profundo lleva en la descripción:**
+   - ❓ **Pregunta invitadora:** una pregunta concreta y curiosa sobre esa tarea.
+   - ✅ **Entregable:** qué tiene que quedar hecho al cerrar el bloque.
+5. **La franja de la tarde** va con lo operativo y creativo. Las tareas cortas de registro se
+   juntan al final del día.
+6. **Colores fijos por tipo de carga** (uno para lo analítico, otro para lo operativo y creativo,
+   otro para la activación), para que la semana se lea de un vistazo.
+7. **Verificar al final:** releer los eventos creados, confirmar que no se cruzan y que nada
+   analítico cayó en un valle. Reportarle la semana a la persona por día.
+8. **Proponer antes de imponer:** el plan se presenta y la persona lo ajusta. Las preferencias
+   que declare (horarios, duración de bloques) se guardan en su perfil para la próxima semana.
+
+## 5. Proteger la ventana profunda
+
+- **Mientras corren los bloques profundos, el agente solo envía avisos que piden una acción
+  inmediata**, en formato de una línea. Lo informativo (reportes de crons, resúmenes, novedades)
+  se junta en **un solo resumen al cerrar la ventana**.
+- **Las urgencias reales pasan siempre.** Una urgencia es algo que se pierde o se rompe si se
+  espera hasta el cierre de la ventana.
+- Los crons que corren en esa ventana se reprograman para después o dejan su salida para el
+  resumen.
+
+## 6. Regla de flexibilidad
+
+Si un día la persona no tiene energía para lo analítico, ese trabajo se mueve al siguiente día
+disponible y el día queda operativo o restaurador. **El agente pregunta siempre antes de mover
+algo**: propone el nuevo acomodo, espera la confirmación y solo entonces cambia el calendario.
+
+## Criterio de hecho (se suma al de A3)
+
+- [ ] Las actividades recurrentes de la persona están clasificadas por tipo de carga.
+- [ ] Los parámetros del ritmo (inicio, bloque, pausa, franjas) están declarados por la persona
+      y guardados.
+- [ ] Una semana completa armada en el calendario, cada bloque profundo con su pregunta
+      invitadora y su entregable, sin cruces.
+- [ ] Los avisos del agente respetan la ventana profunda durante al menos una semana, con
+      evidencia en el log.
+
+## Escalas
+
+- **Individuo:** el ritmo es de una sola persona y ella decide todo.
+- **Negocio pequeño:** el ritmo del dueño ordena el del negocio. Las reuniones con clientes y los
+  horarios de atención se ubican fuera de su ventana profunda siempre que se pueda.
+- **Equipo:** cada persona declara su ritmo. Se acuerda una ventana profunda común, sin
+  reuniones internas, y las reuniones se agrupan en franjas compartidas.
