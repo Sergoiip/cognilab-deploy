@@ -157,8 +157,8 @@ def leer_plugin(x, d):
             pista = ""
             if d.get("fuente") == "vendor" and esperado in {sha(b.replace(b"\r\n", b"\n")), sha(b.replace(b"\n", b"\r\n"))}:
                 pista = ("\n  Causa: Git convirtió los fines de línea al clonar (core.autocrlf). El archivo es el correcto."
-                         "\n  Arreglo: actualizar el repo y restaurar los archivos:"
-                         "\n    git pull && rm -rf stack/vendor && git checkout -- stack/vendor"
+                         "\n  Arreglo (no borra manifiestos de clientes sin versionar):"
+                         "\n    git fetch && git reset --hard origin/main && rm -rf stack/vendor && git checkout -- stack/vendor"
                          "\n  (o volver a clonar con: git clone -c core.autocrlf=false ...)")
             sys.exit(f"HASH DISTINTO en {x}/{f}: no se instala (esperado {esperado[:12]}, llegó {sha(b)[:12]}){pista}")
         buf[f] = b
