@@ -98,8 +98,18 @@ Las tareas se acomodan alrededor; nunca al revés.
    - ✅ **Entregable:** qué tiene que quedar hecho al cerrar el bloque.
 5. **La franja de la tarde** va con lo operativo y creativo. Las tareas cortas de registro se
    juntan al final del día.
-6. **Colores fijos por tipo de carga** (uno para lo analítico, otro para lo operativo y creativo,
-   otro para la activación), para que la semana se lea de un vistazo.
+6. **Colores por frente, no por carga.** La carga ya la dice la hora: la mañana es analítica y
+   la tarde, operativa y creativa. El color responde a **para quién o para qué es**:
+   - Un color por cliente o frente activo, el mismo toda la semana y en todos los eventos de ese
+     frente.
+   - Un color propio para lo de la persona (su producto, su contenido).
+   - Las **reuniones** van en un color de alto contraste que no use ningún frente, para que
+     salten a la vista.
+   - Los **innegociables** van en un color neutro (gris), porque son el fondo de la semana y no
+     compiten con el trabajo.
+   - La revisión semanal lleva su propio color tenue.
+   La leyenda se le entrega a la persona y se guarda en su perfil; si entra un frente nuevo, se le
+   asigna un color libre.
 7. **Verificar al final:** releer los eventos creados, confirmar que no se cruzan y que nada
    analítico cayó en un valle. Reportarle la semana a la persona por día.
 8. **Proponer antes de imponer:** el plan se presenta y la persona lo ajusta. Las preferencias
