@@ -93,7 +93,8 @@ def estado(args):
         if not n:
             problemas.append(f"nave '{item['id']}' no está en el catálogo")
             continue
-        j = por_nombre.get(PREFIJO + n["nombre_visible"])
+        j = next((x for x in jobs_de(estacion_de_nave(n, man)["perfil_hermes"]).values()
+                  if x.get("name") == PREFIJO + n["nombre_visible"]), None)
         por_sector[n["sector"]].append((st_de(j) if j else "sin instalar (corre `aplicar`)", n["nombre_visible"] + (f" «{item['alias']}»" if item.get("alias") else "") + " ⛵"))
     for item in man.get("naves_locales") or []:
         if item.get("sector") in por_sector:
