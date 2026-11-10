@@ -100,7 +100,7 @@ Las tareas se acomodan alrededor; nunca al revés.
    juntan al final del día.
 6. **Color por categoría de tarea** (ver la sección 8). Cada evento lleva una sola categoría,
    y esa es la que da el color. El cliente o frente va como prefijo del título
-   («Cliente · Acción concreta»), la palanca con ⚡ al inicio, y al final de la descripción va la
+   («<emoji> Cliente · Acción concreta»), la palanca con ⚡ al inicio, y al final de la descripción va la
    línea `🏷 Categoría: … · Etiquetas: #frente/x #carga/y [#palanca]`.
 7. **Verificar al final:** releer los eventos creados, confirmar que no se cruzan y que nada
    analítico cayó en un valle. Reportarle la semana a la persona por día.
@@ -144,7 +144,10 @@ esquema `categorias`), para que la tarea, el calendario y el agente hablen igual
 | 🌿 | Innegociable | Rituales AM y PM, comidas, entrenamiento y sueño | Grafito |
 
 **Etiquetas: varias por tarea; sirven para filtrar y no dan color.**
-- `frente/<cliente-o-proyecto>`: para quién es. En el calendario se ve como prefijo del título.
+- `frente/<cliente-o-proyecto>`: para quién es. En el calendario se ve como prefijo del título,
+  precedido por un **emoji fijo por frente** (uno por cliente, sin repetir, elegido con la
+  persona y guardado en el esquema), para distinguirlos de un vistazo:
+  `[⚡ ]<emoji> Cliente · Acción concreta`.
 - `carga/<analitica|operativa|restauradora>`: la energía que pide. Es la misma escala de la
   sección 1. No da color porque ya la dice la franja horaria.
 - `palanca`: hacerla desbloquea mucho más. Va con ⚡ al inicio del título.
