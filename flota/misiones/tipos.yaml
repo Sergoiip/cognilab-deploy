@@ -1,0 +1,57 @@
+# Núcleo de la Flota · tipos de misión y cómo se revisa cada uno
+# Una misión es una tarjeta del Kanban con la ficha adentro. El TIPO decide quién la ejecuta,
+# cómo se revisa y qué puerta humana lleva. Lo que sale hacia afuera SIEMPRE pasa por el capitán.
+version: 1
+tipos:
+  construccion:
+    nombre: "Construcción"
+    ejemplos: "código, plugins, scripts, configuración, automatizaciones"
+    ejecuta: agente
+    modo: goal                     # juez contra el criterio de hecho
+    revision: automatica           # sdlc-review: aprobar / pedir cambios / escalar
+    criterio_revision: "Pruebas o build en verde, cambio acotado a lo pedido, evidencia en metadata (archivos, verificación)"
+    puerta_capitan: "solo para desplegar o publicar (instalar en un cliente, subir a un repo público)"
+  documento:
+    nombre: "Documento y contenido"
+    ejemplos: "propuestas, one-pagers, presentaciones, guiones, artículos, casos de estudio, informes a clientes"
+    ejecuta: agente
+    modo: una_pasada
+    revision: capitan              # el borrador queda en revisión hasta que el capitán lo aprueba
+    criterio_revision: "Voz de la marca, cero datos inventados (cada cifra con fuente), formato final listo para enviar"
+    puerta_capitan: "siempre antes de enviar o publicar; enviar es otra misión que cuelga de la puerta"
+  investigacion:
+    nombre: "Investigación y análisis"
+    ejemplos: "comparar opciones, estudiar un mercado, preparar insumos de una decisión"
+    ejecuta: agente
+    modo: goal
+    revision: automatica
+    criterio_revision: "Fuentes citadas y verificables, conclusiones separadas de los datos, recomendación con su porqué"
+    puerta_capitan: "la decisión que sale del análisis es del capitán"
+  relacion:
+    nombre: "Relación con personas"
+    ejemplos: "reuniones, negociaciones, cobros, decisiones con clientes o socios"
+    ejecuta: capitan               # el agente NO la ejecuta: prepara insumos en una misión hija de tipo documento
+    modo: null
+    revision: capitan
+    criterio_revision: "La cierra el capitán con el resultado de la conversación"
+    puerta_capitan: "es la tarea misma"
+  personal:
+    nombre: "Personal y trámites"
+    ejemplos: "pagos, trámites, compras, salud"
+    ejecuta: capitan               # la Estación Persona recuerda, organiza y prepara; no paga ni firma
+    modo: null
+    revision: capitan
+    criterio_revision: "La cierra el capitán"
+    puerta_capitan: "es la tarea misma"
+  compuerta:
+    nombre: "Compuerta o decisión"
+    ejemplos: "aprobar un prototipo, elegir un nombre, decidir un precio"
+    ejecuta: capitan
+    modo: null
+    revision: capitan
+    criterio_revision: "La decisión queda escrita en la tarjeta y en la nota del proyecto"
+    puerta_capitan: "es la tarea misma; nunca se asigna a un agente"
+reglas:
+  - "Una misión de tipo relación, personal o compuerta nunca se asigna a una estación"
+  - "Si una misión de agente necesita algo hacia afuera, se parte en dos: el borrador (agente) y el envío (cuelga de la puerta del capitán)"
+  - "Los créditos de modelo son gasto: el modelo fuerte solo en construcción e investigación que lo pidan; el resto con el modelo por defecto de la estación"

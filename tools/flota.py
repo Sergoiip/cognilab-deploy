@@ -247,6 +247,69 @@ def aplicar(args):
     return 1 if fallos else 0
 
 
+# ---------- mision ----------
+def mision(args):
+    tipos = yaml.safe_load((FLOTA / "misiones" / "tipos.yaml").read_text(encoding="utf-8"))["tipos"]
+    plantillas = {yaml.safe_load(f.read_text(encoding="utf-8"))["id"]: f for f in FLOTA.glob("misiones/*/*.yaml")}
+    if args.plantilla not in plantillas:
+        print(f"✗ No existe la plantilla '{args.plantilla}'. Hay: {', '.join(sorted(plantillas))}")
+        return 1
+    p = yaml.safe_load(plantillas[args.plantilla].read_text(encoding="utf-8"))
+    t = tipos[p["tipo"]]
+    man, _ = cargar(args.manifiesto)
+    vars_ = dict(kv.split("=", 1) for kv in args.var)
+    vars_.setdefault("cliente", args.cliente or man["cliente"])
+    try:
+        cuerpo = p["cuerpo"].format(**vars_)
+        registro = p["registro"].format(**vars_)
+    except KeyError as k:
+        print(f"✗ Falta la variable {k}. Pásala con --var {k.args[0]}=...")
+        return 1
+    if t["ejecuta"] != "agente":
+        print(f"✗ Una misión de tipo «{t['nombre']}» no se asigna a una estación (la ejecuta el capitán).")
+        return 1
+    est = next((e for e in man["estaciones"] if e["tipo"] == p["la_ejecuta"]), man["estaciones"][0])
+    nuc = yaml.safe_load((FLOTA / "nucleo.yaml").read_text(encoding="utf-8"))
+    no_hace = list(p.get("no_hace", [])) + nuc["codigo_de_navegacion"]
+    titulo = f"{p['nombre_visible']} · {vars_['cliente']}" + (f" · {vars_['periodo']}" if "periodo" in vars_ else "")
+    body = (f"MISIÓN ({t['nombre']}) · plantilla {p['id']} · sector {p['sector']}\n\n{cuerpo}\n"
+            f"CRITERIO DE HECHO:\n" + "\n".join(f"- {h}" for h in p["hecho"]) +
+            f"\n\nNO HACE:\n" + "\n".join(f"- {x}" for x in no_hace) +
+            f"\n\nREGISTRO: {registro}\nREVISIÓN: {t['criterio_revision']}\n"
+            + ("CIERRE: termina con kanban_complete y la ruta del borrador en metadata. NO pidas revisión: "
+               "la aprobación es la tarjeta hija «⛔ Visto bueno», que solo cierra el capitán.\n" if t["revision"] == "capitan" else ""))
+    clave = f"{p['id']}-{vars_['cliente']}-{vars_.get('periodo', '')}".lower().replace(" ", "-")
+    board = args.board or man.get("tablero")
+    base = [HERMES, "kanban"] + (["--board", board] if board else [])
+    tmp = pathlib.Path(os.environ.get("TMPDIR", "/tmp")) / f"mision-{clave}.md"
+    tmp.write_text(body, encoding="utf-8")
+    cmd = base + ["create", titulo, "--body-file", str(tmp), "--assignee", est["perfil_hermes"],
+                  "--tenant", vars_["cliente"], "--idempotency-key", clave, "--json"]
+    for s in p.get("skills") or []:
+        cmd += ["--skill", s]
+    if t["modo"] == "goal":
+        cmd += ["--goal"]
+    if not args.si:
+        print("SIMULACIÓN (agrega --si para crearla)\n  →", " ".join(shlex.quote(c) for c in cmd))
+        if t["revision"] == "capitan":
+            print(f"  → y la puerta del capitán: «⛔ Visto bueno · {titulo}» sin asignar, hija de la misión")
+        print("\n--- cuerpo ---\n" + body)
+        return 0
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print("✗", (r.stdout + r.stderr)[-500:])
+        return 1
+    tid = json.loads(r.stdout[r.stdout.index("{"):])["id"]
+    print(f"✓ misión {tid} asignada a {est['perfil_hermes']}")
+    if t["revision"] == "capitan":
+        r2 = subprocess.run(base + ["create", f"⛔ Visto bueno · {titulo}", "--body",
+                            f"COMPUERTA HUMANA — NO ASIGNAR. {man.get('capitan')} revisa el resultado de {tid} y decide si se envía.",
+                            "--parent", tid, "--tenant", vars_["cliente"], "--idempotency-key", clave + "-visto-bueno", "--json"],
+                            capture_output=True, text=True)
+        print("✓ puerta del capitán creada" if r2.returncode == 0 else "✗ puerta: " + (r2.stdout + r2.stderr)[-300:])
+    return 0
+
+
 ap = argparse.ArgumentParser()
 sub = ap.add_subparsers(dest="cmd", required=True)
 e = sub.add_parser("estado")
@@ -254,5 +317,12 @@ e.add_argument("manifiesto")
 p = sub.add_parser("aplicar")
 p.add_argument("manifiesto")
 p.add_argument("--si", action="store_true")
+m = sub.add_parser("mision")
+m.add_argument("plantilla")
+m.add_argument("manifiesto")
+m.add_argument("--cliente")
+m.add_argument("--var", action="append", default=[], help="clave=valor para la plantilla (repetible)")
+m.add_argument("--board")
+m.add_argument("--si", action="store_true")
 a = ap.parse_args()
-sys.exit(estado(a) if a.cmd == "estado" else aplicar(a))
+sys.exit({"estado": estado, "aplicar": aplicar, "mision": mision}[a.cmd](a))
