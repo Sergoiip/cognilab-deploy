@@ -154,7 +154,13 @@ def leer_plugin(x, d):
             u = f"https://github.com/{d['repo']}/releases/download/{d['version']}/{f}"
             b = urllib.request.urlopen(u, timeout=60).read()
         if sha(b) != esperado:
-            sys.exit(f"HASH DISTINTO en {x}/{f}: no se instala (esperado {esperado[:12]}, llegó {sha(b)[:12]})")
+            pista = ""
+            if d.get("fuente") == "vendor" and esperado in {sha(b.replace(b"\r\n", b"\n")), sha(b.replace(b"\n", b"\r\n"))}:
+                pista = ("\n  Causa: Git convirtió los fines de línea al clonar (core.autocrlf). El archivo es el correcto."
+                         "\n  Arreglo: actualizar el repo y restaurar los archivos:"
+                         "\n    git pull && rm -rf stack/vendor && git checkout -- stack/vendor"
+                         "\n  (o volver a clonar con: git clone -c core.autocrlf=false ...)")
+            sys.exit(f"HASH DISTINTO en {x}/{f}: no se instala (esperado {esperado[:12]}, llegó {sha(b)[:12]}){pista}")
         buf[f] = b
     return buf
 

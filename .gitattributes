@@ -1,0 +1,8 @@
+# Los plugins propios se instalan verificando su sha256 byte a byte.
+# Git no debe convertir sus fines de línea (Git en Windows trae core.autocrlf=true y los
+# cambiaría a CRLF, con lo que el hash deja de coincidir y la instalación se frena).
+stack/vendor/** -text
+
+# Scripts: siempre LF, para que bash y python corran igual en cualquier equipo.
+*.sh text eol=lf
+*.py text eol=lf

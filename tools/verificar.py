@@ -91,7 +91,9 @@ if CATF.exists():
                 for f, esperado in a["sha256"].items():
                     fp = ROOT / a["ruta"] / f
                     if not fp.exists() or hashlib.sha256(fp.read_bytes()).hexdigest() != esperado:
-                        err.append(f"stack: {k}/{f} no coincide con su sha256 del catálogo")
+                        b = fp.read_bytes() if fp.exists() else b""
+                        crlf = esperado in {hashlib.sha256(b.replace(b"\r\n", b"\n")).hexdigest(), hashlib.sha256(b.replace(b"\n", b"\r\n")).hexdigest()}
+                        err.append(f"stack: {k}/{f} no coincide con su sha256 del catálogo" + (" (fines de línea convertidos por Git: ver .gitattributes)" if crlf else ""))
                 if not (ROOT / a["ruta"] / "LICENSE").exists():
                     err.append(f"stack: {k} vendorizado sin LICENSE")
             if not a.get("licencia"):
