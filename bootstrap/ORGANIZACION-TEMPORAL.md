@@ -53,7 +53,7 @@ que la persona declare:
 
 | Parámetro | Por defecto | Notas |
 |---|---|---|
-| Activación previa | 20–30 min antes del primer bloque | Movilidad, hidratación, journaling breve |
+| Ritual AM de activación | 30–60 min antes del primer bloque | Movimiento breve, ducha, desayuno con journaling |
 | Inicio del trabajo profundo | El que declare la persona | Es el ancla del día |
 | Duración del bloque | 37–50 min | La persona decide en el momento. En el calendario se reserva la duración máxima |
 | Pausa entre bloques | 7–10 min | Restauradora: moverse, hidratarse, sin pantalla |
@@ -62,7 +62,24 @@ que la persona declare:
 
 Estos valores van en el campo opcional `ritmo:` del manifiesto (ver más abajo).
 
-## 4. Cómo el agente arma la semana en el calendario
+## 4. Lo innegociable va primero
+
+Antes de ubicar una sola tarea, el calendario se ancla con lo que sostiene la energía. El
+calendario funciona como **mapa de intención**: cada bloque es un compromiso de la persona
+consigo misma.
+
+| Innegociable | Qué es | Notas |
+|---|---|---|
+| **Ritual AM de activación** | Movimiento breve, ducha y desayuno con journaling (descarga cognitiva) | Sin celular hasta terminar. El movimiento antes del trabajo profundo deja impulso; si hace 1 minuto, cuenta |
+| **Comidas** | Almuerzo como corte entre la ventana profunda y la franja de la tarde | Ahí llega el resumen de lo informativo |
+| **Ritual PM de cierre** | 1) Cerrar el día. 2) Preparar mañana y **fijar la ÚNICA tarea** («si la hago, todo lo demás se vuelve más fácil o innecesario»). 3) Escribir la historia del día | Cierra los bucles abiertos que dañan el sueño; deja la mañana sin decisiones |
+| **Revisión semanal (WAR)** | Procesar el Inbox, auditar los proyectos, revisar el tracker de hábitos y armar la semana | Se ubica donde la persona elija; puede ser el primer bloque profundo de la semana |
+| **Sueño y entrenamiento** | Según lo que declare la persona | Nunca se recortan para meter tareas |
+
+Los innegociables se crean como **eventos recurrentes**, solo en los días que declare la persona.
+Las tareas se acomodan alrededor; nunca al revés.
+
+## 5. Cómo el agente arma la semana en el calendario
 
 1. **Juntar lo pendiente** de todas las fuentes de verdad (tablero de tareas, CRM, compromisos
    con clientes y reuniones confirmadas) y clasificar cada ítem por carga.
@@ -71,8 +88,9 @@ Estos valores van en el campo opcional `ritmo:` del manifiesto (ver más abajo).
      confirmar») y esa franja se deja liviana. Se actualiza cuando la confirmen; nunca se inventa
      una hora.
    - **Si una reunión no tiene día,** queda como tarea («confirmar día y hora»), no como evento.
-3. **Poner la activación previa** y, después, los **bloques profundos** desde la hora de inicio:
-   una tarea analítica por bloque. Si una tarea es grande, se reparte en varios bloques
+3. **Poner los bloques profundos** desde la hora de inicio, después de los innegociables: una
+   tarea analítica por bloque. El primer bloque del día es la ÚNICA tarea que fijó el ritual PM
+   anterior. Si una tarea es grande, se reparte en varios bloques
    numerados (1/2, 2/2).
 4. **Cada bloque profundo lleva en la descripción:**
    - ❓ **Pregunta invitadora:** una pregunta concreta y curiosa sobre esa tarea.
@@ -86,7 +104,7 @@ Estos valores van en el campo opcional `ritmo:` del manifiesto (ver más abajo).
 8. **Proponer antes de imponer:** el plan se presenta y la persona lo ajusta. Las preferencias
    que declare (horarios, duración de bloques) se guardan en su perfil para la próxima semana.
 
-## 5. Proteger la ventana profunda
+## 6. Proteger la ventana profunda
 
 - **Mientras corren los bloques profundos, el agente solo envía avisos que piden una acción
   inmediata**, en formato de una línea. Lo informativo (reportes de crons, resúmenes, novedades)
@@ -96,7 +114,7 @@ Estos valores van en el campo opcional `ritmo:` del manifiesto (ver más abajo).
 - Los crons que corren en esa ventana se reprograman para después o dejan su salida para el
   resumen.
 
-## 6. Regla de flexibilidad
+## 7. Regla de flexibilidad
 
 Si un día la persona no tiene energía para lo analítico, ese trabajo se mueve al siguiente día
 disponible y el día queda operativo o restaurador. **El agente pregunta siempre antes de mover
@@ -105,6 +123,8 @@ algo**: propone el nuevo acomodo, espera la confirmación y solo entonces cambia
 ## Criterio de hecho (se suma al de A3)
 
 - [ ] Las actividades recurrentes de la persona están clasificadas por tipo de carga.
+- [ ] Innegociables (rituales AM y PM, comidas, revisión semanal) creados como eventos
+      recurrentes en los días declarados.
 - [ ] Los parámetros del ritmo (inicio, bloque, pausa, franjas) están declarados por la persona
       y guardados.
 - [ ] Una semana completa armada en el calendario, cada bloque profundo con su pregunta

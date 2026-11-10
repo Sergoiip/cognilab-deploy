@@ -9,7 +9,12 @@ ritmo:                       # opcional · ver bootstrap/ORGANIZACION-TEMPORAL.m
   inicio_profundo: "[hora en que arranca el trabajo profundo]"
   bloque_min: [37, 50]        # rango; la persona decide en el momento
   pausa_min: [7, 10]
-  activacion_min: 25          # activación + journaling antes del primer bloque
+  activacion_min: 60          # ritual AM: movimiento + desayuno con journaling
+  dias_innegociables: [lu, ma, mi, ju, vi]
+  innegociables:              # eventos recurrentes; las tareas se acomodan alrededor
+    almuerzo: "[hh:mm-hh:mm]"
+    ritual_pm: "[hh:mm-hh:mm]"     # cierre + ÚNICA tarea de mañana + historia del día
+    revision_semanal: "[día y hora; puede ser el primer bloque profundo]"
   franja_operativa: "[desde qué hora va lo operativo y creativo]"
   avisos_en_ventana: solo-accion   # solo-accion | normal; lo informativo va en un resumen al cerrar la ventana
   mover_sin_energia: preguntar     # preguntar | automatico
