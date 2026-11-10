@@ -23,6 +23,15 @@ estados_de_plano:
   piloto: "Corriendo en un cliente real, con línea base"
   validado: "Un ciclo completo en un cliente real, criterios de hecho cumplidos e indicador medido"
 promocion: "Una nave local que aparece en 2 clientes se promueve al catálogo"
+protocolo_de_tarjeta:            # se agrega al cuerpo de TODA misión (idea tomada de la flota de un estudio aliado, 10-nov)
+  - "Haz solo lo que pide la tarjeta y de la forma más económica: no cargues skills que no necesites ni leas la bóveda completa"
+  - "Cierra con un resumen de máximo 6 líneas: qué hiciste, dónde quedó y qué decide el capitán"
+  - "Si falta un dato, un acceso o una decisión, bloquea la tarjeta diciendo exactamente qué necesitas; no adivines"
+  - "Si otra estación debe hacer algo después, créale su propia tarjeta; no la cuelgues como hija de la tuya"
+  - "Lo que aprendas que sirva para la próxima vez, anótalo en la nota de la estación, en la sección «Memoria»"
+presupuesto_por_defecto:         # el manifiesto lo sobrescribe
+  modo: manual                   # manual: toda misión nace bloqueada hasta que el capitán la suelta; auto: entra directo hasta el tope
+  max_dia: 5                     # misiones creadas por día que entran solas en modo auto
 vocabulario_cliente:             # lore interno -> nombre visible
   estacion: "Agente principal"
   nave: "Agente de tarea"

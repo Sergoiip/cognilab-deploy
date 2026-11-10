@@ -55,3 +55,26 @@ reglas:
   - "Una misión de tipo relación, personal o compuerta nunca se asigna a una estación"
   - "Si una misión de agente necesita algo hacia afuera, se parte en dos: el borrador (agente) y el envío (cuelga de la puerta del capitán)"
   - "Los créditos de modelo son gasto: el modelo fuerte solo en construcción e investigación que lo pidan; el resto con el modelo por defecto de la estación"
+limites:                           # topes por tipo para que una misión no se coma el presupuesto
+  construccion: {max_runtime: "45m", max_retries: 2}
+  documento: {max_runtime: "20m", max_retries: 1}
+  investigacion: {max_runtime: "30m", max_retries: 1}
+# Rúbricas de revisión (idea de un «tribunal» de revisión de un estudio aliado, simplificada): cada criterio se califica 1-10;
+# un veto con 3 o menos bloquea aunque el promedio sea bueno. La calibración con resultados reales
+# (¿el cliente lo aceptó?, ¿la pieza funcionó?) queda para cuando haya casos con resultado.
+rubricas:
+  documento:
+    criterios:
+      veracidad: "Cada cifra y cada afirmación tiene su fuente en la bóveda"
+      voz: "Suena a la marca y respeta su universo"
+      claridad: "Un solo mensaje, entendible sin contexto"
+      accion: "Deja claro qué sigue y quién lo hace"
+    vetos: [veracidad]
+    umbral: {aprobar: 7.5, con_ajustes: 6}
+  construccion:
+    criterios:
+      verificacion: "Pruebas o build en verde, con el comando en la evidencia"
+      alcance: "Cambia solo lo que pidió la tarjeta"
+      reversibilidad: "Se puede deshacer; nada se borra sin respaldo"
+    vetos: [verificacion]
+    umbral: {aprobar: 8, con_ajustes: 6}

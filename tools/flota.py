@@ -225,6 +225,14 @@ def aplicar(args):
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(envoltorio(n, a), encoding="utf-8")
         nombre = PREFIJO + n["nombre_visible"]
+        plataforma = str(man.get("entrega", "")).split(":")[0].upper()
+        envf = home_de(perfil) / ".env"
+        if plataforma in ("TELEGRAM", "DISCORD", "SLACK") and not (
+                envf.exists() and any(l.startswith(f"{plataforma}_BOT_TOKEN=") and len(l.strip()) > len(plataforma) + 11
+                                      for l in envf.read_text(encoding="utf-8", errors="ignore").splitlines())):
+            avisos.append(f"nave {n['id']}: el perfil «{perfil}» no tiene bot de {plataforma.lower()}; un faro ahí descartaría "
+                          f"los avisos sin dar error. No se instala hasta que tenga su token.")
+            continue
         sched = item.get("faro") or n["disparador"]["faro"]
         existe = next((j for j in jobs_de(perfil).values() if j.get("name") == nombre), None)
         if existe:
@@ -272,10 +280,19 @@ def mision(args):
     nuc = yaml.safe_load((FLOTA / "nucleo.yaml").read_text(encoding="utf-8"))
     no_hace = list(p.get("no_hace", [])) + nuc["codigo_de_navegacion"]
     titulo = f"{p['nombre_visible']} · {vars_['cliente']}" + (f" · {vars_['periodo']}" if "periodo" in vars_ else "")
+    tipos_doc = yaml.safe_load((FLOTA / "misiones" / "tipos.yaml").read_text(encoding="utf-8"))
+    rub = (tipos_doc.get("rubricas") or {}).get(p["tipo"])
+    lim = (tipos_doc.get("limites") or {}).get(p["tipo"], {})
+    rub_txt = ""
+    if rub:
+        rub_txt = ("RÚBRICA DE REVISIÓN (1-10 por criterio; un veto con 3 o menos bloquea):\n"
+                   + "\n".join(f"- {k}{' (veto)' if k in rub['vetos'] else ''}: {v}" for k, v in rub["criterios"].items())
+                   + f"\nAprobar desde {rub['umbral']['aprobar']}; con ajustes desde {rub['umbral']['con_ajustes']}.\n")
     body = (f"MISIÓN ({t['nombre']}) · plantilla {p['id']} · sector {p['sector']}\n\n{cuerpo}\n"
             f"CRITERIO DE HECHO:\n" + "\n".join(f"- {h}" for h in p["hecho"]) +
             f"\n\nNO HACE:\n" + "\n".join(f"- {x}" for x in no_hace) +
-            f"\n\nREGISTRO: {registro}\nREVISIÓN: {t['criterio_revision']}\n"
+            f"\n\nCÓMO TRABAJAR LA TARJETA:\n" + "\n".join(f"- {x}" for x in nuc.get("protocolo_de_tarjeta", [])) +
+            f"\n\nREGISTRO: {registro}\nREVISIÓN: {t['criterio_revision']}\n" + rub_txt
             + ("CIERRE: termina con kanban_complete y la ruta del borrador en metadata. NO pidas revisión: "
                "la aprobación es la tarjeta hija «⛔ Visto bueno», que solo cierra el capitán.\n" if t["revision"] == "capitan" else ""))
     clave = f"{p['id']}-{vars_['cliente']}-{vars_.get('periodo', '')}".lower().replace(" ", "-")
@@ -284,7 +301,22 @@ def mision(args):
     tmp = pathlib.Path(os.environ.get("TMPDIR", "/tmp")) / f"mision-{clave}.md"
     tmp.write_text(body, encoding="utf-8")
     cmd = base + ["create", titulo, "--body-file", str(tmp), "--assignee", est["perfil_hermes"],
-                  "--tenant", vars_["cliente"], "--idempotency-key", clave, "--json"]
+                  "--tenant", vars_["cliente"], "--idempotency-key", clave, "--created-by", "flota", "--json"]
+    if lim.get("max_runtime"):
+        cmd += ["--max-runtime", str(lim["max_runtime"])]
+    if lim.get("max_retries"):
+        cmd += ["--max-retries", str(lim["max_retries"])]
+    pres = {**nuc.get("presupuesto_por_defecto", {}), **(man.get("presupuesto") or {})}
+    if pres.get("modo", "manual") == "manual":
+        cmd += ["--initial-status", "blocked"]       # nace bloqueada: el capitán la suelta con `hermes kanban unblock`
+    else:
+        import sqlite3, datetime as _dt
+        hoy0 = int(_dt.datetime.combine(_dt.date.today(), _dt.time()).timestamp())
+        db = (pathlib.Path.home() / ".hermes" / "kanban" / "boards" / board / "kanban.db") if board else (pathlib.Path.home() / ".hermes" / "kanban.db")
+        n = sqlite3.connect(db).execute("select count(*) from tasks where created_by='flota' and created_at>=?", (hoy0,)).fetchone()[0] if db.exists() else 0
+        if n >= int(pres.get("max_dia", 5)):
+            cmd += ["--initial-status", "blocked"]
+            print(f"⚠ Tope diario de {pres.get('max_dia')} misiones alcanzado: esta nace bloqueada.")
     for s in p.get("skills") or []:
         cmd += ["--skill", s]
     if t["modo"] == "goal":

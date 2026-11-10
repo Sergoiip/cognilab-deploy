@@ -5,8 +5,10 @@ estado: piloto                   # borrador | piloto | validado (ver nucleo.yaml
 lentes: [pkm, apqc]              # dueño único: la persona y el negocio a la vez
 estaciones:
   - tipo: negocio
-    fusiona: persona             # lo personal se separa por carpetas, no por perfil
+    fusiona: persona             # por defecto lo personal se separa por carpetas, no por perfil
 opcionales:
+  - tipo: persona
+    cuando: "Si el dueño quiere separar lo personal del negocio (memoria, canal y tablero propios). CogniLab lo hizo el 10-nov"
   - tipo: servicio
     cuando: "Si se abre atención pública automatizada"
 naves_base:                      # ids del catálogo flota/naves/<sector>/<id>.yaml
