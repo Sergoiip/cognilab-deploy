@@ -59,6 +59,11 @@ def resolver(valor, man):
 
 
 def estacion_de_nave(nave, man):
+    if nave.get("la_ejecuta") == "coordinador":
+        cid = man.get("coordinador")
+        for e in man["estaciones"]:
+            if e["id"] == cid:
+                return e
     for e in man["estaciones"]:
         if e["tipo"] == nave.get("la_ejecuta", "negocio"):
             return e
@@ -94,14 +99,14 @@ def estado(args):
             problemas.append(f"nave '{item['id']}' no está en el catálogo")
             continue
         j = next((x for x in jobs_de(estacion_de_nave(n, man)["perfil_hermes"]).values()
-                  if x.get("name") == PREFIJO + n["nombre_visible"]), None)
-        por_sector[n["sector"]].append((st_de(j) if j else "sin instalar (corre `aplicar`)", n["nombre_visible"] + (f" «{item['alias']}»" if item.get("alias") else "") + " ⛵"))
+                  if x.get("name") == PREFIJO + (item.get("nombre") or n["nombre_visible"])), None)
+        por_sector[n["sector"]].append((st_de(j) if j else "sin instalar (corre `aplicar`)", (item.get("nombre") or n["nombre_visible"]) + (f" «{item['alias']}»" if item.get("alias") else "") + " ⛵"))
     for item in man.get("naves_locales") or []:
         if item.get("sector") in por_sector:
             por_sector[item["sector"]].append((item.get("estado", "pendiente"), item["nombre_visible"] + " (local)"))
 
     print(f"Flota «{man['cliente']}» · plano {plano['id']} ({plano['estado']}) · lentes: {' + '.join(plano['lentes'])}")
-    print("Estaciones: " + ", ".join(f"{e['nombre_visible']} ({e['tipo']}, perfil {e['perfil_hermes']})" for e in man["estaciones"]))
+    print("Estaciones: " + ", ".join(f"{e['nombre_visible']} ({e['tipo']}{' · coordinador' if e['id'] == man.get('coordinador') else ''}, perfil {e['perfil_hermes']})" for e in man["estaciones"]))
     huecos = []
     for k, s in sect.items():
         lente = []
@@ -143,6 +148,8 @@ def perfiles_existentes():
 
 
 def descripcion(e, ficha, man):
+    if e.get("descripcion"):
+        return e["descripcion"]
     sectores = man.get("_sectores_activos", [])
     return (f"{e['nombre_visible']} · Estación {e['tipo'].capitalize()} de la Flota «{man['cliente']}» "
             f"(plano {man['plano']}). {e.get('mision') or ficha['mision']} "
@@ -220,12 +227,14 @@ def aplicar(args):
             continue
         for fr in item.get("frentes") or []:
             a += [n["por_frente"], fr]
-        dest = home_de(perfil) / "scripts" / f"flota_{n['id'].replace('-', '_')}.py"
+        a += [str(x) for x in (item.get("args") or [])]          # argumentos propios de esta instancia
+        sufijo = ("_" + item["instancia"].replace("-", "_")) if item.get("instancia") else ""
+        dest = home_de(perfil) / "scripts" / f"flota_{n['id'].replace('-', '_')}{sufijo}.py"
         pasos.append(f"escribir {dest}")
         if si:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(envoltorio(n, a), encoding="utf-8")
-        nombre = PREFIJO + n["nombre_visible"]
+        nombre = PREFIJO + (item.get("nombre") or n["nombre_visible"])
         plataforma = str(man.get("entrega", "")).split(":")[0].upper()
         envf = home_de(perfil) / ".env"
         if plataforma in ("TELEGRAM", "DISCORD", "SLACK") and not (
@@ -242,6 +251,8 @@ def aplicar(args):
         cmd = [HERMES] + (["-p", perfil] if perfil != "default" else []) + [
             "cron", "create", sched, "--name", nombre, "--script", dest.name, "--no-agent",
             "--deliver", man["entrega"], "--timezone", man.get("zona", "America/Bogota"), "--catch-up", "on"]  # un aviso tarde > un aviso perdido
+        if item.get("repetir"):
+            cmd += ["--repeat", str(item["repetir"])]
         ok, out = run(cmd, si, pasos)
         if not ok:
             fallos.append(f"nave {n['id']}: {out[-300:]}")

@@ -28,6 +28,11 @@ python3 flota/naves/operacion/estado_entregables.py --raiz <Projects> --todo    
 
 `aplicar` es idempotente. Describe las estaciones que existen y crea las que faltan **sin credenciales** (el responsable conecta su proveedor). Genera `flota_<nave>.py` en el directorio de scripts del perfil y da de alta el faro `Flota · <nombre>` si no existe. Nunca borra un faro.
 
+## Coordinador y misiones
+- El manifiesto declara `coordinador: <id de estación>`. El coordinador recibe lo que pide el capitán, decide quién lo hace y reparte misiones; las naves con `la_ejecuta: coordinador` corren en su perfil.
+- `tools/flota.py mision <plantilla> <manifiesto> --var clave=valor [--si]` crea una misión con su contrato (tipo, criterio de hecho, rúbrica, topes, protocolo) y su «⛔ Visto bueno» si es un documento. En `presupuesto.modo: manual` nace bloqueada.
+- Naves del Ágora (sin modelo): **Esperando tu OK** (aprobaciones del día), **Tareas atascadas**, **Respaldo de la Flota** y **Faro de misión** (crea una misión en una fecha; cada instancia del manifiesto lleva `instancia`, `nombre`, `faro`, `repetir` y `args`).
+
 ## Cómo agregar una nave al catálogo
 1. `naves/<sector>/<id>.yaml` con los campos obligatorios del núcleo, más `script`, `argumentos` (admite `{crm.raiz}`, `{crm.proyectos}`) y `disparador.faro`.
 2. El script va al lado. Si imprime vacío, el faro calla. Si necesita un modelo, todavía no se instala solo (`aplicar` lo avisa).

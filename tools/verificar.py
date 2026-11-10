@@ -155,7 +155,7 @@ if FL.exists():
                 err.append(f"flota: {rel} está en la carpeta '{f.parent.name}' pero su sector es '{n.get('sector')}'")
             if n.get("modulo") and n["modulo"] not in slugs:
                 err.append(f"flota: {rel} usa el módulo '{n['modulo']}', que no existe")
-            if n.get("la_ejecuta") not in nuc["tipos_de_estacion"]:
+            if n.get("la_ejecuta") not in nuc["tipos_de_estacion"] + list(nuc.get("roles_de_estacion", {})):
                 err.append(f"flota: {rel} la_ejecuta inválido '{n.get('la_ejecuta')}'")
             if n.get("script") and not (f.parent / n["script"]).exists():
                 err.append(f"flota: {rel} declara el script '{n['script']}', que no existe")

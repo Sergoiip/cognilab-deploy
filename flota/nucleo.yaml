@@ -18,6 +18,8 @@ campos_obligatorios:             # toda ficha de estación, nave o faro
   - indicador                    # qué se mide para saber que sirve
 piezas: [estacion, nave, faro]
 tipos_de_estacion: [persona, negocio, servicio]
+roles_de_estacion:               # una estación de cualquier tipo puede tomar un rol extra
+  coordinador: "Recibe lo que pide el capitán, decide quién lo hace, reparte misiones y corre los faros del Ágora y de la máquina. El manifiesto dice cuál estación es (`coordinador: <id>`)"
 estados_de_plano:
   borrador: "Escrito, nunca corrido"
   piloto: "Corriendo en un cliente real, con línea base"
