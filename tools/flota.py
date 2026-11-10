@@ -87,14 +87,14 @@ def estado(args):
         if f["sector"] not in sect:
             problemas.append(f"faro {cid}: sector '{f['sector']}' no existe")
             continue
-        por_sector[f["sector"]].append((st_de(jobs_all.get(cid)), f["nombre"]))
+        por_sector[f["sector"]].append((st_de(jobs_all.get(cid)), f["nombre"] + (f" «{f['alias']}»" if f.get("alias") else "")))
     for item in man.get("naves") or []:
         n = naves.get(item["id"])
         if not n:
             problemas.append(f"nave '{item['id']}' no está en el catálogo")
             continue
         j = por_nombre.get(PREFIJO + n["nombre_visible"])
-        por_sector[n["sector"]].append((st_de(j) if j else "sin instalar (corre `aplicar`)", n["nombre_visible"] + " ⛵"))
+        por_sector[n["sector"]].append((st_de(j) if j else "sin instalar (corre `aplicar`)", n["nombre_visible"] + (f" «{item['alias']}»" if item.get("alias") else "") + " ⛵"))
     for item in man.get("naves_locales") or []:
         if item.get("sector") in por_sector:
             por_sector[item["sector"]].append((item.get("estado", "pendiente"), item["nombre_visible"] + " (local)"))
