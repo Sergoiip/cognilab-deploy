@@ -1,0 +1,68 @@
+# Núcleo de la Flota · sectores (NO se personaliza por cliente)
+# Dos lentes sobre la misma lista:
+#   pkm  = lente de la persona. Rueda «Your PKM Planet» (Linking Your Thinking), adaptada.
+#          La usan la Estación Persona y la escala 1.
+#   apqc = lente del negocio. APQC Process Classification Framework, cross-industry (v7, 13 categorías),
+#          comprimido para pymes. La usa la Estación Negocio.
+# Una operación de dueño único (consultor, marca personal) usa las dos a la vez: la unión completa.
+# Regla: un sector es una etiqueta de fichas, tareas y faros. NUNCA es un perfil de Hermes.
+version: 1
+lentes:
+  pkm: "Persona: ideas, contenido, organización intencional, aprendizaje, relaciones, memoria"
+  apqc: "Negocio: dirección, clientes, marca, operación, finanzas, equipo, tecnología"
+sectores:
+  direccion:
+    nombre: "Dirección y ritmo"
+    tipo: area
+    pkm: "Organización Intencional"
+    apqc: ["1.0 Visión y estrategia", "13.0 Capacidades del negocio"]
+    sostiene: "Metas, prioridades, revisión semanal, vista general, plan en reversa"
+  clientes:
+    nombre: "Clientes"
+    tipo: area
+    pkm: "Relaciones"
+    apqc: ["3.0 Mercadear y vender (la venta)", "6.0 Servicio al cliente", "12.0 Relaciones externas"]
+    sostiene: "Prospectos, propuestas, seguimiento, atención y postventa"
+  marca:
+    nombre: "Marca y contenido"
+    tipo: area
+    pkm: "Contenido"
+    apqc: ["3.0 Mercadear (marca)", "2.0 Productos y servicios"]
+    sostiene: "Guiones, piezas, publicación, reportes de marca"
+  ideas:
+    nombre: "Ideas"
+    tipo: area
+    pkm: "Ideas"
+    apqc: []
+    en_lente_negocio: marca        # en la lente APQC no existe aparte: se lee dentro de Marca
+    sostiene: "Capturar, conectar y madurar ideas"
+  operacion:
+    nombre: "Operación"
+    tipo: area
+    pkm: null
+    apqc: ["4.0 Entregar productos", "5.0 Entregar servicios"]
+    sostiene: "Entregar lo que se vende: agenda, producción, proyectos, archivos de cliente, logística"
+  finanzas:
+    nombre: "Finanzas y administración"
+    tipo: area
+    pkm: null
+    apqc: ["9.0 Recursos financieros", "10.0 Activos", "11.0 Riesgo y cumplimiento"]
+    sostiene: "Cobros, cuentas de cobro, gastos, impuestos y trámites"
+  equipo:
+    nombre: "Equipo y aprendizaje"
+    tipo: area
+    pkm: "Aprendizaje"
+    apqc: ["7.0 Capital humano"]
+    sostiene: "Capacitación, hábitos, roles, transición de personas, mejora del propio agente"
+  memoria:
+    nombre: "Memoria"
+    tipo: transversal
+    pkm: "Memoria"
+    apqc: ["13.0 Gestión del conocimiento"]
+    sostiene: "Second Brain, wiki, registro. Cada estación tiene la suya"
+  mantenimiento:
+    nombre: "Mantenimiento"
+    tipo: transversal
+    pkm: null
+    apqc: ["8.0 Tecnología"]
+    sostiene: "Salud, seguridad, actualizaciones y credenciales de la propia Flota"

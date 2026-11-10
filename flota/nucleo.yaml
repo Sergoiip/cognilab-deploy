@@ -1,0 +1,34 @@
+# Núcleo de la Flota · reglas que ningún cliente ni plano puede quitar
+version: 1
+codigo_de_navegacion:            # se agrega a la lista «no_hace» de TODA ficha
+  - "Nada sale hacia afuera (clientes, redes, pagos) sin visto bueno del responsable"
+  - "No inventa datos: si no está en el registro, pregunta y escala"
+  - "No elimina por completo el componente humano de un proceso (línea roja)"
+  - "No reemplaza un esfuerzo que forma a la persona; solo quita procesos sin sentido (test de diseño)"
+campos_obligatorios:             # toda ficha de estación, nave o faro
+  - id
+  - pieza                        # estacion | nave | faro
+  - sector                       # clave de sectores.yaml
+  - nombre_visible               # lo único que ve el cliente; nunca lore
+  - capitan                      # responsable humano; en el catálogo va "<responsable>"
+  - mision                       # una frase
+  - no_hace
+  - registro                     # dónde deja evidencia
+  - hecho                        # criterio de hecho (mínimo 1 punto verificable)
+  - indicador                    # qué se mide para saber que sirve
+piezas: [estacion, nave, faro]
+tipos_de_estacion: [persona, negocio, servicio]
+estados_de_plano:
+  borrador: "Escrito, nunca corrido"
+  piloto: "Corriendo en un cliente real, con línea base"
+  validado: "Un ciclo completo en un cliente real, criterios de hecho cumplidos e indicador medido"
+promocion: "Una nave local que aparece en 2 clientes se promueve al catálogo"
+vocabulario_cliente:             # lore interno -> nombre visible
+  estacion: "Agente principal"
+  nave: "Agente de tarea"
+  faro: "Revisión automática"
+  muelle: "Canal"
+  puente: "Tablero de tareas"
+  mision: "Tarea"
+  bitacora: "Registro"
+  capitan: "Responsable"

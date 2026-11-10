@@ -1,0 +1,31 @@
+id: estado-entregables
+pieza: faro
+sector: operacion
+estado_ficha: borrador          # falta fijar la fuente de datos (ver «pendiente»)
+nombre_visible: "Estado de entregables por cliente"
+la_ejecuta: negocio
+capitan: "<responsable de la entrega>"
+mision: "Mostrar una vez por semana qué se entregó, qué vence y qué está atrasado en cada cliente activo."
+hace:
+  - "Leer los entregables con fecha de cada proyecto activo del CRM"
+  - "Agrupar por cliente: entregado, vence esta semana, atrasado"
+  - "Avisar solo lo atrasado o lo que vence en la semana"
+no_hace:
+  - "Marcar un entregable como hecho: eso lo confirma el responsable con evidencia"
+  - "Prometer fechas al cliente"
+disparador:
+  faro: "15 13 * * 1"            # lunes; ajustable
+  modo: no_agent
+convencion_registro: |
+  ## Entregables
+  | Fecha | Entregable | Estado |
+  |---|---|---|
+  | 27 dic 2026 | Revisión de entregables del mes 2 | Pendiente |
+pendiente: "Hoy los entregables viven como listas sin fecha dentro de los proyectos y como tarjetas del Kanban. Decidir la fuente única (tabla «## Entregables» en el proyecto, como los pagos, o fechas en el Kanban) antes de escribir el script."
+registro: "Las notas de proyecto del CRM"
+hecho:
+  - "4 lunes seguidos con el estado correcto, verificado contra el proyecto"
+indicador: "Entregables atrasados por cliente y por mes"
+rol_humano_afectado: null
+modulo: cd-flujos-trabajo
+planos: [consultor-e2]

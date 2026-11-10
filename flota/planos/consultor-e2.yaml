@@ -1,0 +1,24 @@
+id: consultor-e2
+tipo_empresa: consultor-marca-personal
+escala: 2
+estado: piloto                   # borrador | piloto | validado (ver nucleo.yaml)
+lentes: [pkm, apqc]              # dueño único: la persona y el negocio a la vez
+estaciones:
+  - tipo: negocio
+    fusiona: persona             # lo personal se separa por carpetas, no por perfil
+opcionales:
+  - tipo: servicio
+    cuando: "Si se abre atención pública automatizada"
+naves_base:                      # ids del catálogo flota/naves/<sector>/<id>.yaml
+  - aviso-cobros
+  - estado-entregables
+cobertura_minima:                # sectores que deben tener al menos un faro o nave activa
+  - direccion
+  - clientes
+  - marca
+  - operacion
+  - finanzas
+  - equipo
+  - memoria
+  - mantenimiento
+evidencia: []                    # se llena al validar: cliente (anonimizado), ciclo, criterios cumplidos, indicador medido
