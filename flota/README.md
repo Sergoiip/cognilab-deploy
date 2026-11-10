@@ -17,10 +17,21 @@ El **Astillero** (este repo) arma la **Flota** de cada cliente con piezas están
 
 ## Comandos
 ```bash
-uv run --no-project --with pyyaml python3 tools/verificar.py                   # valida catálogo y planos
-uv run --no-project --with pyyaml python3 tools/flota.py estado manifiestos/cliente-x.yaml   # cobertura por sector
-python3 flota/naves/finanzas/aviso_cobros.py --raiz <CRM> --hoy 2026-11-12      # probar un faro
+U="uv run --no-project --with pyyaml python3"
+$U tools/verificar.py                                         # valida catálogo, planos y sincronía con Cadence
+$U tools/flota.py estado  manifiestos/cliente-x.yaml          # cobertura por sector, cruzada con los crons reales
+$U tools/flota.py aplicar manifiestos/cliente-x.yaml          # simula: muestra lo que haría
+$U tools/flota.py aplicar manifiestos/cliente-x.yaml --si     # instala/actualiza (solo en la máquina del manifiesto)
+python3 flota/naves/finanzas/aviso_cobros.py --raiz <CRM> --hoy 2026-11-12          # probar un faro en una fecha
+python3 flota/naves/operacion/estado_entregables.py --raiz <Projects> --todo         # informe completo sin filtro de urgencia
 ```
+
+`aplicar` es idempotente. Describe las estaciones que existen y crea las que faltan **sin credenciales** (el responsable conecta su proveedor). Genera `flota_<nave>.py` en el directorio de scripts del perfil y da de alta el faro `Flota · <nombre>` si no existe. Nunca borra un faro.
+
+## Cómo agregar una nave al catálogo
+1. `naves/<sector>/<id>.yaml` con los campos obligatorios del núcleo, más `script`, `argumentos` (admite `{crm.raiz}`, `{crm.proyectos}`) y `disparador.faro`.
+2. El script va al lado. Si imprime vacío, el faro calla. Si necesita un modelo, todavía no se instala solo (`aplicar` lo avisa).
+3. `verificar.py` en verde. Agregarla al plano y al manifiesto, y correr `aplicar`.
 
 ## Reglas
 - Una estación se crea solo por frontera de privacidad, más de una voz de marca o atención pública. Nunca por sector.

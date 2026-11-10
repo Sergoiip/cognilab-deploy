@@ -47,6 +47,9 @@ PROHIBIDO = [(r"\$\s?\d[\d.,]*", "precio"), (r"\bCOP\b", "moneda"),
               "nombre de cliente"),
              (r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP")]
 for p in ROOT.rglob("*"):
+    rel_p = p.relative_to(ROOT)
+    if rel_p.parts[:1] == ("clientes",) or (rel_p.parts[:1] == ("manifiestos",) and p.name.startswith("cliente-")):
+        continue  # datos de clientes: están en .gitignore a propósito y nunca se versionan
     if p.is_file() and p.suffix in (".md", ".yaml", ".sh", ".py", ".js", ".css", ".json") and ".git" not in p.parts and p.name != "verificar.py":
         t = p.read_text(encoding="utf-8", errors="ignore")
         for rx, what in PROHIBIDO:

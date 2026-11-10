@@ -16,6 +16,7 @@ disparador:
   faro: "10 13 * * 1-5"          # días hábiles; ajustable por cliente
   modo: no_agent                 # script determinista: sin modelo, sin costo, sin inventar montos
 script: aviso_cobros.py
+argumentos: ["--raiz", "{crm.raiz}", "--dias", "3"]
 convencion_registro: |
   ## Pagos
   | Fecha | Monto | Cubre | Estado |
@@ -29,4 +30,4 @@ hecho:
 indicador: "Cobros atrasados por mes y días promedio de atraso (antes / después)"
 rol_humano_afectado: null
 modulo: cd-propuestas-cobros
-planos: [consultor-e2]
+planos: [consultor-e2, agencia-e3]
