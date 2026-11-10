@@ -55,7 +55,7 @@ que la persona declare:
 |---|---|---|
 | Ritual AM de activación | 30–60 min antes del primer bloque | Movimiento breve, ducha, desayuno con journaling |
 | Inicio del trabajo profundo | El que declare la persona | Es el ancla del día |
-| Duración del bloque | 37–50 min | La persona decide en el momento. En el calendario se reserva la duración máxima |
+| Duración del bloque | 37–50 min | La persona decide en el momento. **No se dibuja en el calendario**: el bloque es el ritmo interno de la sesión |
 | Pausa entre bloques | 7–10 min | Restauradora: moverse, hidratarse, sin pantalla |
 | Bloques profundos por día | 3–4 | Se amplían de forma progresiva cuando el foco se sostiene |
 | Franja operativa y creativa | Desde media tarde | Tareas mecánicas, repetitivas o creativas de baja exigencia |
@@ -88,11 +88,12 @@ Las tareas se acomodan alrededor; nunca al revés.
      confirmar») y esa franja se deja liviana. Se actualiza cuando la confirmen; nunca se inventa
      una hora.
    - **Si una reunión no tiene día,** queda como tarea («confirmar día y hora»), no como evento.
-3. **Poner los bloques profundos** desde la hora de inicio, después de los innegociables: una
-   tarea analítica por bloque. El primer bloque del día es la ÚNICA tarea que fijó el ritual PM
-   anterior. Si una tarea es grande, se reparte en varios bloques
-   numerados (1/2, 2/2).
-4. **Cada bloque profundo lleva en la descripción:**
+3. **Poner las sesiones profundas** desde la hora de inicio, después de los innegociables: **un
+   solo evento continuo por tarea**, en horas completas y uno detrás de otro, sin huecos. Los
+   bloques de 37–50 min y sus pausas no se dibujan, porque fragmentan la vista de calendario: la
+   persona los maneja por dentro de la sesión, y la descripción del evento lo recuerda. La primera
+   sesión del día es la ÚNICA tarea que fijó el ritual PM anterior.
+4. **Cada sesión profunda lleva en la descripción:**
    - ❓ **Pregunta invitadora:** una pregunta concreta y curiosa sobre esa tarea.
    - ✅ **Entregable:** qué tiene que quedar hecho al cerrar el bloque.
 5. **La franja de la tarde** va con lo operativo y creativo. Las tareas cortas de registro se
@@ -127,8 +128,8 @@ algo**: propone el nuevo acomodo, espera la confirmación y solo entonces cambia
       recurrentes en los días declarados.
 - [ ] Los parámetros del ritmo (inicio, bloque, pausa, franjas) están declarados por la persona
       y guardados.
-- [ ] Una semana completa armada en el calendario, cada bloque profundo con su pregunta
-      invitadora y su entregable, sin cruces.
+- [ ] Una semana completa armada en el calendario, con una sesión continua por tarea, cada
+      una con su pregunta invitadora y su entregable, sin cruces ni fragmentos.
 - [ ] Los avisos del agente respetan la ventana profunda durante al menos una semana, con
       evidencia en el log.
 
