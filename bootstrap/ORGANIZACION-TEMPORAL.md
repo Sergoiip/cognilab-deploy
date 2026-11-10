@@ -98,18 +98,10 @@ Las tareas se acomodan alrededor; nunca al revés.
    - ✅ **Entregable:** qué tiene que quedar hecho al cerrar el bloque.
 5. **La franja de la tarde** va con lo operativo y creativo. Las tareas cortas de registro se
    juntan al final del día.
-6. **Colores por frente, no por carga.** La carga ya la dice la hora: la mañana es analítica y
-   la tarde, operativa y creativa. El color responde a **para quién o para qué es**:
-   - Un color por cliente o frente activo, el mismo toda la semana y en todos los eventos de ese
-     frente.
-   - Un color propio para lo de la persona (su producto, su contenido).
-   - Las **reuniones** van en un color de alto contraste que no use ningún frente, para que
-     salten a la vista.
-   - Los **innegociables** van en un color neutro (gris), porque son el fondo de la semana y no
-     compiten con el trabajo.
-   - La revisión semanal lleva su propio color tenue.
-   La leyenda se le entrega a la persona y se guarda en su perfil; si entra un frente nuevo, se le
-   asigna un color libre.
+6. **Color por categoría de tarea** (ver la sección 8). Cada evento lleva una sola categoría,
+   y esa es la que da el color. El cliente o frente va como prefijo del título
+   («Cliente · Acción concreta»), la palanca con ⚡ al inicio, y al final de la descripción va la
+   línea `🏷 Categoría: … · Etiquetas: #frente/x #carga/y [#palanca]`.
 7. **Verificar al final:** releer los eventos creados, confirmar que no se cruzan y que nada
    analítico cayó en un valle. Reportarle la semana a la persona por día.
 8. **Proponer antes de imponer:** el plan se presenta y la persona lo ajusta. Las preferencias
@@ -131,6 +123,39 @@ Si un día la persona no tiene energía para lo analítico, ese trabajo se mueve
 disponible y el día queda operativo o restaurador. **El agente pregunta siempre antes de mover
 algo**: propone el nuevo acomodo, espera la confirmación y solo entonces cambia el calendario.
 
+## 8. Categorías y etiquetas de tareas
+
+Es el mismo sistema que usa el gestor de tareas (ATLAS.SYS: campo `atlas_categoria` y nota de
+esquema `categorias`), para que la tarea, el calendario y el agente hablen igual.
+
+**Categoría: una sola por tarea, y da el color.**
+
+| Icono | Categoría | Qué entra | Color sugerido (Google Calendar) |
+|---|---|---|---|
+| 🧭 | Estrategia | Decidir, planear y priorizar; el resultado es una decisión escrita | Arándano |
+| 🛠 | Construcción | Producir un entregable propio (producto, plantillas, propuestas) | Pavo real |
+| 🤝 | Comercial | Vender, negociar y hacer seguimiento a una oportunidad | Flamenco |
+| 📦 | Entrega | Ejecutar para un cliente lo que ya compró | Albahaca |
+| 🎬 | Contenido | Grabar, editar y publicar | Uva |
+| 🧾 | Operativo | Registrar, cobrar, archivar y actualizar el CRM | Banana |
+| 🗣 | Reunión | Cualquier encuentro con hora | Mandarina |
+| 📚 | Aprendizaje | Formación y estudio deliberado | Salvia |
+| 🗺 | Revisión | Revisión semanal y cierres de ciclo | Lavanda |
+| 🌿 | Innegociable | Rituales AM y PM, comidas, entrenamiento y sueño | Grafito |
+
+**Etiquetas: varias por tarea; sirven para filtrar y no dan color.**
+- `frente/<cliente-o-proyecto>`: para quién es. En el calendario se ve como prefijo del título.
+- `carga/<analitica|operativa|restauradora>`: la energía que pide. Es la misma escala de la
+  sección 1. No da color porque ya la dice la franja horaria.
+- `palanca`: hacerla desbloquea mucho más. Va con ⚡ al inicio del título.
+
+**Reglas**
+- Si una tarea parece de dos categorías, gana el resultado que entrega: preparar una venta es
+  Comercial aunque exija análisis, y el análisis se marca con `carga/analitica`.
+- Una categoría nueva se agrega primero al esquema, con un color libre. Nunca se inventa en un
+  evento suelto.
+- La leyenda se le entrega a la persona y se guarda en su perfil.
+
 ## Criterio de hecho (se suma al de A3)
 
 - [ ] Las actividades recurrentes de la persona están clasificadas por tipo de carga.
@@ -139,7 +164,7 @@ algo**: propone el nuevo acomodo, espera la confirmación y solo entonces cambia
 - [ ] Los parámetros del ritmo (inicio, bloque, pausa, franjas) están declarados por la persona
       y guardados.
 - [ ] Una semana completa armada en el calendario, con una sesión continua por tarea, cada
-      una con su pregunta invitadora y su entregable, sin cruces ni fragmentos.
+      una con su pregunta invitadora, su entregable y su categoría, sin cruces ni fragmentos.
 - [ ] Los avisos del agente respetan la ventana profunda durante al menos una semana, con
       evidencia en el log.
 
