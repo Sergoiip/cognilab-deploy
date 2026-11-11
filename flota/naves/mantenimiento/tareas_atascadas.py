@@ -6,7 +6,7 @@ que fallaron seguidas o que llevan demasiado tiempo corriendo. Si no hay nada, c
 Uso: tareas_atascadas.py [--dias 3] [--horas-corriendo 6]"""
 import argparse, os, sys, time
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "_comun"))
-from agora import tableros, filas, hace
+from agora import tableros, filas, hace, codigo
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--dias", type=float, default=3)
@@ -32,7 +32,7 @@ for slug, db in tableros().items():
             razones.append("en triage (el despachador no supo qué hacer con ella)")
         if razones:
             err = f"\n    Último error: {t['last_failure_error'][:140]}" if t["last_failure_error"] else ""
-            avisos.append(f"• [{slug}] {t['id']} · {t['title'][:70]}\n    {', '.join(razones)} · {t['assignee'] or 'sin asignar'}{err}")
+            avisos.append(f"[{codigo(slug, t['id'])}] {t['title'][:70]}\n    {', '.join(razones)} · {t['assignee'] or 'sin asignar'}{err}")
 if avisos:
     print("🪨 Tareas atascadas\n" + "\n".join(avisos) +
-          "\n\nDile a ARG.OS «suelta t_…», «re-especifica t_…» o «archiva t_…».")
+          "\n\nDile a ARG.OS «suelta 3», «re-especifica 3» o «archiva 3» (con el número).")
