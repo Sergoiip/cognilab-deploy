@@ -46,3 +46,21 @@ python3 flota/naves/operacion/estado_entregables.py --raiz <Projects> --todo    
 - Un plano pasa a `validado` solo con evidencia (`verificar.py` lo exige).
 - Una nave local que aparece en 2 clientes se promueve al catálogo.
 - Sin precios, nombres de clientes ni credenciales en este directorio.
+
+## Esfera de clientes (pulso semanal)
+
+Cada cliente del manifiesto (`clientes:`) tiene una instancia del faro de misión con la plantilla
+`misiones/clientes/pulso-semanal-cliente.yaml` (lunes 13:30). La misión agrupa cuatro rutinas: informe de la semana,
+dónde estamos y qué falta (proyecto en el CRM contra pendientes y tareas en Atlas), tareas palanca (máximo 3) y
+revisión de flujos. La plantilla lleva `rutina_aprobada: true`: el capitán la aprobó una vez, así que cada semana entra
+lista a la Estación Negocio (respeta el tope diario). Piezas:
+
+- `naves/clientes/contexto_cliente.py`: junta, solo lectura, el contexto del cliente con sus rutas.
+- `naves/_comun/registrar_atlas.py`: registra el pulso como **actividad nativa de ATLAS.SYS**
+  (`ATLAS.SYS/CRM/Actividades/AAAA-MM/`, misma forma que `src/crm/servicio.ts`) vinculada con `atlas_sobre` a la ficha
+  de Cadence, con la tarea palanca 1 como siguiente acción.
+- `naves/clientes/aviso-pulsos.yaml` (alias Pulsar): avisa por el canal de la estación cuando cada pulso termina o se traba.
+- El Puente dibuja la tercera esfera, Clientes: un planeta por cliente con sus cuatro rutinas como lunas.
+
+Nada de esto se envía al cliente. Para replicarlo en otro equipo basta declarar `clientes:` (nombre, proyecto, carpeta,
+sobre) y las instancias `lanzar-mision` en su manifiesto.

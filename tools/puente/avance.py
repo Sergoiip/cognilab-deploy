@@ -288,6 +288,16 @@ def modelo(flota, naves, est_list, ind, ar, personajes):
     med = sum(1 for i in ind if i["medido"])
     it("Medición", "Indicadores de las naves", "parcial" if med < len(ind) else "ok", f"{med} de {len(ind)} indicadores medidos")
     it("Medición", "Pulso 24/7", "ok", "encendido, dormido y apagado de los últimos 7 días")
+    cl = flota.man.get("clientes") or []
+    if cl:
+        hechos = 0
+        for slug, db in tableros().items():
+            try:
+                hechos += filas(db, "select count(*) n from tasks where title like 'Pulso semanal · %' and status='done' and completed_at>?", (time.time() - 8 * 86400,))[0]["n"]
+            except Exception:
+                pass
+        it("Clientes", "Esfera de clientes · pulso semanal", "ok" if hechos >= len(cl) else "parcial",
+           f"{len(cl)} clientes con pulso los lunes 13:30 · {hechos} pulso{'s' if hechos != 1 else ''} hecho{'s' if hechos != 1 else ''} esta semana")
     mn = any(re.search(r"(?i)memoria|mnemo", n["nombre"]) for n in naves if n["estado"] != "pausada")
     it("Memoria", "Mnemosync · wiki de memoria", "ok" if mn else "pendiente", "se sincroniza cada noche" if mn else "se corre a mano")
     it("Memoria", "Fénix · respaldo", "ok" if any(i["id"] == "respaldo-flota" and i["medido"] for i in ind) else "pendiente",
