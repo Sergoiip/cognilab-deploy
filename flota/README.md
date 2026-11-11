@@ -33,6 +33,9 @@ python3 flota/naves/operacion/estado_entregables.py --raiz <Projects> --todo    
 - `tools/flota.py mision <plantilla> <manifiesto> --var clave=valor [--si]` crea una misión con su contrato (tipo, criterio de hecho, rúbrica, topes, protocolo) y su «⛔ Visto bueno» si es un documento. En `presupuesto.modo: manual` nace bloqueada.
 - Naves del Ágora (sin modelo): **Esperando tu OK** (aprobaciones del día), **Tareas atascadas**, **Respaldo de la Flota** y **Faro de misión** (crea una misión en una fecha; cada instancia del manifiesto lleva `instancia`, `nombre`, `faro`, `repetir` y `args`).
 
+## Puente de mando (vista en vivo)
+`tools/puente/servidor.py <manifiesto> [--puerto 7171]`: servidor local (solo localhost, solo lectura, sin dependencias fuera de PyYAML) que muestra cómo está trabajando la Flota: estaciones y sus naves en órbita (activa, trabajando, falló, pausada), el Ágora con las misiones en curso y en tránsito, lo que espera al capitán, lo atascado, los próximos faros, el consumo del día y una bitácora de 24 h. Clic en una nave o misión abre su detalle y su última salida. Si el manifiesto no trae `alias`, muestra nombres funcionales (instalaciones de clientes). Las naves sin faro se declaran en `reserva:` del manifiesto. En la máquina de CogniLab corre como `cogsmos-puente.service`.
+
 ## Cómo agregar una nave al catálogo
 1. `naves/<sector>/<id>.yaml` con los campos obligatorios del núcleo, más `script`, `argumentos` (admite `{crm.raiz}`, `{crm.proyectos}`) y `disparador.faro`.
 2. El script va al lado. Si imprime vacío, el faro calla. Si necesita un modelo, todavía no se instala solo (`aplicar` lo avisa).
