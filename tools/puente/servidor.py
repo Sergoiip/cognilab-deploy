@@ -384,8 +384,13 @@ class Puente(BaseHTTPRequestHandler):
         u = urlparse(self.path)
         q = {k: v[0] for k, v in parse_qs(u.query).items()}
         try:
-            if u.path in ("/", "/index.html"):
-                return self.enviar(200, (AQUI / "index.html").read_bytes(), "text/html; charset=utf-8")
+            paginas = {"/": "mapa.html", "/index.html": "mapa.html", "/mapa": "mapa.html",
+                       "/flujo": "flujo.html", "/resumen": "resumen.html"}
+            if u.path in paginas:
+                return self.enviar(200, (AQUI / paginas[u.path]).read_bytes(), "text/html; charset=utf-8")
+            if u.path in ("/comun.css", "/comun.js"):
+                tipo = "text/css; charset=utf-8" if u.path.endswith(".css") else "text/javascript; charset=utf-8"
+                return self.enviar(200, (AQUI / u.path[1:]).read_bytes(), tipo)
             if u.path.startswith("/fuentes/") or u.path == "/isotipo.svg":
                 nombre = u.path.rsplit("/", 1)[-1]
                 f = (AQUI / "fuentes" / nombre) if u.path.startswith("/fuentes/") else AQUI / "isotipo.svg"
@@ -393,10 +398,6 @@ class Puente(BaseHTTPRequestHandler):
                     tipo = "font/ttf" if nombre.endswith(".ttf") else "image/svg+xml"
                     return self.enviar(200, f.read_bytes(), tipo)
                 return self.enviar(404, {"error": "no encontrado"})
-            if u.path == "/mapa":
-                return self.enviar(200, (AQUI / "mapa.html").read_bytes(), "text/html; charset=utf-8")
-            if u.path == "/resumen":
-                return self.enviar(200, (AQUI / "resumen.html").read_bytes(), "text/html; charset=utf-8")
             if u.path == "/api/estado":
                 with self.candado:
                     if time.time() - self.cache["t"] > 3 or self.cache["d"] is None:

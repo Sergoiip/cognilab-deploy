@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cogsmos · Estado</title>
+<title>Cogsmos · Resumen</title>
+<link rel="stylesheet" href="/comun.css">
 <style>
 @font-face{font-family:Outfit;src:url(/fuentes/Outfit.ttf) format("truetype");font-weight:100 900;font-display:swap}
 @font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
@@ -107,13 +108,8 @@ td small{color:var(--tx3);font-size:14px}
 </style>
 </head>
 <body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
 <div class="pag">
-  <div class="top">
-    <img src="/isotipo.svg" alt="">
-    <b>Cogsmos</b><span>· estado de tus agentes</span>
-    <span class="sp"></span>
-    <span class="vivo" id="vivo" aria-live="polite"><i></i><span id="vivo-t">conectando…</span></span>
-  </div>
 
   <header class="estado" aria-live="polite">
     <div class="ico" id="e-ico"></div>
@@ -141,7 +137,7 @@ td small{color:var(--tx3);font-size:14px}
 
   <div class="pie2">
     <span>Esta página solo muestra. Para soltar, aprobar o descartar algo, díselo a ARG.OS por el chat o Telegram.</span>
-    <a href="/mapa">Vista avanzada (mapa) →</a>
+    
   </div>
 </div>
 
@@ -319,5 +315,6 @@ async function tick(){
 setInterval(()=>document.querySelectorAll("[data-fut]").forEach(x=>x.textContent=`(${rel(+x.dataset.fut,1)})`),15000);
 tick();setInterval(tick,10000);
 </script>
+<script src="/comun.js"></script>
 </body>
 </html>

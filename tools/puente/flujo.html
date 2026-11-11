@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cogsmos · Big Picture en vivo</title>
+<title>Cogsmos · Flujo</title>
+<link rel="stylesheet" href="/comun.css">
 <style>
 @font-face{font-family:Outfit;src:url(/fuentes/Outfit.ttf) format("truetype");font-weight:100 900;font-display:swap}
 @font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
@@ -19,7 +20,7 @@
 html{background:var(--fondo)}
 body{margin:0;color:var(--tx);font:16px/1.45 var(--texto);min-height:100vh;
   background:radial-gradient(1100px 500px at 10% -8%,rgba(155,92,255,.12),transparent 60%),radial-gradient(1000px 520px at 95% -5%,rgba(63,169,255,.08),transparent 60%),var(--fondo)}
-.pag{max-width:1440px;margin:0 auto;padding:20px 28px 56px}
+.pag{max-width:1520px;margin:0 auto;padding:6px 28px 56px}
 a{color:var(--azul)}
 :focus-visible{outline:2px solid var(--magenta);outline-offset:2px;border-radius:6px}
 h2.t{margin:0 0 12px;font:600 14px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
@@ -136,11 +137,8 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
 </style>
 </head>
 <body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
 <div class="pag">
-  <div class="top"><img src="/isotipo.svg" alt=""><b>Cogsmos</b><span>· big picture en vivo</span><span class="sp"></span>
-    <nav><a href="/resumen">Resumen simple</a><a href="/mapa">Vista orbital</a></nav>
-    <span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></div>
-
   <div class="estado">
     <div><h1 aria-live="polite"><span class="ico" id="e-ico"></span><span id="e-tit">Cargando…</span></h1><p id="e-sub"></p></div>
     <div class="leyenda"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span></div>
@@ -339,5 +337,6 @@ async function tick(){try{const r=await fetch("/api/estado",{cache:"no-store"});
 let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>D&&lineas(),120)});
 tick();setInterval(tick,10000);
 </script>
+<script src="/comun.js"></script>
 </body>
 </html>
