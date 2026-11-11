@@ -395,6 +395,8 @@ class Puente(BaseHTTPRequestHandler):
                 return self.enviar(404, {"error": "no encontrado"})
             if u.path == "/mapa":
                 return self.enviar(200, (AQUI / "mapa.html").read_bytes(), "text/html; charset=utf-8")
+            if u.path == "/resumen":
+                return self.enviar(200, (AQUI / "resumen.html").read_bytes(), "text/html; charset=utf-8")
             if u.path == "/api/estado":
                 with self.candado:
                     if time.time() - self.cache["t"] > 3 or self.cache["d"] is None:
