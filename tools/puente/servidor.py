@@ -22,6 +22,7 @@ RAIZ = AQUI.parent.parent
 FLOTA = RAIZ / "flota"
 sys.path.insert(0, str(FLOTA / "naves" / "_comun"))
 from agora import tableros, filas  # noqa: E402
+import avance as AV  # noqa: E402
 
 H = Path(os.path.expanduser("~/.hermes"))
 PREFIJO = "Flota · "
@@ -270,6 +271,29 @@ def estado_agora(flota):
             "atascadas": atascadas, "eventos": eventos[:40]}
 
 
+def clave_personaje(s):
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def personajes_dir(flota):
+    d = flota.man.get("personajes")
+    return Path(os.path.expanduser(d)) if d and Path(os.path.expanduser(d)).is_dir() else None
+
+
+def personajes(flota):
+    """{clave: url} de los retratos disponibles (clave = alias o nombre de la estación, sin tildes)."""
+    d = personajes_dir(flota)
+    if not d:
+        return {}
+    out = {}
+    for f in sorted(d.iterdir()):
+        if re.fullmatch(r"[a-z0-9_-]+\.(png|jpg|webp)", f.name):
+            out[f.name.rsplit(".", 1)[0]] = f"/personajes/{f.name}"
+    return out
+
+
 def instantanea(flota):
     flota.refrescar()
     hoy0 = dt.datetime.now(ZONA).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
@@ -302,6 +326,7 @@ def instantanea(flota):
         "lore": any(n.get("alias") for n in naves),
         "estaciones": estaciones, "naves": naves, "reserva": reserva(flota),
         "sectores": {k: v.get("nombre", k) for k, v in flota.sectores.items()},
+        "personajes": personajes(flota),
         "agora": {k: agora[k] for k in ("conteo", "tableros", "tareas", "espera", "atascadas")},
         "bitacora": bit[:45],
         "sistema": {"gateway": gw.get("gateway_state") or gw.get("state"), "plataformas": plats,
@@ -366,6 +391,7 @@ def detalle_tarea(tablero, tid):
 class Puente(BaseHTTPRequestHandler):
     flota = None
     cache = {"t": 0, "d": None}
+    cache_av = {"t": 0, "d": None}
     candado = threading.Lock()
 
     def log_message(self, *a):
@@ -385,10 +411,10 @@ class Puente(BaseHTTPRequestHandler):
         q = {k: v[0] for k, v in parse_qs(u.query).items()}
         try:
             paginas = {"/": "mapa.html", "/index.html": "mapa.html", "/mapa": "mapa.html",
-                       "/flujo": "flujo.html", "/resumen": "resumen.html"}
+                       "/flujo": "flujo.html", "/resumen": "resumen.html", "/avance": "avance.html"}
             if u.path in paginas:
                 return self.enviar(200, (AQUI / paginas[u.path]).read_bytes(), "text/html; charset=utf-8")
-            if u.path in ("/comun.css", "/comun.js"):
+            if u.path in ("/comun.css", "/comun.js", "/piel.css"):
                 tipo = "text/css; charset=utf-8" if u.path.endswith(".css") else "text/javascript; charset=utf-8"
                 return self.enviar(200, (AQUI / u.path[1:]).read_bytes(), tipo)
             if u.path.startswith("/fuentes/") or u.path == "/isotipo.svg":
@@ -404,6 +430,23 @@ class Puente(BaseHTTPRequestHandler):
                         self.cache["d"] = instantanea(self.flota)
                         self.cache["t"] = time.time()
                     return self.enviar(200, self.cache["d"])
+            if u.path == "/api/avance":
+                with self.candado:
+                    if time.time() - self.cache_av["t"] > 60 or self.cache_av["d"] is None:
+                        base = instantanea(self.flota)
+                        ar = AV.areas(self.flota, base["naves"])
+                        ind = AV.indicadores(self.flota, base["naves"], estado_agora(self.flota))
+                        self.cache_av["d"] = {"ahora": time.time(), "pulso": AV.pulso(), "areas": ar, "proyectos": AV.proyectos(self.flota),
+                                              "indicadores": ind, "personajes": base["personajes"],
+                                              "modelo": AV.modelo(self.flota, base["naves"], base["estaciones"], ind, ar, base["personajes"])}
+                        self.cache_av["t"] = time.time()
+                    return self.enviar(200, self.cache_av["d"])
+            if u.path.startswith("/personajes/"):
+                nombre = u.path.rsplit("/", 1)[-1]; d = personajes_dir(self.flota)
+                f = d / nombre if d else None
+                if f and re.fullmatch(r"[a-z0-9_-]+\.(png|jpg|webp)", nombre) and f.is_file():
+                    return self.enviar(200, f.read_bytes(), "image/" + ("jpeg" if nombre.endswith(".jpg") else nombre.rsplit(".", 1)[1]))
+                return self.enviar(404, {"error": "no encontrado"})
             if u.path == "/api/nave":
                 d = detalle_nave(self.flota, q.get("perfil"), q.get("id"))
                 return self.enviar(200 if d else 404, d or {"error": "no encontrada"})

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cogsmos · Avance</title>
+<link rel="stylesheet" href="/comun.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;color:var(--tx);font:16px/1.45 var(--texto);min-height:100vh}
+.pag{max-width:1520px;margin:0 auto;padding:6px 28px 56px}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:2px;border-radius:6px}
+.intro{margin:20px 0 18px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.intro h1{margin:0;font:600 29px/1.15 var(--texto)}
+.intro p{margin:6px 0 0;color:var(--tx2);max-width:760px}
+.intro .pie-m{color:var(--tx3);font:14px var(--dato)}
+section{margin-bottom:20px}
+.caja{background:var(--sup);border:1px solid var(--linea);border-radius:18px;padding:16px 20px 18px}
+.caja h3{margin:0 0 4px;font:600 14px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);display:flex;justify-content:space-between;gap:12px}
+.caja h3 em{font-style:normal;color:var(--tx2);letter-spacing:.06em}
+.caja .que{color:var(--tx2);font-size:15px;margin:0 0 14px}
+.dos{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px}
+
+/* pulso */
+.cifras{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cifra{flex:1;min-width:150px;border-radius:12px;padding:10px 14px;background:linear-gradient(180deg,#0a0914,#100f1e);border:1px solid #06050c}
+.cifra b{display:block;font:600 28px/1.1 var(--dato);color:var(--c)}
+.cifra span{font-size:14px;color:var(--tx2)}
+.pista{display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px 12px;align-items:center;margin-bottom:9px}
+.pista .d{font:14px var(--dato);color:var(--tx2);text-transform:capitalize}
+.cinta{position:relative;height:28px;border-radius:6px;background:#07060d;box-shadow:inset 0 2px 5px rgba(0,0,0,.8);overflow:hidden}
+.cinta i{position:absolute;top:3px;bottom:3px;border-radius:3px}
+.cinta i.encendido{background:linear-gradient(180deg,#5ff0bd,#1f9f73)}
+.cinta i.dormido{background:repeating-linear-gradient(135deg,#f5b53d 0 4px,#a8761a 4px 8px)}
+.cinta i.apagado{background:#2a2840}
+.cinta .tk{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.06)}
+.cinta .marca{position:absolute;top:0;bottom:0;width:4px;z-index:2;margin-left:-1px;border-radius:2px;background:var(--magenta);box-shadow:0 0 8px var(--magenta)}
+.horas{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;font:13px var(--dato);color:var(--tx3);margin-top:4px}
+.horas div{display:flex;justify-content:space-between}
+.ley{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--tx2)}
+.ley span{display:inline-flex;align-items:center;gap:7px}.ley i{width:16px;height:10px;border-radius:2px;display:inline-block}
+.tarde{margin-top:12px;font-size:15px;color:var(--tx2)}
+.tarde b{color:var(--tx)}
+.serv{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:14px;border:1px solid var(--linea);border-radius:99px;padding:5px 11px;color:var(--tx2);display:inline-flex;align-items:center;gap:7px}
+.punto{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+
+/* áreas */
+.areas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.area{border-radius:14px;padding:12px 14px 12px;background:linear-gradient(180deg,#0a0914,#100f1e);border:1px solid #06050c;border-top:3px solid var(--c)}
+.area .cab{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.area .cab b{font-size:17px;font-weight:600}
+.area .cab .sem{margin-left:auto;font:600 13px var(--dato);letter-spacing:.06em;color:var(--c)}
+.area .naves{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;min-height:26px}
+.area .nv{font-size:14px;color:var(--tx2);border:1px solid var(--linea);border-radius:99px;padding:2px 9px;display:inline-flex;align-items:center;gap:6px}
+.area .nv .punto{width:8px;height:8px}
+.medidor{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.medidor div{text-align:center;border-radius:9px;padding:6px 2px;background:#07060d;box-shadow:inset 0 2px 5px rgba(0,0,0,.75)}
+.medidor b{display:block;font:600 20px/1.1 var(--dato)}
+.medidor span{font-size:14px;color:var(--tx2)}
+.area ul{min-height:78px;margin:4px 0 0;padding:0;list-style:none}
+.area li{font-size:14px;color:var(--tx2);padding:3px 0;display:flex;gap:7px;align-items:center;white-space:nowrap;overflow:hidden;cursor:default}
+.area li span:last-child{overflow:hidden;text-overflow:ellipsis}
+.area .nada{font-size:14px;color:var(--tx3);min-height:78px;display:flex;align-items:center}
+.aviso-area{margin-top:12px;font-size:14px;color:var(--tx3)}
+
+/* proyectos */
+.proy{margin-bottom:18px}
+.proy:last-child{margin-bottom:0}
+.proy .cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.proy .cab b{font-size:19px}
+.proy .cab span{font:14px var(--dato);color:var(--tx2)}
+.fases{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;margin-bottom:10px}
+.fase{position:relative;border-radius:10px;padding:9px 8px 8px;text-align:center;background:#07060d;box-shadow:inset 0 2px 5px rgba(0,0,0,.75);border:1px solid #06050c}
+.fase b{display:block;font:600 16px var(--dato)}
+.fase span{display:block;font-size:13px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fase.hecha{background:linear-gradient(180deg,#123a2d,#0b2219);border-color:#1f6f52}.fase.hecha b{color:var(--bien)}
+.fase.actual{background:linear-gradient(180deg,#3a1029,#200815);border-color:var(--magenta);box-shadow:0 0 14px rgba(255,46,136,.3),inset 0 1px 0 rgba(255,255,255,.08)}.fase.actual b{color:var(--magenta)}
+.fase.espera b{color:var(--aviso)}
+.sig{font-size:15px;color:var(--tx2);padding:10px 12px;border-radius:10px;background:#0a0914;border:1px solid #06050c}
+.sig b{color:var(--tx)}
+.barra-est{display:flex;height:12px;border-radius:6px;overflow:hidden;background:#07060d;box-shadow:inset 0 2px 4px rgba(0,0,0,.8);margin:6px 0 6px}
+.barra-est i{display:block;height:100%}
+.sl{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--tx3)}
+.sl span{display:inline-flex;align-items:center;gap:5px}.sl i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.reciente{font-size:14px;color:var(--tx2);margin-top:6px}
+
+/* indicadores */
+.ind{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:10px 0;border-top:1px solid var(--linea)}
+.ind:first-of-type{border-top:0}
+.ind b{font-weight:600}.ind small{color:var(--tx3);font-size:14px;margin-left:6px}
+.ind .v{font:600 15px var(--dato);text-align:right;white-space:nowrap}
+.ind .q{grid-column:1/-1;font-size:14px;color:var(--tx3)}
+
+/* modelo */
+.mod{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.grp{border-radius:12px;padding:10px 14px;background:linear-gradient(180deg,#0a0914,#100f1e);border:1px solid #06050c}
+.grp h4{margin:0 0 6px;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.it{display:grid;grid-template-columns:12px minmax(0,1fr);gap:4px 10px;padding:6px 0;align-items:start}
+.it .punto{margin-top:6px}
+.it b{font-weight:600;font-size:15px}
+.it div div{font-size:14px;color:var(--tx2)}
+.res-m{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.pie2{margin-top:22px;color:var(--tx3);font-size:14px}
+@media (max-width:1250px){.areas{grid-template-columns:repeat(2,minmax(0,1fr))}.mod{grid-template-columns:repeat(2,minmax(0,1fr))}.dos{grid-template-columns:1fr}}
+@media (max-width:760px){.areas,.mod{grid-template-columns:1fr}.fases{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+<link rel="stylesheet" href="/piel.css">
+</head>
+<body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="pag">
+  <div class="intro"><div><h1>¿Está trabajando y avanzando?</h1>
+    <p>La evidencia, no la configuración: cuándo estuvo encendida la máquina, qué hizo cada área en los últimos 7 días, cómo van los proyectos y qué tanto del modelo ya está instalado.</p></div>
+    <div class="pie-m" id="act"></div></div>
+
+  <section class="caja" aria-labelledby="h-pulso"><h3 id="h-pulso">Pulso 24/7 · últimos 7 días<em id="pct"></em></h3>
+    <p class="que">Si la cinta está verde, la Flota estaba despierta y podía trabajar. Ámbar es dormido y gris es apagado.</p>
+    <div class="cifras" id="cifras"></div><div id="cintas"></div>
+    <div class="ley"><span><i style="background:linear-gradient(180deg,#5ff0bd,#1f9f73)"></i>encendido</span><span><i style="background:repeating-linear-gradient(135deg,#f5b53d 0 4px,#a8761a 4px 8px)"></i>dormido</span><span><i style="background:#2a2840"></i>apagado</span><span><i style="background:var(--magenta)"></i>ahora</span></div>
+    <div class="tarde" id="tarde"></div><div class="serv" id="serv"></div></section>
+
+  <section class="caja" aria-labelledby="h-areas"><h3 id="h-areas">Avance por área · últimos 7 días<em id="ar-res"></em></h3>
+    <p class="que">Cada área es un sector del negocio. «Corridas» son las veces que sus tareas automáticas trabajaron; «misiones» es el trabajo de fondo en el tablero.</p>
+    <div class="areas" id="areas"></div><div class="aviso-area" id="sin-area"></div></section>
+
+  <div class="dos">
+    <section class="caja" aria-labelledby="h-proy"><h3 id="h-proy">Proyectos</h3><p class="que">Fases cerradas con su compuerta, la fase actual y la próxima decisión tuya.</p><div id="proy"></div></section>
+    <section class="caja" aria-labelledby="h-ind"><h3 id="h-ind">Indicadores de las naves<em id="ind-res"></em></h3><p class="que">Cada nave promete mover un número. Estos son los que ya se miden.</p><div id="ind"></div></section>
+  </div>
+
+  <section class="caja" aria-labelledby="h-mod"><h3 id="h-mod">El modelo contra lo instalado<em id="mod-res"></em></h3>
+    <p class="que">Lo que definimos en «Cogsmos — modelo estándar y plan», punto por punto, con lo que de verdad está corriendo en la máquina.</p>
+    <div class="res-m" id="mod-chips"></div><div class="mod" id="mod"></div></section>
+  <div class="pie2">Se actualiza cada minuto. Esta vista solo muestra; para cambiar algo, díselo a ARG.OS.</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const C={bien:"#37d39b",aviso:"#f5b53d",mal:"#ff4d6d",mag:"#ff2e88",vio:"#9b5cff",azul:"#3fa9ff",tx3:"#8b8bb4",off:"#4d4a6e"};
+const SEC={direccion:"Ritmo y dirección",clientes:"Clientes",marca:"Marca y contenido",ideas:"Ideas",operacion:"Entregas y operación",finanzas:"Dinero",equipo:"Aprendizaje y mejora",memoria:"Memoria",mantenimiento:"Cuidado de la máquina"};
+const hm=t=>new Date(t*1000).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",hour12:false});
+const dia=t=>new Date(t*1000).toLocaleDateString("es-CO",{weekday:"short",day:"numeric"});
+const rel=t=>{const s=Math.max(0,Date.now()/1000-t);return s<3600?`hace ${Math.round(s/60)} min`:s<86400?`hace ${Math.round(s/3600)} h`:`hace ${Math.round(s/86400)} días`};
+const num=x=>String(x).replace(".",",");
+const P=c=>`<span class="punto ${c}"></span>`;
+
+function pulso(p){
+  const T=p.hasta-p.desde,h=p.horas,tot=h.encendido+h.dormido+h.apagado||1;
+  $("#pct").textContent=`${Math.round(100*h.encendido/tot)} % del tiempo despierta`;
+  $("#cifras").innerHTML=[["encendido",C.bien,"horas encendida"],["dormido",C.aviso,"horas dormida"],["apagado",C.tx3,"horas apagada"]].map(([k,c,l])=>`<div class="cifra" style="--c:${c}"><b>${num(h[k])}</b><span>${l}</span></div>`).join("");
+  // una cinta por día
+  const d0=new Date(p.desde*1000);d0.setHours(0,0,0,0);let html="";
+  for(let t=d0/1000;t<p.hasta;t+=86400){
+    const a=t,b=t+86400,segs=p.segmentos.filter(s=>s.fin>a&&s.ini<b);
+    const barras=segs.map(s=>{const x=Math.max(s.ini,a,p.desde),y=Math.min(s.fin,b);return `<i class="${s.tipo}" style="left:${(x-a)/864}%;width:${Math.max(.3,(y-x)/864)}%" title="${s.tipo} ${hm(x)}–${hm(y)}"></i>`}).join("");
+    const tks=[6,12,18].map(hh=>`<span class="tk" style="left:${hh/24*100}%"></span>`).join("");
+    const ahora=p.hasta>=a&&p.hasta<b?`<span class="marca" style="left:${(p.hasta-a)/864}%"></span>`:"";
+    html+=`<div class="pista"><span class="d">${dia(t)}</span><div class="cinta">${tks}${barras}${ahora}</div></div>`}
+  html+=`<div class="horas"><span></span><div><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>24 h</span></div></div>`;
+  $("#cintas").innerHTML=html;
+  const tr=p.tarde;
+  $("#tarde").innerHTML=tr.length?`<b>${tr.length} tareas corrieron tarde</b> en la semana porque la máquina estaba apagada o dormida a su hora (las recuperó al despertar): ${[...new Set(tr.map(x=>x.nombre))].slice(0,6).map(esc).join(" · ")}.`:`<b>Ninguna tarea corrió tarde</b> esta semana.`;
+  const SV={"hermes-gateway":"Mensajería","flota-despierta":"Insomnio (no dormir con corriente)","cogsmos-puente":"Puente de mando"};
+  $("#serv").innerHTML=Object.entries(p.servicios).map(([k,v])=>`<span class="chip">${P(v.estado==="active"?"p-bien":"p-mal")}${SV[k]||k}${v.desde?` · desde ${esc(v.desde.replace(/^\w+ /,"").replace(/ -05$/,"").slice(0,16))}`:""}</span>`).join("")}
+
+function areas(A){
+  const keys=Object.keys(SEC).filter(k=>A[k]);let conAv=0;
+  $("#areas").innerHTML=keys.map(k=>{const a=A[k],c=a.corridas,m=a.misiones,corr=(c.aviso||0)+(c.silencio||0)+(c.fallo||0);
+    const avanza=corr>0&&!c.fallo||m.hechas>0;if(avanza)conAv++;
+    const [col,sem]=c.fallo?[C.mal,"CON FALLAS"]:m.hechas||c.aviso?[C.bien,"AVANZA"]:corr?[C.azul,"VIGILA"]:a.activas?[C.aviso,"SIN CORRIDAS"]:[C.off,"SIN NAVES"];
+    return `<article class="area" style="--c:${col}"><div class="cab">${P(c.fallo?"p-mal":corr?"p-bien":"p-off")}<b>${esc(SEC[k])}</b><span class="sem">${sem}</span></div>
+      <div class="naves">${a.naves.length?a.naves.map(n=>`<span class="nv" title="${esc(n.nombre)}">${P(n.estado==="pausada"?"p-off":n.estado==="fallo"?"p-mal":"p-bien")}${esc(n.alias||n.nombre)}</span>`).join(""):`<span class="nada">Sin tareas automáticas</span>`}</div>
+      <div class="medidor"><div><b>${corr}</b><span>corridas</span></div><div><b style="color:${c.aviso?C.bien:"inherit"}">${c.aviso||0}</b><span>avisos</span></div><div><b style="color:${m.hechas?C.bien:"inherit"}">${m.hechas}</b><span>misiones hechas</span></div><div><b>${m.abiertas}</b><span>abiertas</span></div></div>
+      ${m.lista.length?`<ul>${m.lista.slice(0,3).map(t=>`<li title="${esc(t.titulo)}">${P(t.estado==="running"?"p-trab":t.estado==="blocked"?"p-aviso":t.estado==="done"?"p-bien":"p-off")}<span>${esc(t.titulo)}</span></li>`).join("")}</ul>`:`<div class="nada">Sin misiones en el tablero.</div>`}</article>`}).join("");
+  $("#ar-res").textContent=`${conAv} de ${keys.length} áreas con movimiento`;
+  const s=A._sin_area;$("#sin-area").textContent=`${s.con_area} de ${s.total} misiones tienen área asignada. ${s.hechas?`${s.hechas} misiones terminadas esta semana no tenían área y no cuentan aquí.`:""}`}
+
+function proyectos(L){
+  const SC=[["done",C.bien,"terminadas"],["running",C.mag,"en curso"],["ready","#7a77a3","listas"],["todo","#3d3a5e","en espera"],["blocked",C.aviso,"bloqueadas"],["review",C.vio,"en revisión"]];
+  $("#proy").innerHTML=L.map(p=>{const t=Math.max(1,SC.reduce((a,[k])=>a+(p.estados[k]||0),0));
+    const barra=`<div class="barra-est">${SC.map(([k,c])=>p.estados[k]?`<i style="width:${p.estados[k]/t*100}%;background:${c}"></i>`:"").join("")}</div><div class="sl">${SC.filter(([k])=>p.estados[k]).map(([k,c,l])=>`<span><i style="background:${c}"></i>${p.estados[k]} ${l}</span>`).join("")}</div>`;
+    if(!p.fases.length) return `<div class="proy"><div class="cab"><b>${esc(p.nombre)}</b><span>${p.estados.done||0} de ${t} tarjetas terminadas</span></div>${barra}${p.recientes.length?`<div class="reciente">Lo último terminado: ${p.recientes.slice(0,2).map(r=>esc(r.titulo)).join(" · ")}</div>`:""}</div>`;
+    const act=p.actual;
+    const fs=p.fases.map(f=>{const hecha=f.compuerta.estado==="done",cur=act&&f.fase===act.fase,esp=cur&&f.tarjeta.estado==="done";
+      return `<div class="fase ${hecha?"hecha":cur?"actual":""} ${esp?"espera":""}" title="${esc(f.tarjeta.titulo||"")}"><b>${esc(f.fase)}</b><span>${hecha?"cerrada":cur?(esp?"tu compuerta":f.tarjeta.estado==="running"?"en curso":"lista"):"por venir"}</span></div>`}).join("");
+    const sig=act?(act.tarjeta.estado==="done"?`<b>Te toca a ti:</b> ${esc(act.compuerta.titulo||"la compuerta de "+act.fase)}.`:`<b>Ahora:</b> ${esc(act.tarjeta.titulo||act.fase)} · ${act.tarjeta.estado==="running"?"en curso":act.tarjeta.estado==="blocked"?"bloqueada":"lista para empezar"}. Al terminar, tu compuerta.`):"<b>Todas las fases cerradas.</b>";
+    return `<div class="proy"><div class="cab"><b>${esc(p.nombre)}</b><span>${p.cerradas} de ${p.fases.length} fases cerradas</span></div><div class="fases">${fs}</div><div class="sig">${sig}${p.paralelas.length?`<br><span style="color:var(--tx3)">En paralelo: ${p.paralelas.slice(0,3).map(x=>esc(x.titulo)).join(" · ")}</span>`:""}</div>${barra}</div>`}).join("")}
+
+function indicadores(L){
+  $("#ind-res").textContent=`${L.filter(i=>i.medido).length} de ${L.length} medidos`;
+  $("#ind").innerHTML=L.map(i=>`<div class="ind"><span><b>${esc(i.alias||i.nombre)}</b><small>${esc(i.nombre||"")}</small></span><span class="v" style="color:${i.medido?"var(--tx)":"var(--tx3)"}">${esc(i.valor||"aún no se mide")}</span><span class="q">${esc(i.indicador||"")}${i.nota?" · "+esc(i.nota):""}</span></div>`).join("")}
+
+function modelo(L){
+  const E={ok:["p-bien","instalado"],parcial:["p-aviso","a medias"],pendiente:["p-mal","pendiente"]};
+  const c=k=>L.filter(x=>x.estado===k).length;
+  $("#mod-res").textContent=`${c("ok")} de ${L.length} instalados`;
+  $("#mod-chips").innerHTML=Object.entries(E).map(([k,[p,l]])=>`<span class="chip">${P(p)}${c(k)} ${l}</span>`).join("");
+  const g={};L.forEach(x=>(g[x.grupo]=g[x.grupo]||[]).push(x));
+  $("#mod").innerHTML=Object.entries(g).map(([k,v])=>`<div class="grp"><h4>${esc(k)}</h4>${v.map(x=>`<div class="it">${P(E[x.estado][0])}<div><b>${esc(x.nombre)}</b><div>${esc(x.detalle)}</div></div></div>`).join("")}</div>`).join("")}
+
+async function tick(){try{const r=await fetch("/api/avance",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();
+  pulso(d.pulso);areas(d.areas);proyectos(d.proyectos);indicadores(d.indicadores);modelo(d.modelo);
+  $("#act").textContent="datos de las "+hm(d.ahora);$("#vivo").className="vivo";$("#vivo-t").textContent="en vivo · "+hm(Date.now()/1000)}
+  catch(e){console.error(e);$("#vivo").className="vivo caido";$("#vivo-t").textContent="sin conexión con el panel"}}
+tick();setInterval(tick,60000);
+</script>
+<script src="/comun.js"></script>
+</body>
+</html>

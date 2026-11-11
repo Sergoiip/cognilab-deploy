@@ -135,9 +135,10 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="/piel.css">
 </head>
 <body>
-<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
 <div class="pag">
   <div class="estado">
     <div><h1 aria-live="polite"><span class="ico" id="e-ico"></span><span id="e-tit">Cargando…</span></h1><p id="e-sub"></p></div>
@@ -173,6 +174,7 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
 
 <script>
 const $=s=>document.querySelector(s);
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let D=null,skew=0;const now=()=>Date.now()/1000+skew;
 const C={bien:"#37d39b",aviso:"#f5b53d",mal:"#ff4d6d",mag:"#ff2e88",vio:"#9b5cff",azul:"#3fa9ff",tx3:"#8b8bb4"};
@@ -225,7 +227,7 @@ function colAgente(e){
   act.sort((a,b)=>(a.proximo||9e12)-(b.proximo||9e12)).forEach(n=>{const k=n.sector||(/^once/.test(n.horario||"")?"unavez":"otros");(grupos[k]=grupos[k]||[]).push(n)});
   const secs=Object.keys(grupos).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
   return `<article class="ag" style="--c:${c}">
-    <div class="cab"><div class="av">${esc(e.nombre.slice(0,1))}</div><div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div>
+    <div class="cab">${D.personajes&&D.personajes[claveP(e.nombre)]?`<img class="av con-retrato retrato" style="--c:${color(e)}" src="${D.personajes[claveP(e.nombre)]}" alt="">`:`<div class="av">${esc(e.nombre.slice(0,1))}</div>`}<div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div>
       <div class="bot"><span class="punto ${e.bot==="connected"?"p-bien":"p-mal"}"></span>${e.bot==="connected"?"bot":"sin bot"}</div></div>
     <div class="ahora"><div class="e">${estado}</div>${items.length?`<ul>${items.slice(0,3).map(i=>`<li ${i.click?`onclick="${i.click}"`:""} title="${esc(i.t)}">${esc(i.t)}</li>`).join("")}${items.length>3?`<li>y ${items.length-3} más</li>`:""}</ul>`:""}</div>
     <div class="sub-t">Sus tareas automáticas · ${act.length}</div>

@@ -78,7 +78,8 @@ button.copiar.ok{background:var(--bien)}
 .pie-mapa h4{margin:0 0 8px;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font-size:14px;border:1px solid var(--linea);border-radius:99px;padding:5px 11px;color:var(--tx2);display:inline-flex;align-items:center;gap:7px}
-.chip.res{border-style:dashed}.chip b{color:var(--tx);font-weight:600}
+.chip.res{border-style:dashed}
+.chip img.mini{width:24px;height:24px;border-radius:50%;margin:-3px 0 -3px -6px;filter:grayscale(.6) brightness(.8);box-shadow:0 0 0 1px #000}.chip b{color:var(--tx);font-weight:600}
 .punto{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
 .p-bien{background:var(--bien)}.p-mal{background:var(--mal)}.p-off{border:2px solid var(--off)}.p-aviso{background:var(--aviso)}
 .p-trab{background:var(--magenta);animation:lat 1.6s ease-in-out infinite}
@@ -145,9 +146,10 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
 @media (max-width:760px){.paneles,.bitl,.pie-mapa{grid-template-columns:1fr}.pie-mapa > div + div{border-left:0;border-top:1px solid var(--linea)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="/piel.css">
 </head>
 <body>
-<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
 <div class="pag">
 
   <div class="estado"><div><h1 aria-live="polite"><span class="ico" id="e-ico"></span><span id="e-tit">Cargando…</span></h1><p id="e-sub"></p></div></div>
@@ -156,7 +158,7 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
   <section class="mapa" aria-labelledby="h-mapa">
     <div class="mcab"><h2 id="h-mapa">Mapa de la flota</h2>
       <div class="pasos" aria-label="Cómo fluye el trabajo"><span><i class="n">1</i>Le pides a ARG.OS</span><span>→</span><span><i class="n">2</i>crea la misión</span><span>→</span><span><i class="n">3</i>Promempteo la ejecuta</span><span>→</span><span><i class="n gris">4</i>te avisa del resultado</span></div></div>
-    <div class="ley"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span><span><i class="punto p-bien"></i>con IA</span><span><i class="rombo"></i>sin IA (no gasta)</span><span style="margin-left:auto;color:var(--tx3)">Toca cualquier tarea o misión para ver su detalle</span></div>
+    <div class="ley"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span><span><i class="punto p-bien"></i>con IA</span><span><i class="rombo"></i>sin IA (no gasta; en retratos, anillo punteado)</span><span style="margin-left:auto;color:var(--tx3)">Toca cualquier tarea o misión para ver su detalle</span></div>
     <div id="lienzo"><canvas id="estrellas"></canvas><svg id="svg"></svg><div id="tablero"></div></div>
     <div class="pie-mapa"><div><h4>En reserva · con nombre, sin tarea todavía</h4><div class="chips" id="reserva"></div></div><div><h4>La máquina</h4><div class="chips" id="maquina"></div></div></div>
   </section>
@@ -205,6 +207,8 @@ const porPerfil=p=>D.estaciones.find(e=>e.perfil===p);
 const color=e=>e&&e.coordinador?C.vio:C.azul;
 const rol=e=>e.coordinador?"coordina y hace lo personal":e.tipo==="negocio"?"hace el trabajo del negocio":e.tipo==="servicio"?"atiende al público":"hace lo personal";
 const sector=n=>n.sector||(/^once/.test(n.horario||"")?"unavez":"otros");
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const retrato=x=>D.personajes&&D.personajes[claveP(x)];
 const stCol=n=>({activa:C.bien,corriendo:C.mag,fallo:C.mal,pausada:C.off})[n.estado]||C.tx3;
 function errorClaro(e){if(!e)return"";if(/not configured|not enabled|deliver|chat_id|telegram|discord/i.test(e))return"Hizo su trabajo, pero no te pudo mandar el mensaje con el resultado.";
   if(/timeout|timed out/i.test(e))return"Se demoró más de lo permitido y se detuvo.";if(/credential|auth|401|403|api key/i.test(e))return"Le falta una credencial o acceso.";
@@ -290,13 +294,20 @@ function dibujar(){
     el("circle",{cx:p.x,cy,r:58,fill:"none",stroke:p.c,"stroke-opacity":".55","stroke-width":1.5},svg);
     const hx=[...Array(6)].map((_,k)=>{const a=Math.PI/3*k-Math.PI/2;return `${p.x+44*Math.cos(a)},${cy+44*Math.sin(a)}`}).join(" ");
     el("polygon",{points:hx,fill:"#0c0b1a",stroke:p.c,"stroke-width":2},svg);
-    tx(svg,p.x,cy-1,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?C.mag:p.c});
-    tx(svg,p.x,cy+24,e.misiones.running===1?"misión":"misiones","scap",{"text-anchor":"middle"});
+    const rE=retrato(e.nombre);
+    if(rE){const cid="cl-"+i;const cp=el("clipPath",{id:cid},defs);el("circle",{cx:p.x,cy,r:40},cp);
+      el("image",{href:rE,x:p.x-40,y:cy-40,width:80,height:80,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice"},svg);
+      el("circle",{cx:p.x,cy,r:40,fill:"none",stroke:p.c,"stroke-width":2},svg);
+      const bx=p.x+34,by=cy-34;el("circle",{cx:bx,cy:by,r:15,fill:e.misiones.running?C.mag:"#1b1a2e",stroke:"#000","stroke-width":2},svg);
+      tx(svg,bx,by+5,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?"#06060f":p.c,style:"font-size:15px"});
+      const tt=el("title",{},svg.lastChild);tt.textContent=`${e.misiones.running} misiones en curso`}
+    else{tx(svg,p.x,cy-1,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?C.mag:p.c});
+    tx(svg,p.x,cy+24,e.misiones.running===1?"misión":"misiones","scap",{"text-anchor":"middle"})}
     tx(svg,p.x,cy+86,e.nombre.toUpperCase(),"snom",{"text-anchor":"middle",fill:p.c});
-    tx(svg,p.x,cy+106,rol(e),"srol",{"text-anchor":"middle"});
+    tx(svg,p.x,cy+106,rol(e)+(rE?` · ${e.misiones.running} en curso`:""),"srol",{"text-anchor":"middle"});
     tx(svg,p.x,cy+126,e.bot==="connected"?"● bot conectado":"○ bot desconectado","scap",{"text-anchor":"middle",fill:e.bot==="connected"?C.bien:C.mal});
     // muelle
-    const fs=filas[i],total=alto(fs),ry=total/2+34,lx=p.x+p.s*(RX+26);let y=cy-total/2;
+    const fs=filas[i],total=alto(fs),ry=total/2+34,lx=p.x+p.s*(RX+(D.personajes&&Object.keys(D.personajes).length?36:26));let y=cy-total/2;
     el("path",{d:`M${p.x} ${cy-ry} A ${RX} ${ry} 0 0 ${p.s<0?0:1} ${p.x} ${cy+ry}`,fill:"none",stroke:p.c,"stroke-opacity":".45","stroke-width":1.4,"stroke-dasharray":"3 5"},svg);
     const anc=p.s<0?"end":"start";
     fs.forEach(r=>{
@@ -306,7 +317,11 @@ function dibujar(){
       el("line",{x1:sx,y1:yc,x2:lx-p.s*6,y2:yc,stroke:c,"stroke-opacity":pa?".18":".4","stroke-dasharray":"2 4"},g);
       if(n.estado==="corriendo")el("circle",{cx:sx,cy:yc,r:7,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},g);
       else if(n.ultimo&&now()-n.ultimo<900&&!pa)el("circle",{cx:sx,cy:yc,r:7,fill:"none",stroke:c,"stroke-width":1.5,class:"pulso tres"},g);
-      if(n.sin_modelo)el("rect",{x:sx-6,y:yc-6,width:12,height:12,rx:2,transform:`rotate(45 ${sx} ${yc})`,fill:pa?C.sup:c,stroke:pa?C.off:"none","stroke-width":2},g);
+      const rN=n.alias&&retrato(n.alias);
+      if(rN){const cid="cn-"+n.id;const cp=el("clipPath",{id:cid},defs);el("circle",{cx:sx,cy:yc,r:15},cp);
+        el("image",{href:rN,x:sx-15,y:yc-15,width:30,height:30,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice",opacity:pa?.4:1},g);
+        el("circle",{cx:sx,cy:yc,r:16,fill:"none",stroke:c,"stroke-width":2.5,...(n.sin_modelo?{"stroke-dasharray":"3 3"}:{})},g)}
+      else if(n.sin_modelo)el("rect",{x:sx-6,y:yc-6,width:12,height:12,rx:2,transform:`rotate(45 ${sx} ${yc})`,fill:pa?C.sup:c,stroke:pa?C.off:"none","stroke-width":2},g);
       else el("circle",{cx:sx,cy:yc,r:7,fill:pa?C.sup:c,stroke:pa?C.off:"none","stroke-width":2},g);
       if(n.estado==="fallo")el("circle",{cx:sx,cy:yc,r:12,fill:"none",stroke:C.mal,"stroke-width":1.4},g);
       const cu=n.estado==="fallo"?"falló":n.estado==="corriendo"?"trabajando ahora":cuando(n.horario);
@@ -318,7 +333,7 @@ function dibujar(){
       const tn=[...t1.childNodes].find(x=>!x.getAttribute("class"));while(t1.getComputedTextLength()>LW&&tn.textContent.length>3)tn.textContent=tn.textContent.slice(0,-2).trimEnd()+"…";
       const t2=tx(g,lx,yc+15,n.alias?nombre(n):(n.sin_modelo?"script sin IA":"con IA"),"l2",{"text-anchor":anc});cabe(t2,LW);
       const bw=Math.max(t1.getComputedTextLength(),t2.getComputedTextLength());
-      const xa=p.s<0?lx-bw-6:sx-14,xb=p.s<0?sx+14:lx+bw+6;el("rect",{class:"hit",x:xa,y:yc-ALTO_N/2+2,width:xb-xa,height:ALTO_N-4},g);
+      const xa=p.s<0?lx-bw-6:sx-18,xb=p.s<0?sx+18:lx+bw+6;el("rect",{class:"hit",x:xa,y:yc-ALTO_N/2+2,width:xb-xa,height:ALTO_N-4},g);
       g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(n.alias||nombre(n))}</b>${n.alias?`<div class="k">${esc(nombre(n))}</div>`:""}<div class="k">Área: <b>${esc(SEC[sector(n)])}</b></div>
         <div class="k">Cuándo: <b>${esc(cuando(n.horario))}</b> · ${n.sin_modelo?"sin IA":"con IA"}</div><div class="k">Última vez: <b>${n.ultimo?rel(n.ultimo):"nunca"}</b>${n.ultimo_silencio?" · sin novedades":""}</div>
         <div class="k">Próxima: <b>${pa?"pausada":rel(n.proximo,1)}</b></div>${n.error?`<div class="k" style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}`));
@@ -367,7 +382,7 @@ function paneles(){
   // consumo
   $("#cons").innerHTML=D.estaciones.map(e=>`<div class="c" style="--c:${color(e)}"><b>${esc(e.nombre)}</b><div>${e.actividad.sesiones_hoy} sesiones · ${tok(e.actividad.tokens_hoy)} tokens</div><div>US$ ${(+e.actividad.costo_hoy||0).toFixed(2).replace(".",",")}</div></div>`).join("");
   // reserva y máquina
-  $("#reserva").innerHTML=(D.reserva||[]).map(r=>`<span class="chip res" title="${esc(SEC[r.sector]||"")}"><b>${esc(r.alias)}</b>${esc(r.funcion||"")}</span>`).join("");
+  $("#reserva").innerHTML=(D.reserva||[]).map(r=>`<span class="chip res" title="${esc(SEC[r.sector]||"")}">${retrato(r.alias)?`<img class="mini" src="${retrato(r.alias)}" alt="">`:""}<b>${esc(r.alias)}</b>${esc(r.funcion||"")}</span>`).join("");
   const sy=D.sistema,sv=sy.servicios||{},en=sy.energia||{},rs=sy.respaldo;
   const ch=(ok,t)=>`<span class="chip"><span class="punto ${ok===true?"p-bien":ok===false?"p-mal":"p-aviso"}"></span>${t}</span>`;
   $("#maquina").innerHTML=[ch(sy.gateway==="running"||false,"Mensajería "+(sy.gateway==="running"?"en línea":"detenida")),

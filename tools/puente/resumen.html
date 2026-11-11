@@ -106,9 +106,10 @@ td small{color:var(--tx3);font-size:14px}
 @media (max-width:880px){.grid{grid-template-columns:1fr}.pag{padding:18px}.estado h1{font-size:27px}.lin{grid-template-columns:54px 22px minmax(0,1fr)}.lin .r{grid-column:3;justify-self:start}}
 @media (prefers-reduced-motion:reduce){.punto.trab{animation:none}}
 </style>
+<link rel="stylesheet" href="/piel.css">
 </head>
 <body>
-<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
 <div class="pag">
 
   <header class="estado" aria-live="polite">
@@ -143,6 +144,7 @@ td small{color:var(--tx3);font-size:14px}
 
 <script>
 const $=s=>document.querySelector(s);
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let D=null,skew=0;
 const now=()=>Date.now()/1000+skew;
@@ -244,7 +246,7 @@ function pintar(){
     const prox=D.naves.filter(n=>n.estacion===e.id&&n.estado!=="pausada"&&n.proximo&&!continuo(n)).sort((a,b)=>a.proximo-b.proximo)[0];
     const n=D.naves.filter(x=>x.estacion===e.id&&x.estado!=="pausada").length;
     return `<article class="ag" style="--c:${c}">
-      <div class="cab"><div class="av">${esc(e.nombre.slice(0,1))}</div><div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div></div>
+      <div class="cab">${D.personajes&&D.personajes[claveP(e.nombre)]?`<img class="av con-retrato retrato" style="--c:${color(e)}" src="${D.personajes[claveP(e.nombre)]}" alt="">`:`<div class="av">${esc(e.nombre.slice(0,1))}</div>`}<div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div></div>
       <div class="est"><span class="punto ${estado[0]}" style="${estado[0]?"":`background:${C.tx3}`}"></span>${estado[1]}</div>
       ${items.length?`<ul>${items.slice(0,3).map(t=>`<li title="${esc(t)}">${esc(t)}</li>`).join("")}${items.length>3?`<li>y ${items.length-3} más</li>`:""}</ul>`:""}
       ${prox?`<div class="prox">Lo próximo: <b>${esc(nombre(prox))}</b> a las ${hm(prox.proximo)} <span data-fut="${prox.proximo}">(${rel(prox.proximo,1)})</span></div>`:""}
