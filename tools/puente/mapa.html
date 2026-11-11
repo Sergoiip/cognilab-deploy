@@ -42,6 +42,12 @@ button.copiar.ok{background:var(--bien)}
 #estrellas{position:absolute;inset:0;width:100%;height:100%}
 #svg{position:absolute;left:0;top:0;overflow:visible}
 .sat{cursor:pointer}
+.sat .cuerpo{transition:transform .18s ease}
+.sat.foco .cuerpo{transform:scale(1.35)}
+.sat.foco .l1{fill:#fff;font-size:17px}
+.sat.foco .etq{filter:drop-shadow(0 0 4px #000) drop-shadow(0 0 8px #000)}
+.sat .etq text{paint-order:stroke;stroke:#08070f;stroke-width:4px;stroke-linejoin:round}
+.sat.pausa .etq{opacity:.7}
 .sat .hit{fill:transparent}
 .sat:hover .l1{fill:#fff}
 .l1{font:600 15px var(--texto);fill:var(--tx)}
@@ -158,7 +164,7 @@ pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:v
   <section class="mapa" aria-labelledby="h-mapa">
     <div class="mcab"><h2 id="h-mapa">Mapa de la flota</h2>
       <div class="pasos" aria-label="Cómo fluye el trabajo"><span><i class="n">1</i>Le pides a ARG.OS</span><span>→</span><span><i class="n">2</i>crea la misión</span><span>→</span><span><i class="n">3</i>Promempteo la ejecuta</span><span>→</span><span><i class="n gris">4</i>te avisa del resultado</span></div></div>
-    <div class="ley"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span><span><i class="punto p-bien"></i>con IA</span><span><i class="rombo"></i>sin IA (no gasta; en retratos, anillo punteado)</span><span style="margin-left:auto;color:var(--tx3)">Toca cualquier tarea o misión para ver su detalle</span></div>
+    <div class="ley"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span><span><i class="punto p-bien"></i>con IA</span><span><i class="rombo"></i>sin IA (no gasta; en retratos, anillo punteado)</span><span style="margin-left:auto;color:var(--tx3)">Pasa el mouse sobre una tarea: su órbita se detiene · clic para el detalle</span></div>
     <div id="lienzo"><canvas id="estrellas"></canvas><svg id="svg"></svg><div id="tablero"></div></div>
     <div class="pie-mapa"><div><h4>En reserva · con nombre, sin tarea todavía</h4><div class="chips" id="reserva"></div></div><div><h4>La máquina</h4><div class="chips" id="maquina"></div></div></div>
   </section>
@@ -233,114 +239,145 @@ function atencion(){
 function el(tag,at={},p){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(p)p.appendChild(e);return e}
 function tx(p,x,y,s,cls,at={}){const t=el("text",{x,y,class:cls,...at},p);t.textContent=s;return t}
 function cabe(t,max){let s=t.textContent;while(t.getComputedTextLength()>max&&s.length>3){s=s.slice(0,-2);t.textContent=s.trimEnd()+"…"}return t}
-function filasDe(e){
-  const ns=D.naves.filter(n=>n.estacion===e.id),act=ns.filter(n=>n.estado!=="pausada"),pau=ns.filter(n=>n.estado==="pausada");
-  const g={};act.forEach(n=>(g[sector(n)]=g[sector(n)]||[]).push(n));
-  const out=[];ORDEN.filter(k=>g[k]).forEach(k=>{out.push({h:SEC[k]});g[k].sort((a,b)=>(a.proximo||9e12)-(b.proximo||9e12)).forEach(n=>out.push({n}))});
-  if(pau.length){out.push({h:"Pausadas"});pau.forEach(n=>out.push({n}))}
-  return out}
-const ALTO_N=44,ALTO_H=28;
+function navesDe(e){
+  const ns=D.naves.filter(n=>n.estacion===e.id);
+  return ns.sort((a,b)=>((a.estado==="pausada")-(b.estado==="pausada"))||(ORDEN.indexOf(sector(a))-ORDEN.indexOf(sector(b)))||String(a.id).localeCompare(b.id))}
 function estrellas(W,H){const c=$("#estrellas"),r=devicePixelRatio||1;c.width=W*r;c.height=H*r;const x=c.getContext("2d");x.scale(r,r);
   let s=11;const R=()=>(s=(s*16807)%2147483647)/2147483647;
   for(let i=0;i<W*H/5200;i++){const a=R();x.fillStyle=`rgba(220,220,255,${.10+.4*a*a})`;const z=a>.95?1.6:1;x.fillRect(R()*W,R()*H,z,z)}}
 
+/* ── órbitas: estado que sobrevive a los redibujos ── */
+const ORB={};             // id de estación → {ang, angM, pausa}
+let SATS=[],ANILLOS=[];   // satélites vivos y misiones en el anillo interior
+const QUIETO=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const VUELTA=150,VUELTA_TRAB=100,VUELTA_MIS=26;   // segundos por vuelta (lento para poder leer)
+
 function dibujar(){
   const lz=$("#lienzo"),W=lz.clientWidth,svg=$("#svg");
   const ests=[...D.estaciones].sort((a,b)=>(b.coordinador?1:0)-(a.coordinador?1:0)).slice(0,2);
-  const filas=ests.map(filasDe),alto=f=>f.reduce((s,r)=>s+(r.h?ALTO_H:ALTO_N),0);
-  const maxAlto=Math.max(...filas.map(alto),320);
-  const TOP=128,H=TOP+maxAlto+48;lz.style.height=H+"px";
+  const gx=W/2,tw=Math.max(210,Math.min(250,W*.18));
+  const X0=Math.max(250,W*.22);
+  const RX=Math.max(115,Math.min(195,gx-tw/2-X0-112));
+  const maxN=Math.max(...ests.map(e=>navesDe(e).length),6);
+  const RY=Math.max(RX+20,Math.min(260,maxN*19));
+  const TOP=128,cy=TOP+RY+36,H=cy+RY+112;lz.style.height=H+"px";
   svg.setAttribute("width",W);svg.setAttribute("height",H);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML="";estrellas(W,H);
+  SATS=[];ANILLOS=[];
   const defs=el("defs",{},svg);
   [["gA",C.vio],["gB",C.azul]].forEach(([id,c])=>{const g=el("radialGradient",{id},defs);el("stop",{offset:"0","stop-color":c,"stop-opacity":".38"},g);el("stop",{offset:"1","stop-color":c,"stop-opacity":"0"},g)});
   const mk=(id,c)=>{const m=el("marker",{id,viewBox:"0 0 10 10",refX:"8",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"},defs);el("path",{d:"M0 0L10 5L0 10z",fill:c},m)};mk("fa",C.mag);mk("fb",C.tx3);
-  const LW=Math.max(180,Math.min(260,W*.18)),RX=Math.max(90,Math.min(125,W*.085));
-  const cy=TOP+maxAlto/2,gx=W/2;
-  const X=[LW+RX+40,W-(LW+RX+40)];
+  const X=[X0,W-X0];
   const P=ests.map((e,i)=>({e,x:X[i],s:i?1:-1,c:color(e),grad:i?"gB":"gA"}));
+  const capas={fondo:el("g",{},svg),flujo:el("g",{},svg),orbitas:el("g",{},svg),nucleos:el("g",{},svg),sats:el("g",{},svg)};
 
   // capitán
-  const capW=250,capH=56,capY=18;
-  el("rect",{x:gx-capW/2,y:capY,width:capW,height:capH,rx:16,fill:"rgba(255,46,136,.08)",stroke:"rgba(255,46,136,.6)","stroke-width":1.5},svg);
-  el("rect",{x:gx-capW/2+12,y:capY+10,width:36,height:36,rx:11,fill:"rgba(255,46,136,.18)"},svg);
-  tx(svg,gx-capW/2+30,capY+34,"S","scnt",{"text-anchor":"middle",fill:C.mag,style:"font-size:18px"});
-  tx(svg,gx-capW/2+60,capY+27,D.capitan||"Capitán","clab",{style:"font-size:18px"});
-  tx(svg,gx-capW/2+60,capY+44,"capitán · escritorio y Telegram","scap");
-  const badge=(x,y,n,c)=>{el("circle",{cx:x,cy:y,r:13,fill:c},svg);tx(svg,x,y+5,String(n),"scnt",{"text-anchor":"middle",fill:"#06060f",style:"font-size:15px"})};
-  if(P[0]){const p=P[0],x1=gx-capW/2,y1=capY+capH/2,x2=p.x+26,y2=cy-60;
-    el("path",{d:`M${x1} ${y1} C ${x1-120} ${y1}, ${x2} ${y1+20}, ${x2} ${y2}`,fill:"none",stroke:C.mag,"stroke-width":2,"marker-end":"url(#fa)"},svg);
-    const bx=x2+(x1-x2)*.28,by=y1+28;badge(bx,by,1,C.mag);tx(svg,bx+20,by+5,"le pides todo","srol",{fill:C.tx})}
-  if(P[1]){const p=P[1],x1=gx+capW/2,y1=capY+capH/2,x2=p.x-26,y2=cy-60;
-    el("path",{d:`M${x2} ${y2} C ${x2} ${y1+20}, ${x1+120} ${y1}, ${x1} ${y1}`,fill:"none",stroke:C.tx3,"stroke-width":1.6,"stroke-dasharray":"5 6","marker-end":"url(#fb)"},svg);
-    const bx=x2-(x2-x1)*.28,by=y1+28;badge(bx,by,4,C.tx3);tx(svg,bx-20,by+5,"te avisa del resultado","srol",{fill:C.tx,"text-anchor":"end"})}
+  const capW=250,capH=56,capY=18,cap=capas.flujo;
+  el("rect",{x:gx-capW/2,y:capY,width:capW,height:capH,rx:16,fill:"rgba(255,46,136,.08)",stroke:"rgba(255,46,136,.6)","stroke-width":1.5},cap);
+  el("rect",{x:gx-capW/2+12,y:capY+10,width:36,height:36,rx:11,fill:"rgba(255,46,136,.18)"},cap);
+  tx(cap,gx-capW/2+30,capY+34,"S","scnt",{"text-anchor":"middle",fill:C.mag,style:"font-size:18px"});
+  tx(cap,gx-capW/2+60,capY+27,D.capitan||"Capitán","clab",{style:"font-size:18px"});
+  tx(cap,gx-capW/2+60,capY+44,"capitán · escritorio y Telegram","scap");
+  const badge=(x,y,n,c)=>{el("circle",{cx:x,cy:y,r:13,fill:c},cap);tx(cap,x,y+5,String(n),"scnt",{"text-anchor":"middle",fill:"#06060f",style:"font-size:15px"})};
+  if(P[0]){const p=P[0],x1=gx-capW/2,y1=capY+capH/2,x2=p.x+30,y2=cy-62;
+    el("path",{d:`M${x1} ${y1} C ${x1-120} ${y1}, ${x2} ${y1+20}, ${x2} ${y2}`,fill:"none",stroke:C.mag,"stroke-width":2,"marker-end":"url(#fa)"},cap);
+    const bx=x2+(x1-x2)*.45,by=y1+20;badge(bx,by,1,C.mag);tx(cap,bx+20,by+5,"le pides todo","srol",{fill:C.tx})}
+  if(P[1]){const p=P[1],x1=gx+capW/2,y1=capY+capH/2,x2=p.x-30,y2=cy-62;
+    el("path",{d:`M${x2} ${y2} C ${x2} ${y1+20}, ${x1+120} ${y1}, ${x1} ${y1}`,fill:"none",stroke:C.tx3,"stroke-width":1.6,"stroke-dasharray":"5 6","marker-end":"url(#fb)"},cap);
+    const bx=x2-(x2-x1)*.45,by=y1+20;badge(bx,by,4,C.tx3);tx(cap,bx-20,by+5,"te avisa del resultado","srol",{fill:C.tx,"text-anchor":"end"})}
 
   // tablero de misiones (HTML encima) y carriles
-  const tb=$("#tablero"),gap=P[1]?P[1].x-P[0].x:600,tw=Math.min(270,Math.max(200,gap-2*64-150));
-  tb.style.width=tw+"px";tb.innerHTML=htmlTablero();tb.style.left=(gx-tw/2)+"px";const th=tb.offsetHeight;tb.style.top=(cy-th/2)+"px";
+  const tb=$("#tablero");tb.style.width=tw+"px";tb.innerHTML=htmlTablero();tb.style.left=(gx-tw/2)+"px";const th=tb.offsetHeight;tb.style.top=(cy-th/2)+"px";
   const activo=D.agora.tareas.some(t=>["running","ready"].includes(t.estado)&&t.asignada);
   if(P.length===2){
-    const segs=[[P[0].x+58,gx-tw/2-8,2,"crea la misión"],[gx+tw/2+8,P[1].x-58,3,"la ejecuta"]];
-    segs.forEach(([a,b,n,l])=>{el("line",{x1:a,y1:cy,x2:b,y2:cy,stroke:"rgba(255,46,136,.16)","stroke-width":12,"stroke-linecap":"round"},svg);
-      el("line",{x1:a,y1:cy,x2:b-6,y2:cy,stroke:C.mag,"stroke-width":2.6,"marker-end":"url(#fa)",...(activo?{class:"flujo"}:{"stroke-dasharray":"4 8"})},svg);
-      const mx=(a+b)/2;badge(mx,cy-26,n,C.mag);if(b-a>130)tx(svg,mx,cy-52,l,"srol",{"text-anchor":"middle",fill:C.tx})});
-    // misiones en camino a la estación ejecutora
+    const segs=[[P[0].x+62,gx-tw/2-8,2,"crea la misión"],[gx+tw/2+8,P[1].x-62,3,"la ejecuta"]];
+    segs.forEach(([a,b,n,l])=>{el("line",{x1:a,y1:cy,x2:b,y2:cy,stroke:"rgba(255,46,136,.14)","stroke-width":12,"stroke-linecap":"round"},cap);
+      el("line",{x1:a,y1:cy,x2:b-6,y2:cy,stroke:C.mag,"stroke-width":2.6,"marker-end":"url(#fa)",...(activo?{class:"flujo"}:{"stroke-dasharray":"4 8"})},cap);
+      const mx=(a+b)/2;badge(mx,cy-26,n,C.mag);if(b-a>130)tx(cap,mx,cy-52,l,"srol",{"text-anchor":"middle",fill:C.tx})});
     D.agora.tareas.filter(t=>t.estado==="ready"&&t.asignada&&t.estacion===P[1].e.id).slice(0,4).forEach((t,k)=>{
-      const g=el("g",{class:"sat"},svg);el("path",{d:"M-8 -6 L8 0 L-8 6 L-4 0z",fill:C.azul},g);
-      el("animateMotion",{dur:"6s",repeatCount:"indefinite",begin:`${-k*1.5}s`,path:`M${gx+tw/2+10} ${cy} L${P[1].x-62} ${cy}`},g);tipTarea(g,t)})}
+      const g=el("g",{class:"sat"},cap);el("path",{d:"M-8 -6 L8 0 L-8 6 L-4 0z",fill:C.azul},g);
+      el("animateMotion",{dur:"6s",repeatCount:"indefinite",begin:`${-k*1.5}s`,path:`M${gx+tw/2+10} ${cy} L${P[1].x-66} ${cy}`},g);tipTarea(g,t)})}
 
-  // estaciones y sus naves
+  // estaciones, órbitas y satélites
   P.forEach((p,i)=>{const e=p.e,trabaja=e.misiones.running>0||e.actividad.activas.length>0;
-    el("circle",{cx:p.x,cy,r:trabaja?104:88,fill:`url(#${p.grad})`,class:trabaja?"respira":""},svg);
-    el("circle",{cx:p.x,cy,r:58,fill:"none",stroke:p.c,"stroke-opacity":".55","stroke-width":1.5},svg);
+    const o=ORB[e.id]||(ORB[e.id]={ang:i?Math.PI:0,angM:0,pausa:false});
+    o.periodo=trabaja?VUELTA_TRAB:VUELTA;o.cx=p.x;o.cy=cy;o.dir=p.s<0?1:-1;
+    // órbita exterior
+    el("ellipse",{cx:p.x,cy,rx:RX,ry:RY,fill:"none",stroke:p.c,"stroke-opacity":".4","stroke-width":1.3,"stroke-dasharray":"3 6"},capas.orbitas);
+    el("ellipse",{cx:p.x,cy,rx:RX+1,ry:RY+1,fill:"none",stroke:p.c,"stroke-opacity":".08","stroke-width":10},capas.orbitas);
+    // núcleo
+    const nu=capas.nucleos;
+    el("circle",{cx:p.x,cy,r:trabaja?104:88,fill:`url(#${p.grad})`,class:trabaja?"respira":""},nu);
+    el("circle",{cx:p.x,cy,r:58,fill:"none",stroke:p.c,"stroke-opacity":".55","stroke-width":1.5},nu);
     const hx=[...Array(6)].map((_,k)=>{const a=Math.PI/3*k-Math.PI/2;return `${p.x+44*Math.cos(a)},${cy+44*Math.sin(a)}`}).join(" ");
-    el("polygon",{points:hx,fill:"#0c0b1a",stroke:p.c,"stroke-width":2},svg);
+    el("polygon",{points:hx,fill:"#0c0b1a",stroke:p.c,"stroke-width":2},nu);
     const rE=retrato(e.nombre);
     if(rE){const cid="cl-"+i;const cp=el("clipPath",{id:cid},defs);el("circle",{cx:p.x,cy,r:40},cp);
-      el("image",{href:rE,x:p.x-40,y:cy-40,width:80,height:80,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice"},svg);
-      el("circle",{cx:p.x,cy,r:40,fill:"none",stroke:p.c,"stroke-width":2},svg);
-      const bx=p.x+34,by=cy-34;el("circle",{cx:bx,cy:by,r:15,fill:e.misiones.running?C.mag:"#1b1a2e",stroke:"#000","stroke-width":2},svg);
-      tx(svg,bx,by+5,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?"#06060f":p.c,style:"font-size:15px"});
-      const tt=el("title",{},svg.lastChild);tt.textContent=`${e.misiones.running} misiones en curso`}
-    else{tx(svg,p.x,cy-1,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?C.mag:p.c});
-    tx(svg,p.x,cy+24,e.misiones.running===1?"misión":"misiones","scap",{"text-anchor":"middle"})}
-    tx(svg,p.x,cy+86,e.nombre.toUpperCase(),"snom",{"text-anchor":"middle",fill:p.c});
-    tx(svg,p.x,cy+106,rol(e)+(rE?` · ${e.misiones.running} en curso`:""),"srol",{"text-anchor":"middle"});
-    tx(svg,p.x,cy+126,e.bot==="connected"?"● bot conectado":"○ bot desconectado","scap",{"text-anchor":"middle",fill:e.bot==="connected"?C.bien:C.mal});
-    // muelle
-    const fs=filas[i],total=alto(fs),ry=total/2+34,lx=p.x+p.s*(RX+(D.personajes&&Object.keys(D.personajes).length?36:26));let y=cy-total/2;
-    el("path",{d:`M${p.x} ${cy-ry} A ${RX} ${ry} 0 0 ${p.s<0?0:1} ${p.x} ${cy+ry}`,fill:"none",stroke:p.c,"stroke-opacity":".45","stroke-width":1.4,"stroke-dasharray":"3 5"},svg);
-    const anc=p.s<0?"end":"start";
-    fs.forEach(r=>{
-      if(r.h){const yy=y+ALTO_H-9;const t=tx(svg,lx,yy,r.h.toUpperCase(),"grp",{"text-anchor":anc});y+=ALTO_H;return}
-      const n=r.n,yc=y+ALTO_N/2,dy=yc-cy,sx=p.x+p.s*RX*Math.sqrt(Math.max(0,1-(dy/ry)**2)),c=stCol(n),pa=n.estado==="pausada";
-      const g=el("g",{class:"sat","data-id":n.id},svg);
-      el("line",{x1:sx,y1:yc,x2:lx-p.s*6,y2:yc,stroke:c,"stroke-opacity":pa?".18":".4","stroke-dasharray":"2 4"},g);
-      if(n.estado==="corriendo")el("circle",{cx:sx,cy:yc,r:7,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},g);
-      else if(n.ultimo&&now()-n.ultimo<900&&!pa)el("circle",{cx:sx,cy:yc,r:7,fill:"none",stroke:c,"stroke-width":1.5,class:"pulso tres"},g);
+      el("image",{href:rE,x:p.x-40,y:cy-40,width:80,height:80,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice"},nu);
+      el("circle",{cx:p.x,cy,r:40,fill:"none",stroke:p.c,"stroke-width":2},nu);
+      const bx=p.x+34,by=cy-34;el("circle",{cx:bx,cy:by,r:15,fill:e.misiones.running?C.mag:"#1b1a2e",stroke:"#000","stroke-width":2},nu);
+      tx(nu,bx,by+5,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?"#06060f":p.c,style:"font-size:15px"})}
+    else{tx(nu,p.x,cy-1,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?C.mag:p.c});
+      tx(nu,p.x,cy+24,e.misiones.running===1?"misión":"misiones","scap",{"text-anchor":"middle"})}
+    tx(nu,p.x,cy+RY+56,e.nombre.toUpperCase(),"snom",{"text-anchor":"middle",fill:p.c});
+    tx(nu,p.x,cy+RY+76,`${rol(e)} · ${e.misiones.running} misión${e.misiones.running===1?"":"es"} en curso`,"srol",{"text-anchor":"middle"});
+    tx(nu,p.x,cy+RY+94,e.bot==="connected"?"● bot conectado":"○ bot desconectado","scap",{"text-anchor":"middle",fill:e.bot==="connected"?C.bien:C.mal});
+    // anillo interior: misiones en curso (giran más rápido)
+    const mis=D.agora.tareas.filter(t=>t.estado==="running"&&t.estacion===e.id).slice(0,6);
+    if(mis.length){el("circle",{cx:p.x,cy,r:76,fill:"none",stroke:C.mag,"stroke-opacity":".3","stroke-dasharray":"1 5"},capas.orbitas);
+      mis.forEach((t,k)=>{const g=el("g",{class:"sat"},capas.sats);
+        el("circle",{r:12,fill:"transparent"},g);
+        el("path",{d:"M-7 -5 L8 0 L-7 5 L-3 0z",fill:C.mag,class:"nave-m"},g);
+        g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco")});
+        g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
+        g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(t.titulo)}</b><div class="k">Misión en curso · ${esc(e.nombre)}</div><div class="k">Empezó <b>${rel(t.inicio)}</b></div><div class="k" style="color:var(--tx3)">La órbita se detiene mientras la miras · clic para el detalle</div>`));
+        g.addEventListener("click",()=>abrirTarea(t.tablero,t.id));
+        ANILLOS.push({g,o,k,N:mis.length})})}
+    // satélites: las tareas automáticas
+    const ns=navesDe(e),N=ns.length;
+    ns.forEach((n,k)=>{const c=stCol(n),pa=n.estado==="pausada";
+      const g=el("g",{class:"sat"+(pa?" pausa":""),"data-id":n.id},capas.sats);
+      const cuerpo=el("g",{class:"cuerpo"},g);
+      el("circle",{r:22,fill:"transparent"},cuerpo);
+      if(n.estado==="corriendo")el("circle",{r:17,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},cuerpo);
+      else if(n.ultimo&&now()-n.ultimo<900&&!pa)el("circle",{r:14,fill:"none",stroke:c,"stroke-width":1.5,class:"pulso tres"},cuerpo);
       const rN=n.alias&&retrato(n.alias);
-      if(rN){const cid="cn-"+n.id;const cp=el("clipPath",{id:cid},defs);el("circle",{cx:sx,cy:yc,r:15},cp);
-        el("image",{href:rN,x:sx-15,y:yc-15,width:30,height:30,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice",opacity:pa?.4:1},g);
-        el("circle",{cx:sx,cy:yc,r:16,fill:"none",stroke:c,"stroke-width":2.5,...(n.sin_modelo?{"stroke-dasharray":"3 3"}:{})},g)}
-      else if(n.sin_modelo)el("rect",{x:sx-6,y:yc-6,width:12,height:12,rx:2,transform:`rotate(45 ${sx} ${yc})`,fill:pa?C.sup:c,stroke:pa?C.off:"none","stroke-width":2},g);
-      else el("circle",{cx:sx,cy:yc,r:7,fill:pa?C.sup:c,stroke:pa?C.off:"none","stroke-width":2},g);
-      if(n.estado==="fallo")el("circle",{cx:sx,cy:yc,r:12,fill:"none",stroke:C.mal,"stroke-width":1.4},g);
-      const cu=n.estado==="fallo"?"falló":n.estado==="corriendo"?"trabajando ahora":cuando(n.horario);
-      const cuAt=n.estado==="fallo"?{fill:C.mal}:n.estado==="corriendo"?{fill:C.mag}:{};
-      const t1=tx(g,lx,yc-3,"","l1",{"text-anchor":anc,...(pa?{fill:C.tx3}:{})});
-      const nmS=el("tspan",{},t1);nmS.textContent=n.alias||nombre(n);
-      const hrS=el("tspan",{class:"l2",dx:"9",...cuAt},t1);hrS.textContent=cu;
-      if(p.s<0){t1.textContent="";const a2=el("tspan",{class:"l2",...cuAt},t1);a2.textContent=cu;const b2=el("tspan",{dx:"9"},t1);b2.textContent=n.alias||nombre(n)}
-      const tn=[...t1.childNodes].find(x=>!x.getAttribute("class"));while(t1.getComputedTextLength()>LW&&tn.textContent.length>3)tn.textContent=tn.textContent.slice(0,-2).trimEnd()+"…";
-      const t2=tx(g,lx,yc+15,n.alias?nombre(n):(n.sin_modelo?"script sin IA":"con IA"),"l2",{"text-anchor":anc});cabe(t2,LW);
-      const bw=Math.max(t1.getComputedTextLength(),t2.getComputedTextLength());
-      const xa=p.s<0?lx-bw-6:sx-18,xb=p.s<0?sx+18:lx+bw+6;el("rect",{class:"hit",x:xa,y:yc-ALTO_N/2+2,width:xb-xa,height:ALTO_N-4},g);
+      if(rN){const cid="cn-"+n.id;const cp=el("clipPath",{id:cid},defs);el("circle",{r:15},cp);
+        el("image",{href:rN,x:-15,y:-15,width:30,height:30,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice",opacity:pa?.4:1},cuerpo);
+        el("circle",{r:16,fill:"none",stroke:c,"stroke-width":2.5,...(n.sin_modelo?{"stroke-dasharray":"3 3"}:{})},cuerpo)}
+      else if(n.sin_modelo)el("rect",{x:-7,y:-7,width:14,height:14,rx:2,transform:"rotate(45)",fill:pa?C.sup:c,stroke:pa?C.off:"#000","stroke-width":pa?2:1},cuerpo);
+      else el("circle",{r:8,fill:pa?C.sup:c,stroke:pa?C.off:"#000","stroke-width":pa?2:1},cuerpo);
+      if(n.estado==="fallo")el("circle",{r:rN?21:13,fill:"none",stroke:C.mal,"stroke-width":1.6},cuerpo);
+      const cu=n.estado==="fallo"?"falló":n.estado==="corriendo"?"trabajando ahora":pa?"pausada":cuando(n.horario);
+      const et=el("g",{class:"etq"},g);
+      const t1=tx(et,0,-2,n.alias||nombre(n),"l1",pa?{fill:C.tx3}:{});cabe(t1,150);
+      const t2=tx(et,0,15,cu,"l2",n.estado==="fallo"?{fill:C.mal}:n.estado==="corriendo"?{fill:C.mag}:{});cabe(t2,150);
+      g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco");capas.sats.appendChild(g)});
+      g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
       g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(n.alias||nombre(n))}</b>${n.alias?`<div class="k">${esc(nombre(n))}</div>`:""}<div class="k">Área: <b>${esc(SEC[sector(n)])}</b></div>
         <div class="k">Cuándo: <b>${esc(cuando(n.horario))}</b> · ${n.sin_modelo?"sin IA":"con IA"}</div><div class="k">Última vez: <b>${n.ultimo?rel(n.ultimo):"nunca"}</b>${n.ultimo_silencio?" · sin novedades":""}</div>
-        <div class="k">Próxima: <b>${pa?"pausada":rel(n.proximo,1)}</b></div>${n.error?`<div class="k" style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}`));
-      g.addEventListener("mouseleave",untip);g.addEventListener("click",()=>abrirNave(n.perfil,n.id));
-      y+=ALTO_N});
+        <div class="k">Próxima: <b>${pa?"pausada":rel(n.proximo,1)}</b></div>${n.error?`<div class="k" style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}
+        <div class="k" style="color:var(--tx3)">La órbita se detiene mientras la miras · clic para el detalle</div>`));
+      g.addEventListener("click",()=>abrirNave(n.perfil,n.id));
+      SATS.push({g,et,t1,t2,o,k,N,rx:RX,ry:RY,lado:0})});
+    // pausar también al mirar el núcleo
+    const hit=el("circle",{cx:p.x,cy,r:60,fill:"transparent",style:"cursor:default"},capas.sats);
+    hit.addEventListener("mouseenter",()=>o.pausa=true);hit.addEventListener("mouseleave",()=>o.pausa=false);
   });
+  colocar();
 }
+function colocar(){
+  for(const s of SATS){const o=s.o,th=o.ang*o.dir+(-Math.PI/2)+s.k*2*Math.PI/s.N;
+    const x=o.cx+s.rx*Math.cos(th),y=o.cy+s.ry*Math.sin(th);s.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+    const lado=Math.cos(th)>=0?1:-1;
+    if(lado!==s.lado){s.lado=lado;const a=lado>0?"start":"end",dx=lado>0?24:-24;
+      [s.t1,s.t2].forEach(t=>{t.setAttribute("text-anchor",a);t.setAttribute("x",dx)})}}
+  for(const m of ANILLOS){const o=m.o,th=o.angM+m.k*2*Math.PI/m.N;
+    const x=o.cx+76*Math.cos(th),y=o.cy+76*Math.sin(th);m.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(th*180/Math.PI+90).toFixed(1)})`)}}
+let tPrev=performance.now();
+function girar(t){const dt=Math.min(.1,(t-tPrev)/1000);tPrev=t;
+  if(!QUIETO&&!document.hidden){for(const id in ORB){const o=ORB[id];if(o.pausa)continue;o.ang+=dt*2*Math.PI/(o.periodo||VUELTA);o.angM+=dt*2*Math.PI/VUELTA_MIS}colocar()}
+  requestAnimationFrame(girar)}
+requestAnimationFrame(girar);
 function htmlTablero(){
   const ag=D.agora,d0=new Date(now()*1000);d0.setHours(0,0,0,0);const hoy0=d0/1000;
   const curso=ag.tareas.filter(t=>t.estado==="running"),cola=ag.tareas.filter(t=>t.estado==="ready"&&t.asignada),
