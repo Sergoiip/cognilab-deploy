@@ -386,6 +386,15 @@ class Puente(BaseHTTPRequestHandler):
         try:
             if u.path in ("/", "/index.html"):
                 return self.enviar(200, (AQUI / "index.html").read_bytes(), "text/html; charset=utf-8")
+            if u.path.startswith("/fuentes/") or u.path == "/isotipo.svg":
+                nombre = u.path.rsplit("/", 1)[-1]
+                f = (AQUI / "fuentes" / nombre) if u.path.startswith("/fuentes/") else AQUI / "isotipo.svg"
+                if re.fullmatch(r"[A-Za-z0-9_.-]+\.(ttf|svg)", nombre) and f.is_file():
+                    tipo = "font/ttf" if nombre.endswith(".ttf") else "image/svg+xml"
+                    return self.enviar(200, f.read_bytes(), tipo)
+                return self.enviar(404, {"error": "no encontrado"})
+            if u.path == "/mapa":
+                return self.enviar(200, (AQUI / "mapa.html").read_bytes(), "text/html; charset=utf-8")
             if u.path == "/api/estado":
                 with self.candado:
                     if time.time() - self.cache["t"] > 3 or self.cache["d"] is None:
