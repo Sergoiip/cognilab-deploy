@@ -294,6 +294,62 @@ def personajes(flota):
     return out
 
 
+RUTINAS = [("informe", "Informe de la semana"), ("donde", "Dónde estamos y qué falta"),
+           ("palanca", "Tareas palanca"), ("flujos", "Revisión de flujos")]
+
+
+def clientes(flota, naves):
+    """La esfera de clientes: por cliente, su pulso semanal (faro, última misión, resultado) y sus tareas en Atlas."""
+    out = []
+    boveda = Path(os.path.expanduser(flota.man.get("boveda") or "~/Documents/Obsidian/Bóveda de Operaciones"))
+    tasks_dir = boveda / "04 - Infraestructura" / "TaskNotes" / "Tasks"
+    act_dir = boveda / "04 - Infraestructura" / "ATLAS.SYS" / "CRM" / "Actividades"
+    tareas = []
+    for f in (sorted(tasks_dir.glob("*.md")) if tasks_dir.is_dir() else []):
+        try:
+            txt = f.read_text(encoding="utf-8", errors="replace")[:3000]
+        except Exception:
+            continue
+        m = re.search(r"^status:\s*(\S+)", txt, re.M)
+        tareas.append((f.stem, txt.lower(), m.group(1) if m else "?"))
+    dbs = tableros()
+    for c in flota.man.get("clientes") or []:
+        claves = [c["nombre"].lower(), (c.get("sobre") or "").lower()]
+        mencion = lambda s: any(k and k in s.lower() for k in claves)
+        faro = next((n for n in naves if n["nombre"].endswith(c["nombre"]) and "Pulso" in n["nombre"]), None)
+        pulsos = []
+        for slug, db in dbs.items():
+            try:
+                for r in filas(db, "select id,title,status,started_at,completed_at,created_at,result from tasks where title like ?",
+                               (f"Pulso semanal · {c['nombre']} ·%",)):
+                    run = filas(db, "select summary,metadata from task_runs where task_id=? order by id desc limit 1", (r["id"],))
+                    meta = {}
+                    try:
+                        meta = json.loads((run[0].get("metadata") if run else None) or "{}") or {}
+                    except Exception:
+                        pass
+                    pulsos.append({**r, "tablero": slug, "resumen": (run[0].get("summary") if run else None) or r["result"],
+                                   "atlas": meta.get("atlas"), "palancas": meta.get("palancas") or [], "riesgos": meta.get("riesgos") or []})
+            except Exception:
+                pass
+        pulsos.sort(key=lambda x: -(x["created_at"] or 0))
+        abiertas = [n for n, txt, st in tareas if st not in ("done",) and (mencion(n) or mencion(txt))]
+        acts = 0
+        if act_dir.is_dir():
+            for f in act_dir.rglob("*.md"):
+                try:
+                    if mencion(f.read_text(encoding="utf-8", errors="replace")[:800]):
+                        acts += 1
+                except Exception:
+                    pass
+        out.append({"nombre": c["nombre"], "sobre": c.get("sobre"), "proyecto": c.get("proyecto"),
+                    "faro": faro and {"id": faro["id"], "perfil": faro["perfil"], "proximo": faro["proximo"], "estado": faro["estado"]},
+                    "ultimo": pulsos[0] if pulsos else None, "historial": [{"id": p["id"], "titulo": p["title"], "estado": p["status"]} for p in pulsos[:6]],
+                    "tareas_abiertas": abiertas[:12], "n_tareas": len(abiertas), "actividades_atlas": acts,
+                    "rutinas": [{"id": k, "nombre": v} for k, v in RUTINAS]})
+    return out
+
+
 def instantanea(flota):
     flota.refrescar()
     hoy0 = dt.datetime.now(ZONA).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
@@ -324,7 +380,7 @@ def instantanea(flota):
     return {
         "ahora": time.time(), "cliente": flota.man.get("cliente"), "capitan": flota.man.get("capitan"),
         "lore": any(n.get("alias") for n in naves),
-        "estaciones": estaciones, "naves": naves, "reserva": reserva(flota),
+        "estaciones": estaciones, "naves": naves, "reserva": reserva(flota), "clientes": clientes(flota, naves),
         "sectores": {k: v.get("nombre", k) for k, v in flota.sectores.items()},
         "personajes": personajes(flota),
         "agora": {k: agora[k] for k in ("conteo", "tableros", "tareas", "espera", "atascadas")},

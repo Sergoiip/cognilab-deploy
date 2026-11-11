@@ -260,11 +260,12 @@ function dibujar(){
   const RX=Math.max(115,Math.min(195,gx-tw/2-X0-112));
   const maxN=Math.max(...ests.map(e=>navesDe(e).length),6);
   const RY=Math.max(RX+20,Math.min(260,maxN*19));
-  const TOP=128,cy=TOP+RY+36,H=cy+RY+112;lz.style.height=H+"px";
+  const CLI=D.clientes||[],RCX=Math.min(W*.30,420),RCY=120;
+  const TOP=128,cy=TOP+RY+36,cy2=cy+RY+130+RCY+50,H=CLI.length?cy2+RCY+110:cy+RY+112;lz.style.height=H+"px";
   svg.setAttribute("width",W);svg.setAttribute("height",H);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML="";estrellas(W,H);
   SATS=[];ANILLOS=[];
   const defs=el("defs",{},svg);
-  [["gA",C.vio],["gB",C.azul]].forEach(([id,c])=>{const g=el("radialGradient",{id},defs);el("stop",{offset:"0","stop-color":c,"stop-opacity":".38"},g);el("stop",{offset:"1","stop-color":c,"stop-opacity":"0"},g)});
+  [["gA",C.vio],["gB",C.azul],["gC",C.bien]].forEach(([id,c])=>{const g=el("radialGradient",{id},defs);el("stop",{offset:"0","stop-color":c,"stop-opacity":".38"},g);el("stop",{offset:"1","stop-color":c,"stop-opacity":"0"},g)});
   const mk=(id,c)=>{const m=el("marker",{id,viewBox:"0 0 10 10",refX:"8",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"},defs);el("path",{d:"M0 0L10 5L0 10z",fill:c},m)};mk("fa",C.mag);mk("fb",C.tx3);
   const X=[X0,W-X0];
   const P=ests.map((e,i)=>({e,x:X[i],s:i?1:-1,c:color(e),grad:i?"gB":"gA"}));
@@ -363,13 +364,53 @@ function dibujar(){
     const hit=el("circle",{cx:p.x,cy,r:60,fill:"transparent",style:"cursor:default"},capas.sats);
     hit.addEventListener("mouseenter",()=>o.pausa=true);hit.addEventListener("mouseleave",()=>o.pausa=false);
   });
+  // ── esfera de clientes ──
+  if(CLI.length){
+    const o=ORB.__clientes||(ORB.__clientes={ang:0,angM:0,pausa:false});o.periodo=200;o.cx=gx;o.cy=cy2;o.dir=1;
+    el("ellipse",{cx:gx,cy:cy2,rx:RCX,ry:RCY,fill:"none",stroke:C.bien,"stroke-opacity":".35","stroke-width":1.3,"stroke-dasharray":"3 6"},capas.orbitas);
+    el("circle",{cx:gx,cy:cy2,r:70,fill:"url(#gC)"},capas.nucleos);
+    el("circle",{cx:gx,cy:cy2,r:44,fill:"#0c0b1a",stroke:C.bien,"stroke-width":2},capas.nucleos);
+    tx(capas.nucleos,gx,cy2+2,String(CLI.length),"scnt",{"text-anchor":"middle",fill:C.bien});
+    tx(capas.nucleos,gx,cy2+22,"clientes","scap",{"text-anchor":"middle"});
+    tx(capas.nucleos,gx,cy2+RCY+46,"CLIENTES","snom",{"text-anchor":"middle",fill:C.bien});
+    tx(capas.nucleos,gx,cy2+RCY+66,"pulso semanal: lunes 13:30 · informe, dónde estamos, palancas y flujos","srol",{"text-anchor":"middle"});
+    // Promempteo ejecuta los pulsos
+    const pe=P.find(p=>p.e.tipo==="negocio");
+    if(pe){const x1=pe.x,y1=cy+RY+100,x2=gx+50,y2=cy2-30;
+      el("path",{d:`M${x1} ${y1} C ${x1} ${y1+60}, ${x2+80} ${y2-40}, ${x2} ${y2}`,fill:"none",stroke:C.azul,"stroke-width":1.8,"stroke-dasharray":"5 6","marker-end":"url(#fb)"},capas.flujo);
+      tx(capas.flujo,(x1+x2)/2+40,(y1+y2)/2-6,"hace los pulsos","srol",{fill:C.tx})}
+    const EP={done:[C.bien,"hecho"],running:[C.mag,"trabajando ahora"],ready:["#7a77a3","en cola"],blocked:[C.aviso,"trabado"],triage:[C.aviso,"sin repartir"],todo:["#7a77a3","en espera"]};
+    CLI.forEach((c,k)=>{const u=c.ultimo,[col,lab]=u?(EP[u.status]||[C.tx3,u.status]):[C.tx3,"aún sin pulso"];
+      const g=el("g",{class:"sat planeta"},capas.sats);const cuerpo=el("g",{class:"cuerpo"},g);
+      el("circle",{r:46,fill:"transparent"},cuerpo);
+      const lunas=el("g",{},cuerpo);
+      el("circle",{r:38,fill:"none",stroke:col,"stroke-opacity":".25","stroke-dasharray":"1 4"},lunas);
+      c.rutinas.forEach((r,j)=>{const a=j*Math.PI/2;el("circle",{cx:38*Math.cos(a),cy:38*Math.sin(a),r:4.5,fill:u&&u.status==="done"?C.bien:u&&u.status==="running"?C.mag:"#3a3659",stroke:"#000","stroke-width":1},lunas)});
+      if(u&&u.status==="running")el("circle",{r:28,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},cuerpo);
+      el("circle",{r:24,fill:"#12102a",stroke:col,"stroke-width":2.5},cuerpo);
+      tx(cuerpo,0,6,c.nombre.replace(/[^A-ZÁÉÍÓÚÑ]/g,"").slice(0,2)||c.nombre.slice(0,2).toUpperCase(),"scnt",{"text-anchor":"middle",fill:col,style:"font-size:17px"});
+      const et=el("g",{class:"etq"},g);
+      const t1=tx(et,0,-2,c.nombre,"l1");cabe(t1,190);
+      const t2=tx(et,0,15,`pulso: ${lab}${u&&u.completed_at?" "+rel(u.completed_at):""}`,"l2",{fill:col});cabe(t2,190);
+      g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco");capas.sats.appendChild(g)});
+      g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
+      g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(c.nombre)}</b><div class="k">Último pulso: <b style="color:${col}">${esc(lab)}</b>${u?` · ${esc(u.title.split("·").pop().trim())}`:""}</div>
+        ${u&&u.resumen?`<div class="k" style="white-space:pre-wrap;margin-top:4px">${esc(String(u.resumen).slice(0,420))}</div>`:""}
+        ${u&&u.palancas.length?`<div class="k" style="margin-top:4px">Palancas: <b>${u.palancas.slice(0,3).map(esc).join(" · ")}</b></div>`:""}
+        <div class="k" style="margin-top:4px">Tareas abiertas en Atlas: <b>${c.n_tareas}</b> · actividades en Atlas: <b>${c.actividades_atlas}</b></div>
+        <div class="k">Próximo pulso: <b>${c.faro?rel(c.faro.proximo,1):"sin faro"}</b></div>
+        <div class="k" style="color:var(--tx3)">La esfera se detiene mientras la miras · clic para el detalle</div>`));
+      g.addEventListener("click",()=>u?abrirTarea(u.tablero,u.id):c.faro&&abrirNave(c.faro.perfil,c.faro.id));
+      SATS.push({g,et,t1,t2,o,k,N:CLI.length,rx:RCX,ry:RCY,lado:0,lunas,dx:56})});
+  }
   colocar();
 }
 function colocar(){
   for(const s of SATS){const o=s.o,th=o.ang*o.dir+(-Math.PI/2)+s.k*2*Math.PI/s.N;
     const x=o.cx+s.rx*Math.cos(th),y=o.cy+s.ry*Math.sin(th);s.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
     const lado=Math.cos(th)>=0?1:-1;
-    if(lado!==s.lado){s.lado=lado;const a=lado>0?"start":"end",dx=lado>0?24:-24;
+    if(s.lunas)s.lunas.setAttribute("transform",`rotate(${(s.o.angM*57.3*.5%360).toFixed(1)})`);
+    if(lado!==s.lado){s.lado=lado;const a=lado>0?"start":"end",dx=(s.dx||24)*lado;
       [s.t1,s.t2].forEach(t=>{t.setAttribute("text-anchor",a);t.setAttribute("x",dx)})}}
   for(const m of ANILLOS){const o=m.o,th=o.angM+m.k*2*Math.PI/m.N;
     const x=o.cx+76*Math.cos(th),y=o.cy+76*Math.sin(th);m.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(th*180/Math.PI+90).toFixed(1)})`)}}
@@ -464,7 +505,7 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("button.c
   setTimeout(()=>{b.textContent="Copiar frase";b.classList.remove("ok")},2400)});
 
 /* ── ciclo ── */
-function firma(d){return JSON.stringify([d.naves.map(n=>[n.id,n.estado,n.alias,n.horario,n.ultimo&&now()-n.ultimo<900]),d.estaciones.map(e=>[e.bot,e.misiones,e.actividad.activas.length]),
+function firma(d){return JSON.stringify([d.naves.map(n=>[n.id,n.estado,n.alias,n.horario,n.ultimo&&now()-n.ultimo<900]),d.estaciones.map(e=>[e.bot,e.misiones,e.actividad.activas.length]),(d.clientes||[]).map(c=>[c.nombre,c.ultimo&&c.ultimo.status,c.ultimo&&c.ultimo.id]),
   d.agora.tareas.filter(t=>t.estado!=="done").map(t=>[t.id,t.estado,t.asignada]),d.agora.conteo,(d.agora.espera||[]).length,innerWidth])}
 async function tick(){try{const r=await fetch("/api/estado",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();skew=d.ahora-Date.now()/1000;prev=D;D=d;
   paneles();const f=firma(d);if(f!==firmaPrev){firmaPrev=f;dibujar()}else{$("#tablero").innerHTML=htmlTablero()}

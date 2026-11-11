@@ -279,6 +279,14 @@ def mision(args):
     man, _ = cargar(args.manifiesto)
     vars_ = dict(kv.split("=", 1) for kv in args.var)
     vars_.setdefault("cliente", args.cliente or man["cliente"])
+    vars_.setdefault("raiz", str(FLOTA.parent))
+    vars_.setdefault("boveda", os.path.expanduser(man.get("boveda") or "~/Documents/Obsidian/Bóveda de Operaciones"))
+    import datetime as _dt
+    for k, v in list(vars_.items()):               # @semana / @hoy se resuelven el día que corre el faro
+        if v == "@semana":
+            y, w, _ = _dt.date.today().isocalendar(); vars_[k] = f"{y}-S{w:02d}"
+        elif v == "@hoy":
+            vars_[k] = _dt.date.today().isoformat()
     try:
         cuerpo = p["cuerpo"].format(**vars_)
         registro = p["registro"].format(**vars_)
@@ -319,9 +327,9 @@ def mision(args):
     if lim.get("max_retries"):
         cmd += ["--max-retries", str(lim["max_retries"])]
     pres = {**nuc.get("presupuesto_por_defecto", {}), **(man.get("presupuesto") or {})}
-    if pres.get("modo", "manual") == "manual":
+    if pres.get("modo", "manual") == "manual" and not p.get("rutina_aprobada"):
         cmd += ["--initial-status", "blocked"]       # nace bloqueada: el capitán la suelta con `hermes kanban unblock`
-    else:
+    if pres.get("modo", "manual") != "manual" or p.get("rutina_aprobada"):
         import sqlite3, datetime as _dt
         hoy0 = int(_dt.datetime.combine(_dt.date.today(), _dt.time()).timestamp())
         db = (pathlib.Path.home() / ".hermes" / "kanban" / "boards" / board / "kanban.db") if board else (pathlib.Path.home() / ".hermes" / "kanban.db")
