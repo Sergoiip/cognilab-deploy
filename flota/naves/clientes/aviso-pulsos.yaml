@@ -1,0 +1,24 @@
+id: aviso-pulsos
+pieza: faro
+sector: clientes
+nombre_visible: "Aviso de pulsos de clientes"
+la_ejecuta: negocio
+capitan: "<responsable de las cuentas>"
+mision: "Contarle al responsable, por el canal de la estación, el resultado de cada pulso semanal de cliente apenas termina, o avisar si se trabó."
+hace:
+  - "Leer los pulsos terminados o trabados en los tableros vivos"
+  - "Mandar el resumen, las tareas palanca y dónde quedó en Atlas, una sola vez por pulso"
+  - "Quedarse en silencio si no hay nada nuevo"
+no_hace:
+  - "Escribirle al cliente"
+  - "Cambiar el pulso ni el tablero"
+disparador: {faro: "15,45 13-21 * * 1-5", modo: no_agent}
+script: aviso_pulsos.py
+argumentos: []
+registro: "Solo lectura del Kanban; el aviso queda en el canal"
+hecho:
+  - "El responsable recibe cada pulso el mismo día en que termina, sin abrir el tablero"
+indicador: "Horas entre que termina el pulso y que el responsable lo lee"
+rol_humano_afectado: null
+modulo: cd-reportes
+planos: [consultor-e2, agencia-e3]

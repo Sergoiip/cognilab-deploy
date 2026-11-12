@@ -1,0 +1,22 @@
+id: tareas-atascadas
+pieza: faro
+sector: mantenimiento
+nombre_visible: "Tareas atascadas"
+la_ejecuta: coordinador
+capitan: "<responsable de la Flota>"
+mision: "Avisar las misiones que se atascan (bloqueadas hace días, que se bloquean una y otra vez, que fallan seguidas o que no terminan) para que alguien decida qué hacer con ellas."
+hace:
+  - "Revisar todos los tableros vivos del Ágora"
+  - "Quedarse en silencio si nada está atascado"
+no_hace:
+  - "Desbloquear, reasignar o archivar por su cuenta"
+disparador: {faro: "5 13 * * 1-5", modo: no_agent}
+script: tareas_atascadas.py
+argumentos: ["--dias", "3", "--horas-corriendo", "6"]
+registro: "Solo lectura del Kanban; el aviso queda en el canal"
+hecho:
+  - "Durante 2 semanas, cada tarjeta atascada aparece en el aviso y ninguna sana aparece"
+indicador: "Días promedio que una misión pasa atascada antes de que alguien decida"
+rol_humano_afectado: null
+modulo: cd-mantenimiento
+planos: [consultor-e2, agencia-e3]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deja un PC listo según el manifiesto del cliente. Idempotente: se puede repetir sin romper nada.
 #   bootstrap/instala.sh --base [--dry-run]                       (1.º: sin manifiesto)
-#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si]
+#   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si] [--espacio]
 # Desde 0.28.0 el manifiesto se arma DURANTE la instalación: --base deja el agente con la skill
 # cd-manifiesto-en-vivo, el Hermes del cliente hace las preguntas y luego corre este script
 # con el manifiesto que resultó (bootstrap/skill-manifiesto/SKILL.md).
@@ -9,13 +9,14 @@
 # Instala los módulos pedidos (más E2, siempre) y las aplicaciones que el manifiesto resuelve.
 set -euo pipefail
 
-MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0; BASE=0
+MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0; BASE=0; ESPACIO=0
 for a in "$@"; do
   case "$a" in
     --dry-run) DRY=1 ;;
     --sin-apps) SIN_APPS=1 ;;
     --si) SI=1 ;;
     --base) BASE=1 ;;
+    --espacio) ESPACIO=1 ;;
     *) MANIFIESTO="$a" ;;
   esac
 done
@@ -165,6 +166,17 @@ else
     esac
   done <<<"$PLAN"
 fi
+
+if [[ $ESPACIO -eq 1 ]]; then
+  echo "== 5b Espacio de trabajo (patrón ICM)"
+  EV="$("$PY" -c 'import sys,yaml,os;print(os.path.expanduser(yaml.safe_load(open(sys.argv[1])).get("vault","")))' "$MANIFIESTO")"
+  if [[ -z "$EV" ]]; then echo "  (omitido: el manifiesto no trae 'vault:')"
+  else
+    EDRY=""; [[ $DRY -eq 1 ]] && EDRY="--dry-run"
+    "$PY" "$REPO/tools/espacio.py" crear "$MANIFIESTO" --destino "$EV/Espacio CogniLab" $EDRY | sed 's/^/  /'
+  fi
+fi
+
 
 echo "== 6/7 Skills de Hermes que piden los módulos activos"
 # Fuente de cada una: aprendizaje/Skills replicables (se copia), Hermes (ya viene) o el hub

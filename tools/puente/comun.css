@@ -1,0 +1,27 @@
+/* Cogsmos · Puente de mando — base común de todas las vistas (marca CogniLab 2026) */
+@font-face{font-family:Outfit;src:url(/fuentes/Outfit.ttf) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+:root{
+  --fondo:#06060f; --sup:#0e0d1d; --sup2:#15132b; --linea:#25223f; --linea2:#332f55;
+  --tx:#e6e6f5; --tx2:#b6b6dc; --tx3:#8b8bb4;
+  --azul:#3fa9ff; --violeta:#9b5cff; --magenta:#ff2e88; --coral:#ff4d6d;
+  --bien:#37d39b; --aviso:#f5b53d; --mal:#ff4d6d; --off:#4d4a6e;
+  --texto:Outfit,system-ui,sans-serif; --dato:"Chakra Petch",ui-monospace,monospace;
+}
+/* barra común con el selector de vistas: mismo ancho y lugar en todas las vistas */
+.barra-env{max-width:1520px;margin:0 auto;padding:6px 28px 0}
+.barra{display:flex;align-items:center;gap:18px;padding:12px 0 14px;border-bottom:1px solid var(--linea);margin-bottom:6px}
+.barra .marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--tx)}
+.barra .marca img{width:28px;height:28px}
+.barra .marca b{font:600 19px var(--texto);letter-spacing:.02em}
+.vistas{display:flex;gap:4px;background:var(--sup);border:1px solid var(--linea2);border-radius:12px;padding:4px}
+.vistas a{font:600 15px var(--texto);color:var(--tx2);text-decoration:none;padding:7px 16px;border-radius:9px;display:flex;align-items:center;gap:8px}
+.vistas a:hover{color:var(--tx);background:var(--sup2)}
+.vistas a[aria-current="page"]{background:var(--magenta);color:#06060f}
+.vistas a small{font:13px var(--dato);opacity:.8}
+.barra .sp{flex:1}
+.barra .vivo{display:inline-flex;align-items:center;gap:8px;font:14px var(--dato);color:var(--tx3);white-space:nowrap}
+.barra .vivo i{width:8px;height:8px;border-radius:50%;background:var(--bien)}
+.barra .vivo.caido i{background:var(--mal)}
+@media (max-width:760px){.barra{flex-wrap:wrap}.vistas{order:3;width:100%}.vistas a{flex:1;justify-content:center}}

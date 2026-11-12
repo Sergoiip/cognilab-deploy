@@ -55,6 +55,9 @@ if _loc.exists():
         if _l.strip() and not _l.startswith("#"):
             PROHIBIDO.append((_l.strip(), "nombre de cliente (lista local)"))
 for p in ROOT.rglob("*"):
+    rel_p = p.relative_to(ROOT)
+    if rel_p.parts[:1] == ("clientes",) or (rel_p.parts[:1] == ("manifiestos",) and p.name.startswith("cliente-")):
+        continue  # datos de clientes: están en .gitignore a propósito y nunca se versionan
     if p.is_file() and p.suffix in (".md", ".yaml", ".sh", ".py", ".js", ".css", ".json") and ".git" not in p.parts and p.name != "verificar.py":
         t = p.read_text(encoding="utf-8", errors="ignore")
         for rx, what in PROHIBIDO:
@@ -134,6 +137,54 @@ if CAD.exists():
         warn.append("Repo sin sellar contra Cadence")
 else:
     warn.append("No encuentro la nota de Cadence; sincronía no verificada")
+
+# Flota: núcleo, catálogo de naves y planos (ver flota/README.md)
+FL = ROOT / "flota"
+if FL.exists():
+    nuc = yaml.safe_load((FL / "nucleo.yaml").read_text(encoding="utf-8"))
+    sect = yaml.safe_load((FL / "sectores.yaml").read_text(encoding="utf-8"))["sectores"]
+    slugs = {m["slug"] for m in mods}
+    for k, s in sect.items():
+        if not s.get("pkm") and not s.get("apqc"):
+            err.append(f"flota: sector '{k}' sin lente PKM ni APQC")
+        if s.get("en_lente_negocio") and s["en_lente_negocio"] not in sect:
+            err.append(f"flota: sector '{k}' apunta a '{s['en_lente_negocio']}', que no existe")
+    fichas = {}
+    for f in sorted(list(FL.glob("estaciones/*.yaml")) + list(FL.glob("naves/*/*.yaml"))):
+        n = yaml.safe_load(f.read_text(encoding="utf-8"))
+        rel = f.relative_to(ROOT)
+        for c in nuc["campos_obligatorios"]:
+            if not n.get(c):
+                err.append(f"flota: {rel} sin '{c}'")
+        if n.get("pieza") not in nuc["piezas"]:
+            err.append(f"flota: {rel} pieza inválida '{n.get('pieza')}'")
+        if n.get("sector") not in sect:
+            err.append(f"flota: {rel} sector inválido '{n.get('sector')}'")
+        if "naves" in f.parts:
+            if f.parent.name != n.get("sector"):
+                err.append(f"flota: {rel} está en la carpeta '{f.parent.name}' pero su sector es '{n.get('sector')}'")
+            if n.get("modulo") and n["modulo"] not in slugs:
+                err.append(f"flota: {rel} usa el módulo '{n['modulo']}', que no existe")
+            if n.get("la_ejecuta") not in nuc["tipos_de_estacion"] + list(nuc.get("roles_de_estacion", {})):
+                err.append(f"flota: {rel} la_ejecuta inválido '{n.get('la_ejecuta')}'")
+            if n.get("script") and not (f.parent / n["script"]).exists():
+                err.append(f"flota: {rel} declara el script '{n['script']}', que no existe")
+            if n.get("estado_ficha") == "borrador":
+                warn.append(f"flota: nave '{n['id']}' en borrador")
+            fichas[n["id"]] = n
+    for f in sorted(FL.glob("planos/*.yaml")):
+        p = yaml.safe_load(f.read_text(encoding="utf-8"))
+        if p.get("estado") not in nuc["estados_de_plano"]:
+            err.append(f"flota: plano {p.get('id')} con estado inválido")
+        if p.get("estado") == "validado" and not p.get("evidencia"):
+            err.append(f"flota: plano {p['id']} marcado validado sin evidencia")
+        for nid in p.get("naves_base", []):
+            if nid not in fichas:
+                err.append(f"flota: plano {p['id']} usa la nave '{nid}', que no está en el catálogo")
+        for s in p.get("cobertura_minima", []):
+            if s not in sect:
+                err.append(f"flota: plano {p['id']} exige el sector '{s}', que no existe")
+    print(f"flota: {len(sect)} sectores · {len(fichas)} naves · {len(list(FL.glob('planos/*.yaml')))} planos")
 
 print(f"{len(mods)} módulos · {len(err)} errores · {len(warn)} advertencias")
 for e in err: print("ERROR ", e)

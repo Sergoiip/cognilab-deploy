@@ -1,0 +1,23 @@
+id: respaldo-flota
+pieza: faro
+sector: mantenimiento
+nombre_visible: "Respaldo de la Flota"
+la_ejecuta: coordinador
+capitan: "<responsable de la Flota>"
+mision: "Respaldar cada noche lo necesario para reconstruir la Flota: configuración, instrucciones, memoria, faros, credenciales y tableros."
+hace:
+  - "Guardar los últimos 7 días en una carpeta privada de la máquina"
+  - "Avisar solo si el respaldo falla"
+no_hace:
+  - "Subir el respaldo a la nube ni sacarlo de la máquina"
+  - "Copiar el historial de conversaciones (por tamaño)"
+disparador: {faro: "30 23 * * *", modo: no_agent}
+script: respaldo_flota.py
+argumentos: ["--dias", "7"]
+registro: "~/.hermes/backups/fenix/"
+hecho:
+  - "Restaurar un tablero y un perfil desde el respaldo en una prueba, sin pérdida"
+indicador: "Días seguidos con respaldo válido"
+rol_humano_afectado: null
+modulo: cd-mantenimiento
+planos: [consultor-e2, agencia-e3]

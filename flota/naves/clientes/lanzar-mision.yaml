@@ -1,0 +1,22 @@
+id: lanzar-mision
+pieza: faro
+sector: clientes
+nombre_visible: "Faro de misión"
+la_ejecuta: coordinador
+capitan: "<responsable de la Flota>"
+mision: "En una fecha o con un ritmo, crear una misión del Ágora a partir de una plantilla del catálogo, sin duplicarla."
+hace:
+  - "Crear la misión con su contrato (tipo, criterio de hecho, rúbrica, topes) y su visto bueno si es un documento"
+  - "Avisar el id de la misión nueva"
+no_hace:
+  - "Ejecutar la misión: la ejecuta la estación asignada cuando el capitán la suelta (modo manual)"
+disparador: {faro: "0 13 * * 1", modo: no_agent}   # cada instancia del manifiesto pone su propia fecha
+script: lanzar_mision.py
+argumentos: []
+registro: "El Ágora (Kanban)"
+hecho:
+  - "La misión aparece en el tablero el día del faro, una sola vez, con su visto bueno"
+indicador: "Misiones recurrentes que ya no hay que acordarse de crear"
+rol_humano_afectado: null
+modulo: cd-flujos-trabajo
+planos: [consultor-e2, agencia-e3]

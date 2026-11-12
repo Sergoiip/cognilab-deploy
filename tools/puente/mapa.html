@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cogsmos · Mapa de la flota</title>
+<link rel="stylesheet" href="/comun.css">
+<style>
+*{box-sizing:border-box}
+html{background:var(--fondo)}
+body{margin:0;color:var(--tx);font:16px/1.45 var(--texto);min-height:100vh;
+  background:radial-gradient(1100px 520px at 12% -8%,rgba(155,92,255,.11),transparent 60%),radial-gradient(1000px 520px at 92% -6%,rgba(63,169,255,.08),transparent 60%),var(--fondo)}
+.pag{max-width:1520px;margin:0 auto;padding:6px 28px 56px}
+a{color:var(--azul)}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:2px;border-radius:6px}
+h2.t{margin:0 0 10px;font:600 14px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+
+/* estado */
+.estado{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin:18px 0 12px}
+.estado h1{margin:0;font:600 29px/1.15 var(--texto);display:flex;align-items:center;gap:14px}
+.estado h1 .ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none}
+.estado p{margin:4px 0 0 58px;color:var(--tx2)}
+.atn{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:18px}
+.at{background:var(--sup);border:1px solid var(--linea);border-left:3px solid var(--c);border-radius:14px;padding:12px 14px}
+.at .q{font-weight:600}.at .d{color:var(--tx2);font-size:15px;overflow-wrap:anywhere}.at .s{font-size:15px;margin-top:2px}
+.at .acc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px;color:var(--tx3)}
+.frase{font:600 14px var(--dato);color:var(--tx);background:var(--sup2);border:1px solid var(--linea);border-radius:8px;padding:4px 9px}
+button.copiar{font:600 14px var(--texto);color:#06060f;background:var(--magenta);border:0;border-radius:8px;padding:5px 11px;cursor:pointer}
+button.copiar.ok{background:var(--bien)}
+
+/* mapa */
+.mapa{background:linear-gradient(180deg,#0b0a1a,#08070f);border:1px solid var(--linea);border-radius:22px;overflow:hidden}
+.mcab{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 22px 10px;border-bottom:1px solid var(--linea)}
+.mcab h2{margin:0;font:600 21px var(--texto)}
+.pasos{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;font-size:15px;color:var(--tx2)}
+.pasos span{display:inline-flex;align-items:center;gap:7px}
+.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--magenta);color:#06060f;font:700 13px var(--dato)}
+.n.gris{background:var(--tx3)}
+.ley{display:flex;gap:16px;flex-wrap:wrap;padding:10px 22px;font-size:14px;color:var(--tx2);border-bottom:1px solid var(--linea)}
+.ley span{display:inline-flex;align-items:center;gap:7px}
+#lienzo{position:relative}
+#estrellas{position:absolute;inset:0;width:100%;height:100%}
+#svg{position:absolute;left:0;top:0;overflow:visible}
+.sat{cursor:pointer}
+.sat .cuerpo{transition:transform .18s ease}
+.sat.foco .cuerpo{transform:scale(1.35)}
+.sat.foco .l1{fill:#fff;font-size:17px}
+.sat.foco .etq{filter:drop-shadow(0 0 4px #000) drop-shadow(0 0 8px #000)}
+.sat .etq text{paint-order:stroke;stroke:#08070f;stroke-width:4px;stroke-linejoin:round}
+.sat.pausa .etq{opacity:.7}
+.sat .hit{fill:transparent}
+.sat:hover .l1{fill:#fff}
+.l1{font:600 15px var(--texto);fill:var(--tx)}
+.l2{font:13px var(--dato);fill:var(--tx3)}
+.grp{font:600 13px var(--dato);letter-spacing:.12em;fill:var(--tx2)}
+.snom{font:600 22px var(--texto);letter-spacing:.03em}
+.srol{font:14px var(--texto);fill:var(--tx2)}
+.scnt{font:700 26px var(--dato)}
+.scap{font:13px var(--dato);fill:var(--tx3)}
+.clab{font:600 15px var(--texto);fill:var(--tx)}
+.flujo{stroke-dasharray:4 8;animation:fl 1.3s linear infinite}
+@keyframes fl{to{stroke-dashoffset:-24}}
+.pulso{transform-box:fill-box;transform-origin:center;animation:pu 1.8s ease-out infinite}
+.pulso.tres{animation-iteration-count:3}
+@keyframes pu{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2.5);opacity:0}}
+.respira{animation:re 3s ease-in-out infinite}
+@keyframes re{50%{opacity:.45}}
+/* tablero de misiones (sobre el lienzo) */
+#tablero{position:absolute;background:rgba(14,13,29,.94);border:1.5px dashed rgba(255,46,136,.55);border-radius:18px;padding:12px 14px;box-shadow:0 0 0 6px rgba(255,46,136,.04)}
+#tablero .tt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+#tablero .tt b{font-size:17px}#tablero .tt span{font:13px var(--dato);color:var(--tx3)}
+#tablero .fila{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:15px;color:var(--tx2);border-top:1px solid var(--linea)}
+#tablero .fila:first-of-type{border-top:0}
+#tablero .fila b{font:600 15px var(--dato);color:var(--tx)}
+#tablero .fila.hot b{color:var(--aviso)}
+#tablero .ya{margin-top:8px;padding-top:8px;border-top:1px solid var(--linea2)}
+#tablero .ya h6{margin:0 0 4px;font:600 13px var(--dato);letter-spacing:.1em;text-transform:uppercase;color:var(--magenta)}
+#tablero .mi{display:flex;align-items:center;gap:8px;font-size:14px;padding:3px 0;cursor:pointer;color:var(--tx2)}
+#tablero .mi span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tablero .mi:hover{color:var(--tx)}
+.pie-mapa{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:0;border-top:1px solid var(--linea)}
+.pie-mapa > div{padding:12px 22px 14px}
+.pie-mapa > div + div{border-left:1px solid var(--linea)}
+.pie-mapa h4{margin:0 0 8px;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:14px;border:1px solid var(--linea);border-radius:99px;padding:5px 11px;color:var(--tx2);display:inline-flex;align-items:center;gap:7px}
+.chip.res{border-style:dashed}
+.chip img.mini{width:24px;height:24px;border-radius:50%;margin:-3px 0 -3px -6px;filter:grayscale(.6) brightness(.8);box-shadow:0 0 0 1px #000}.chip b{color:var(--tx);font-weight:600}
+.punto{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.p-bien{background:var(--bien)}.p-mal{background:var(--mal)}.p-off{border:2px solid var(--off)}.p-aviso{background:var(--aviso)}
+.p-trab{background:var(--magenta);animation:lat 1.6s ease-in-out infinite}
+@keyframes lat{50%{box-shadow:0 0 0 5px rgba(255,46,136,.2)}}
+.rombo{width:10px;height:10px;transform:rotate(45deg);background:var(--bien);display:inline-block;border-radius:2px}
+
+/* paneles bajo el mapa */
+.paneles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:18px}
+.caja{background:var(--sup);border:1px solid var(--linea);border-radius:16px;padding:14px 16px}
+.caja h3{margin:0 0 10px;font:600 14px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);display:flex;justify-content:space-between}
+.caja h3 em{font-style:normal;color:var(--tx2)}
+.trab{padding:8px 10px;border-radius:10px;background:var(--sup2);border:1px solid var(--linea);border-left:3px solid var(--c);margin-bottom:8px;font-size:14px;color:var(--tx2);cursor:default}
+.trab b{display:block;color:var(--tx);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trab[data-t]{cursor:pointer}
+.vacio{color:var(--tx3);font-size:15px}
+.px{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;cursor:pointer;border-top:1px solid var(--linea)}
+.px:first-of-type{border-top:0}
+.px .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.px .nm small{color:var(--tx3);font:13px var(--dato);margin-left:6px}
+.px .w{font:13px var(--dato);color:var(--tx2);white-space:nowrap}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px 10px;align-items:center;margin:8px 0}
+.bar .k{font-size:14px;color:var(--tx);grid-column:1/-1;display:flex;justify-content:space-between}
+.bar .k span{font:13px var(--dato);color:var(--tx3)}
+.stack{display:flex;height:9px;border-radius:5px;overflow:hidden;background:#1a1930;grid-column:1/-1}
+.stack i{display:block;height:100%}
+.sl{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:13px;color:var(--tx3)}
+.sl span{display:inline-flex;align-items:center;gap:5px}.sl i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.cons{display:grid;gap:10px}
+.cons .c{border:1px solid var(--linea);border-left:3px solid var(--c);border-radius:10px;padding:9px 12px;background:var(--sup2)}
+.cons .c b{display:block;color:var(--c);font-size:16px}
+.cons .c div{font:14px/1.5 var(--dato);color:var(--tx2)}
+.nota{font-size:13px;color:var(--tx3);margin-top:8px}
+
+/* bitácora */
+.bit{margin-top:18px}
+.bitl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
+.ev{display:grid;grid-template-columns:52px 12px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--linea);cursor:pointer;font-size:15px}
+.ev .h{font:600 14px var(--dato);color:var(--tx2)}
+.ev .x{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .x small{color:var(--tx3);font-size:14px;margin-left:6px}
+.ev .r{font-size:14px;color:var(--tx3);white-space:nowrap}
+.ev.nuevo{animation:nv 2.5s ease-out}
+@keyframes nv{0%{background:rgba(255,46,136,.18)}100%{background:transparent}}
+.pie2{margin-top:22px;color:var(--tx3);font-size:14px}
+
+/* detalle y tooltip */
+#tip{position:fixed;pointer-events:none;z-index:65;max-width:340px;background:rgba(11,10,24,.97);border:1px solid var(--linea2);border-radius:12px;padding:10px 13px;font-size:15px;display:none;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+#tip .k{font-size:14px;color:var(--tx2)}#tip .k b{color:var(--tx);font-weight:500}
+#tapa{position:fixed;inset:0;background:rgba(3,3,10,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+#tapa.on{opacity:1;pointer-events:auto}
+#det{position:fixed;top:0;right:0;bottom:0;width:min(560px,96vw);background:#0b0a18;border-left:1px solid var(--linea2);z-index:70;transform:translateX(102%);transition:transform .25s ease;display:flex;flex-direction:column}
+#det.on{transform:none}
+#det .dh{padding:18px 20px;border-bottom:1px solid var(--linea);display:flex;justify-content:space-between;gap:12px}
+#det h3{margin:0;font:600 23px/1.15 var(--texto)}#det .sub{color:var(--tx3);font-size:14px;margin-top:4px}
+#det .x{font:600 14px var(--texto);color:var(--tx2);background:none;border:1px solid var(--linea2);border-radius:8px;padding:5px 11px;cursor:pointer;height:fit-content}
+#det .db{overflow-y:auto;padding:16px 20px 30px}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:7px 12px;font-size:15px}
+.kv div:nth-child(odd){color:var(--tx3);font-size:14px;padding-top:1px}
+.sec{font:600 13px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);margin:18px 0 8px}
+pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:var(--tx2);background:#08070f;border:1px solid var(--linea);border-radius:10px;padding:12px;margin:0}
+.hist{display:flex;flex-wrap:wrap;gap:6px}.hist span{font:13px var(--dato);border:1px solid var(--linea);border-radius:7px;padding:3px 8px;color:var(--tx2)}
+
+@media (max-width:1250px){.paneles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.paneles,.bitl,.pie-mapa{grid-template-columns:1fr}.pie-mapa > div + div{border-left:0;border-top:1px solid var(--linea)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<link rel="stylesheet" href="/piel.css">
+</head>
+<body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="pag">
+
+  <div class="estado"><div><h1 aria-live="polite"><span class="ico" id="e-ico"></span><span id="e-tit">Cargando…</span></h1><p id="e-sub"></p></div></div>
+  <div class="atn" id="atencion"></div>
+
+  <section class="mapa" aria-labelledby="h-mapa">
+    <div class="mcab"><h2 id="h-mapa">Mapa de la flota</h2>
+      <div class="pasos" aria-label="Cómo fluye el trabajo"><span><i class="n">1</i>Le pides a ARG.OS</span><span>→</span><span><i class="n">2</i>crea la misión</span><span>→</span><span><i class="n">3</i>Promempteo la ejecuta</span><span>→</span><span><i class="n gris">4</i>te avisa del resultado</span></div></div>
+    <div class="ley"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span><span><i class="punto p-bien"></i>con IA</span><span><i class="rombo"></i>sin IA (no gasta; en retratos, anillo punteado)</span><span style="margin-left:auto;color:var(--tx3)">Pasa el mouse sobre una tarea: su órbita se detiene · clic para el detalle</span></div>
+    <div id="lienzo"><canvas id="estrellas"></canvas><svg id="svg"></svg><div id="tablero"></div></div>
+    <div class="pie-mapa"><div><h4>En reserva · con nombre, sin tarea todavía</h4><div class="chips" id="reserva"></div></div><div><h4>La máquina</h4><div class="chips" id="maquina"></div></div></div>
+  </section>
+
+  <div class="paneles">
+    <section class="caja"><h3>Trabajando ahora<em id="c-trab"></em></h3><div id="trab"></div></section>
+    <section class="caja"><h3>Próximas tareas automáticas<em id="c-prox"></em></h3><div id="prox"></div></section>
+    <section class="caja"><h3>Tableros de misiones<em id="c-tab"></em></h3><div id="tabs"></div></section>
+    <section class="caja"><h3>Consumo de hoy<em>estimado</em></h3><div class="cons" id="cons"></div><div class="nota">Calculado con precios de lista; no es lo que te cobran.</div></section>
+  </div>
+
+  <section class="caja bit"><h3>Bitácora · últimas 24 horas<em id="c-bit"></em></h3><div class="bitl" id="bitl"></div></section>
+  <div class="pie2">Esta vista solo muestra. Para soltar, aprobar o descartar algo, díselo a ARG.OS por el chat o Telegram.</div>
+</div>
+<div id="tip"></div><div id="tapa"></div>
+<aside id="det" aria-hidden="true"><div class="dh"><div><h3 id="dt"></h3><div class="sub" id="ds"></div></div><button class="x" id="dx">Cerrar ✕</button></div><div class="db" id="db"></div></aside>
+
+<script>
+const $=s=>document.querySelector(s);const NS="http://www.w3.org/2000/svg";
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null,prev=null,firmaPrev="",skew=0;const now=()=>Date.now()/1000+skew;
+const C={bien:"#37d39b",aviso:"#f5b53d",mal:"#ff4d6d",mag:"#ff2e88",vio:"#9b5cff",azul:"#3fa9ff",tx:"#e6e6f5",tx2:"#b6b6dc",tx3:"#8b8bb4",off:"#4d4a6e",sup:"#0e0d1d"};
+const I={ok:c=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`,
+  alerta:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M12 4l9 16H3z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.6v.2"/></svg>`};
+
+/* ── lenguaje común ── */
+const SEC={direccion:"Ritmo y dirección",clientes:"Clientes",marca:"Marca y contenido",ideas:"Ideas",operacion:"Entregas y operación",finanzas:"Dinero",equipo:"Aprendizaje y mejora",memoria:"Memoria",mantenimiento:"Cuidado de la máquina",unavez:"De una sola vez",otros:"Sin clasificar"};
+const ORDEN=["direccion","clientes","marca","ideas","operacion","finanzas","equipo","memoria","mantenimiento","unavez","otros"];
+const DOW={"*":"diario","1-5":"L a V","0":"dom","1":"lun","2":"mar","3":"mié","4":"jue","5":"vie","6":"sáb"};
+const MES=["","ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+function cuando(s){if(!s)return"";const o=s.match(/^once at (\d{4})-(\d\d)-(\d\d)[ T](\d\d:\d\d)/);
+  if(o){const h=new Date(now()*1000);return (+o[3]===h.getDate()&&+o[2]===h.getMonth()+1?"hoy":`${+o[3]}-${MES[+o[2]]}`)+" "+o[4]}
+  let m=s.match(/^every (\d+)m$/);if(m){const v=+m[1];return v%60===0?`cada ${v/60} h`:`cada ${v} min`}
+  const p=s.split(/\s+/);if(p.length!==5)return s;const [mi,ho,dom,mon,dow]=p,hh=`${ho.padStart(2,"0")}:${mi.padStart(2,"0")}`;
+  if(dom!=="*"&&mon!=="*")return `${dom}-${MES[+mon]} ${hh}`;return `${dow.split(",").map(x=>DOW[x]||x).join(" y ")} ${hh}`}
+function rel(t,fut){if(!t)return"—";let s=Math.max(0,Math.round(fut?t-now():now()-t));let x;
+  if(s<60)x="segundos";else if(s<3600)x=`${Math.floor(s/60)} min`;else if(s<86400){const h=Math.floor(s/3600),m=Math.floor(s%3600/60);x=h<6&&m?`${h} h ${m} min`:`${h} h`}else{const d=Math.floor(s/86400);x=d===1?"1 día":`${d} días`}
+  return fut?`en ${x}`:`hace ${x}`}
+const hm=t=>new Date(t*1000).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",hour12:false});
+const fecha=t=>t?new Date(t*1000).toLocaleString("es-CO",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false}):"—";
+const tok=n=>n>=1e6?(n/1e6).toFixed(1).replace(".",",")+" M":n>=1e3?Math.round(n/1e3)+" mil":String(n);
+const continuo=n=>/^every/.test(n.horario||"");
+const nombre=n=>n.nombre.replace(/^Misión · /,"");
+const est=id=>D.estaciones.find(e=>e.id===id);
+const porPerfil=p=>D.estaciones.find(e=>e.perfil===p);
+const color=e=>e&&e.coordinador?C.vio:C.azul;
+const rol=e=>e.coordinador?"coordina y hace lo personal":e.tipo==="negocio"?"hace el trabajo del negocio":e.tipo==="servicio"?"atiende al público":"hace lo personal";
+const sector=n=>n.sector||(/^once/.test(n.horario||"")?"unavez":"otros");
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const retrato=x=>D.personajes&&D.personajes[claveP(x)];
+const stCol=n=>({activa:C.bien,corriendo:C.mag,fallo:C.mal,pausada:C.off})[n.estado]||C.tx3;
+function errorClaro(e){if(!e)return"";if(/not configured|not enabled|deliver|chat_id|telegram|discord/i.test(e))return"Hizo su trabajo, pero no te pudo mandar el mensaje con el resultado.";
+  if(/timeout|timed out/i.test(e))return"Se demoró más de lo permitido y se detuvo.";if(/credential|auth|401|403|api key/i.test(e))return"Le falta una credencial o acceso.";
+  if(/not found|no such file|404/i.test(e))return"No encontró un archivo o recurso que necesita.";return"Tuvo un error técnico. ARG.OS puede ver el detalle."}
+
+/* ── necesita de ti ── */
+function atencion(){
+  const L=[],sy=D.sistema;
+  for(const t of D.agora.espera){const v={"para soltar":["Una misión espera que la sueltes",`suelta ${t.id}`],"visto bueno":["Un documento espera tu visto bueno",`aprueba ${t.id}`],"en revisión":["Una misión terminó y espera tu revisión",`revisa ${t.id}`]}[t.motivo]||["Esto espera tu decisión",`revisa ${t.id}`];
+    L.push({c:C.aviso,q:v[0],d:t.titulo,s:"No avanza hasta que decidas.",f:v[1]})}
+  for(const t of D.agora.atascadas){const larga=/corriendo/.test(t.motivo);
+    L.push({c:C.aviso,q:larga?"Una misión lleva más de 6 horas trabajando":/triage/.test(t.motivo)?"Una misión no se pudo repartir":/fallos/.test(t.motivo)?"Una misión ha fallado varias veces":"Una misión lleva días bloqueada",
+      d:`${t.titulo} · ${porPerfil(t.asignada)?.nombre||"sin asignar"} · desde ${rel(t.inicio||t.creada)}`,s:larga?"Puede que se haya trabado. Si no esperabas que tardara tanto, pregúntale.":"Mientras siga así, ese trabajo no avanza.",f:`¿qué pasa con ${t.id}?`})}
+  for(const n of D.naves.filter(n=>n.estado==="fallo"))L.push({c:C.mal,q:`Falló «${nombre(n)}»`,d:`${n.alias?n.alias+" · ":""}${est(n.estacion)?.nombre||""} · ${rel(n.ultimo)}`,s:errorClaro(n.error),f:`revisa la tarea automática ${n.alias||nombre(n)}`});
+  for(const e of D.estaciones)if(e.bot!=="connected")L.push({c:C.mal,q:`El bot de ${e.nombre} está desconectado`,d:"No te van a llegar sus avisos por Telegram.",f:`revisa el bot de ${e.nombre}`});
+  if(sy.gateway!=="running")L.push({c:C.mal,q:"La mensajería está detenida",d:"Ningún agente puede escribirte ni recibir mensajes.",f:"revisa el gateway"});
+  const en=sy.energia||{};if(en.corriente===false)L.push({c:C.aviso,q:"El portátil está con batería",d:`Va en ${en.bateria??"?"}%. Si se apaga, se detiene todo.`});
+  if(!sy.respaldo||now()-sy.respaldo.ts>36*3600)L.push({c:C.aviso,q:"No hay respaldo reciente",d:sy.respaldo?`El último fue ${rel(sy.respaldo.ts)}.`:"Todavía no hay ninguno.",f:"revisa el respaldo"});
+  return L}
+
+/* ── svg ── */
+function el(tag,at={},p){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(p)p.appendChild(e);return e}
+function tx(p,x,y,s,cls,at={}){const t=el("text",{x,y,class:cls,...at},p);t.textContent=s;return t}
+function cabe(t,max){let s=t.textContent;while(t.getComputedTextLength()>max&&s.length>3){s=s.slice(0,-2);t.textContent=s.trimEnd()+"…"}return t}
+function navesDe(e){
+  const ns=D.naves.filter(n=>n.estacion===e.id);
+  return ns.sort((a,b)=>((a.estado==="pausada")-(b.estado==="pausada"))||(ORDEN.indexOf(sector(a))-ORDEN.indexOf(sector(b)))||String(a.id).localeCompare(b.id))}
+function estrellas(W,H){const c=$("#estrellas"),r=devicePixelRatio||1;c.width=W*r;c.height=H*r;const x=c.getContext("2d");x.scale(r,r);
+  let s=11;const R=()=>(s=(s*16807)%2147483647)/2147483647;
+  for(let i=0;i<W*H/5200;i++){const a=R();x.fillStyle=`rgba(220,220,255,${.10+.4*a*a})`;const z=a>.95?1.6:1;x.fillRect(R()*W,R()*H,z,z)}}
+
+/* ── órbitas: estado que sobrevive a los redibujos ── */
+const ORB={};             // id de estación → {ang, angM, pausa}
+let SATS=[],ANILLOS=[];   // satélites vivos y misiones en el anillo interior
+const QUIETO=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const VUELTA=150,VUELTA_TRAB=100,VUELTA_MIS=26;   // segundos por vuelta (lento para poder leer)
+
+function dibujar(){
+  const lz=$("#lienzo"),W=lz.clientWidth,svg=$("#svg");
+  const ests=[...D.estaciones].sort((a,b)=>(b.coordinador?1:0)-(a.coordinador?1:0)).slice(0,2);
+  const gx=W/2,tw=Math.max(210,Math.min(250,W*.18));
+  const X0=Math.max(250,W*.22);
+  const RX=Math.max(115,Math.min(195,gx-tw/2-X0-112));
+  const maxN=Math.max(...ests.map(e=>navesDe(e).length),6);
+  const RY=Math.max(RX+20,Math.min(260,maxN*19));
+  const CLI=D.clientes||[],RCX=Math.min(W*.30,420),RCY=120;
+  const TOP=128,cy=TOP+RY+36,cy2=cy+RY+130+RCY+50,H=CLI.length?cy2+RCY+110:cy+RY+112;lz.style.height=H+"px";
+  svg.setAttribute("width",W);svg.setAttribute("height",H);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.innerHTML="";estrellas(W,H);
+  SATS=[];ANILLOS=[];
+  const defs=el("defs",{},svg);
+  [["gA",C.vio],["gB",C.azul],["gC",C.bien]].forEach(([id,c])=>{const g=el("radialGradient",{id},defs);el("stop",{offset:"0","stop-color":c,"stop-opacity":".38"},g);el("stop",{offset:"1","stop-color":c,"stop-opacity":"0"},g)});
+  const mk=(id,c)=>{const m=el("marker",{id,viewBox:"0 0 10 10",refX:"8",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"},defs);el("path",{d:"M0 0L10 5L0 10z",fill:c},m)};mk("fa",C.mag);mk("fb",C.tx3);
+  const X=[X0,W-X0];
+  const P=ests.map((e,i)=>({e,x:X[i],s:i?1:-1,c:color(e),grad:i?"gB":"gA"}));
+  const capas={fondo:el("g",{},svg),flujo:el("g",{},svg),orbitas:el("g",{},svg),nucleos:el("g",{},svg),sats:el("g",{},svg)};
+
+  // capitán
+  const capW=250,capH=56,capY=18,cap=capas.flujo;
+  el("rect",{x:gx-capW/2,y:capY,width:capW,height:capH,rx:16,fill:"rgba(255,46,136,.08)",stroke:"rgba(255,46,136,.6)","stroke-width":1.5},cap);
+  el("rect",{x:gx-capW/2+12,y:capY+10,width:36,height:36,rx:11,fill:"rgba(255,46,136,.18)"},cap);
+  tx(cap,gx-capW/2+30,capY+34,"S","scnt",{"text-anchor":"middle",fill:C.mag,style:"font-size:18px"});
+  tx(cap,gx-capW/2+60,capY+27,D.capitan||"Capitán","clab",{style:"font-size:18px"});
+  tx(cap,gx-capW/2+60,capY+44,"capitán · escritorio y Telegram","scap");
+  const badge=(x,y,n,c)=>{el("circle",{cx:x,cy:y,r:13,fill:c},cap);tx(cap,x,y+5,String(n),"scnt",{"text-anchor":"middle",fill:"#06060f",style:"font-size:15px"})};
+  if(P[0]){const p=P[0],x1=gx-capW/2,y1=capY+capH/2,x2=p.x+30,y2=cy-62;
+    el("path",{d:`M${x1} ${y1} C ${x1-120} ${y1}, ${x2} ${y1+20}, ${x2} ${y2}`,fill:"none",stroke:C.mag,"stroke-width":2,"marker-end":"url(#fa)"},cap);
+    const bx=x2+(x1-x2)*.45,by=y1+20;badge(bx,by,1,C.mag);tx(cap,bx+20,by+5,"le pides todo","srol",{fill:C.tx})}
+  if(P[1]){const p=P[1],x1=gx+capW/2,y1=capY+capH/2,x2=p.x-30,y2=cy-62;
+    el("path",{d:`M${x2} ${y2} C ${x2} ${y1+20}, ${x1+120} ${y1}, ${x1} ${y1}`,fill:"none",stroke:C.tx3,"stroke-width":1.6,"stroke-dasharray":"5 6","marker-end":"url(#fb)"},cap);
+    const bx=x2-(x2-x1)*.45,by=y1+20;badge(bx,by,4,C.tx3);tx(cap,bx-20,by+5,"te avisa del resultado","srol",{fill:C.tx,"text-anchor":"end"})}
+
+  // tablero de misiones (HTML encima) y carriles
+  const tb=$("#tablero");tb.style.width=tw+"px";tb.innerHTML=htmlTablero();tb.style.left=(gx-tw/2)+"px";const th=tb.offsetHeight;tb.style.top=(cy-th/2)+"px";
+  const activo=D.agora.tareas.some(t=>["running","ready"].includes(t.estado)&&t.asignada);
+  if(P.length===2){
+    const segs=[[P[0].x+62,gx-tw/2-8,2,"crea la misión"],[gx+tw/2+8,P[1].x-62,3,"la ejecuta"]];
+    segs.forEach(([a,b,n,l])=>{el("line",{x1:a,y1:cy,x2:b,y2:cy,stroke:"rgba(255,46,136,.14)","stroke-width":12,"stroke-linecap":"round"},cap);
+      el("line",{x1:a,y1:cy,x2:b-6,y2:cy,stroke:C.mag,"stroke-width":2.6,"marker-end":"url(#fa)",...(activo?{class:"flujo"}:{"stroke-dasharray":"4 8"})},cap);
+      const mx=(a+b)/2;badge(mx,cy-26,n,C.mag);if(b-a>130)tx(cap,mx,cy-52,l,"srol",{"text-anchor":"middle",fill:C.tx})});
+    D.agora.tareas.filter(t=>t.estado==="ready"&&t.asignada&&t.estacion===P[1].e.id).slice(0,4).forEach((t,k)=>{
+      const g=el("g",{class:"sat"},cap);el("path",{d:"M-8 -6 L8 0 L-8 6 L-4 0z",fill:C.azul},g);
+      el("animateMotion",{dur:"6s",repeatCount:"indefinite",begin:`${-k*1.5}s`,path:`M${gx+tw/2+10} ${cy} L${P[1].x-66} ${cy}`},g);tipTarea(g,t)})}
+
+  // estaciones, órbitas y satélites
+  P.forEach((p,i)=>{const e=p.e,trabaja=e.misiones.running>0||e.actividad.activas.length>0;
+    const o=ORB[e.id]||(ORB[e.id]={ang:i?Math.PI:0,angM:0,pausa:false});
+    o.periodo=trabaja?VUELTA_TRAB:VUELTA;o.cx=p.x;o.cy=cy;o.dir=p.s<0?1:-1;
+    // órbita exterior
+    el("ellipse",{cx:p.x,cy,rx:RX,ry:RY,fill:"none",stroke:p.c,"stroke-opacity":".4","stroke-width":1.3,"stroke-dasharray":"3 6"},capas.orbitas);
+    el("ellipse",{cx:p.x,cy,rx:RX+1,ry:RY+1,fill:"none",stroke:p.c,"stroke-opacity":".08","stroke-width":10},capas.orbitas);
+    // núcleo
+    const nu=capas.nucleos;
+    el("circle",{cx:p.x,cy,r:trabaja?104:88,fill:`url(#${p.grad})`,class:trabaja?"respira":""},nu);
+    el("circle",{cx:p.x,cy,r:58,fill:"none",stroke:p.c,"stroke-opacity":".55","stroke-width":1.5},nu);
+    const hx=[...Array(6)].map((_,k)=>{const a=Math.PI/3*k-Math.PI/2;return `${p.x+44*Math.cos(a)},${cy+44*Math.sin(a)}`}).join(" ");
+    el("polygon",{points:hx,fill:"#0c0b1a",stroke:p.c,"stroke-width":2},nu);
+    const rE=retrato(e.nombre);
+    if(rE){const cid="cl-"+i;const cp=el("clipPath",{id:cid},defs);el("circle",{cx:p.x,cy,r:40},cp);
+      el("image",{href:rE,x:p.x-40,y:cy-40,width:80,height:80,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice"},nu);
+      el("circle",{cx:p.x,cy,r:40,fill:"none",stroke:p.c,"stroke-width":2},nu);
+      const bx=p.x+34,by=cy-34;el("circle",{cx:bx,cy:by,r:15,fill:e.misiones.running?C.mag:"#1b1a2e",stroke:"#000","stroke-width":2},nu);
+      tx(nu,bx,by+5,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?"#06060f":p.c,style:"font-size:15px"})}
+    else{tx(nu,p.x,cy-1,String(e.misiones.running),"scnt",{"text-anchor":"middle",fill:e.misiones.running?C.mag:p.c});
+      tx(nu,p.x,cy+24,e.misiones.running===1?"misión":"misiones","scap",{"text-anchor":"middle"})}
+    tx(nu,p.x,cy+RY+56,e.nombre.toUpperCase(),"snom",{"text-anchor":"middle",fill:p.c});
+    tx(nu,p.x,cy+RY+76,`${rol(e)} · ${e.misiones.running} misión${e.misiones.running===1?"":"es"} en curso`,"srol",{"text-anchor":"middle"});
+    tx(nu,p.x,cy+RY+94,e.bot==="connected"?"● bot conectado":"○ bot desconectado","scap",{"text-anchor":"middle",fill:e.bot==="connected"?C.bien:C.mal});
+    // anillo interior: misiones en curso (giran más rápido)
+    const mis=D.agora.tareas.filter(t=>t.estado==="running"&&t.estacion===e.id).slice(0,6);
+    if(mis.length){el("circle",{cx:p.x,cy,r:76,fill:"none",stroke:C.mag,"stroke-opacity":".3","stroke-dasharray":"1 5"},capas.orbitas);
+      mis.forEach((t,k)=>{const g=el("g",{class:"sat"},capas.sats);
+        el("circle",{r:12,fill:"transparent"},g);
+        el("path",{d:"M-7 -5 L8 0 L-7 5 L-3 0z",fill:C.mag,class:"nave-m"},g);
+        g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco")});
+        g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
+        g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(t.titulo)}</b><div class="k">Misión en curso · ${esc(e.nombre)}</div><div class="k">Empezó <b>${rel(t.inicio)}</b></div><div class="k" style="color:var(--tx3)">La órbita se detiene mientras la miras · clic para el detalle</div>`));
+        g.addEventListener("click",()=>abrirTarea(t.tablero,t.id));
+        ANILLOS.push({g,o,k,N:mis.length})})}
+    // satélites: las tareas automáticas
+    const ns=navesDe(e),N=ns.length;
+    ns.forEach((n,k)=>{const c=stCol(n),pa=n.estado==="pausada";
+      const g=el("g",{class:"sat"+(pa?" pausa":""),"data-id":n.id},capas.sats);
+      const cuerpo=el("g",{class:"cuerpo"},g);
+      el("circle",{r:22,fill:"transparent"},cuerpo);
+      if(n.estado==="corriendo")el("circle",{r:17,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},cuerpo);
+      else if(n.ultimo&&now()-n.ultimo<900&&!pa)el("circle",{r:14,fill:"none",stroke:c,"stroke-width":1.5,class:"pulso tres"},cuerpo);
+      const rN=n.alias&&retrato(n.alias);
+      if(rN){const cid="cn-"+n.id;const cp=el("clipPath",{id:cid},defs);el("circle",{r:15},cp);
+        el("image",{href:rN,x:-15,y:-15,width:30,height:30,"clip-path":`url(#${cid})`,preserveAspectRatio:"xMidYMid slice",opacity:pa?.4:1},cuerpo);
+        el("circle",{r:16,fill:"none",stroke:c,"stroke-width":2.5,...(n.sin_modelo?{"stroke-dasharray":"3 3"}:{})},cuerpo)}
+      else if(n.sin_modelo)el("rect",{x:-7,y:-7,width:14,height:14,rx:2,transform:"rotate(45)",fill:pa?C.sup:c,stroke:pa?C.off:"#000","stroke-width":pa?2:1},cuerpo);
+      else el("circle",{r:8,fill:pa?C.sup:c,stroke:pa?C.off:"#000","stroke-width":pa?2:1},cuerpo);
+      if(n.estado==="fallo")el("circle",{r:rN?21:13,fill:"none",stroke:C.mal,"stroke-width":1.6},cuerpo);
+      const cu=n.estado==="fallo"?"falló":n.estado==="corriendo"?"trabajando ahora":pa?"pausada":cuando(n.horario);
+      const et=el("g",{class:"etq"},g);
+      const t1=tx(et,0,-2,n.alias||nombre(n),"l1",pa?{fill:C.tx3}:{});cabe(t1,150);
+      const t2=tx(et,0,15,cu,"l2",n.estado==="fallo"?{fill:C.mal}:n.estado==="corriendo"?{fill:C.mag}:{});cabe(t2,150);
+      g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco");capas.sats.appendChild(g)});
+      g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
+      g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(n.alias||nombre(n))}</b>${n.alias?`<div class="k">${esc(nombre(n))}</div>`:""}<div class="k">Área: <b>${esc(SEC[sector(n)])}</b></div>
+        <div class="k">Cuándo: <b>${esc(cuando(n.horario))}</b> · ${n.sin_modelo?"sin IA":"con IA"}</div><div class="k">Última vez: <b>${n.ultimo?rel(n.ultimo):"nunca"}</b>${n.ultimo_silencio?" · sin novedades":""}</div>
+        <div class="k">Próxima: <b>${pa?"pausada":rel(n.proximo,1)}</b></div>${n.error?`<div class="k" style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}
+        <div class="k" style="color:var(--tx3)">La órbita se detiene mientras la miras · clic para el detalle</div>`));
+      g.addEventListener("click",()=>abrirNave(n.perfil,n.id));
+      SATS.push({g,et,t1,t2,o,k,N,rx:RX,ry:RY,lado:0})});
+    // pausar también al mirar el núcleo
+    const hit=el("circle",{cx:p.x,cy,r:60,fill:"transparent",style:"cursor:default"},capas.sats);
+    hit.addEventListener("mouseenter",()=>o.pausa=true);hit.addEventListener("mouseleave",()=>o.pausa=false);
+  });
+  // ── esfera de clientes ──
+  if(CLI.length){
+    const o=ORB.__clientes||(ORB.__clientes={ang:0,angM:0,pausa:false});o.periodo=200;o.cx=gx;o.cy=cy2;o.dir=1;
+    el("ellipse",{cx:gx,cy:cy2,rx:RCX,ry:RCY,fill:"none",stroke:C.bien,"stroke-opacity":".35","stroke-width":1.3,"stroke-dasharray":"3 6"},capas.orbitas);
+    el("circle",{cx:gx,cy:cy2,r:70,fill:"url(#gC)"},capas.nucleos);
+    el("circle",{cx:gx,cy:cy2,r:44,fill:"#0c0b1a",stroke:C.bien,"stroke-width":2},capas.nucleos);
+    tx(capas.nucleos,gx,cy2+2,String(CLI.length),"scnt",{"text-anchor":"middle",fill:C.bien});
+    tx(capas.nucleos,gx,cy2+22,"clientes","scap",{"text-anchor":"middle"});
+    tx(capas.nucleos,gx,cy2+RCY+46,"CLIENTES","snom",{"text-anchor":"middle",fill:C.bien});
+    tx(capas.nucleos,gx,cy2+RCY+66,"pulso semanal: lunes 13:30 · informe, dónde estamos, palancas y flujos","srol",{"text-anchor":"middle"});
+    // Promempteo ejecuta los pulsos
+    const pe=P.find(p=>p.e.tipo==="negocio");
+    if(pe){const x1=pe.x,y1=cy+RY+100,x2=gx+50,y2=cy2-30;
+      el("path",{d:`M${x1} ${y1} C ${x1} ${y1+60}, ${x2+80} ${y2-40}, ${x2} ${y2}`,fill:"none",stroke:C.azul,"stroke-width":1.8,"stroke-dasharray":"5 6","marker-end":"url(#fb)"},capas.flujo);
+      tx(capas.flujo,(x1+x2)/2+40,(y1+y2)/2-6,"hace los pulsos","srol",{fill:C.tx})}
+    const EP={done:[C.bien,"hecho"],running:[C.mag,"trabajando ahora"],ready:["#7a77a3","en cola"],blocked:[C.aviso,"trabado"],triage:[C.aviso,"sin repartir"],todo:["#7a77a3","en espera"]};
+    CLI.forEach((c,k)=>{const u=c.ultimo,[col,lab]=u?(EP[u.status]||[C.tx3,u.status]):[C.tx3,"aún sin pulso"];
+      const g=el("g",{class:"sat planeta"},capas.sats);const cuerpo=el("g",{class:"cuerpo"},g);
+      el("circle",{r:46,fill:"transparent"},cuerpo);
+      const lunas=el("g",{},cuerpo);
+      el("circle",{r:38,fill:"none",stroke:col,"stroke-opacity":".25","stroke-dasharray":"1 4"},lunas);
+      c.rutinas.forEach((r,j)=>{const a=j*Math.PI/2;el("circle",{cx:38*Math.cos(a),cy:38*Math.sin(a),r:4.5,fill:u&&u.status==="done"?C.bien:u&&u.status==="running"?C.mag:"#3a3659",stroke:"#000","stroke-width":1},lunas)});
+      if(u&&u.status==="running")el("circle",{r:28,fill:"none",stroke:C.mag,"stroke-width":2,class:"pulso"},cuerpo);
+      el("circle",{r:24,fill:"#12102a",stroke:col,"stroke-width":2.5},cuerpo);
+      tx(cuerpo,0,6,c.nombre.replace(/[^A-ZÁÉÍÓÚÑ]/g,"").slice(0,2)||c.nombre.slice(0,2).toUpperCase(),"scnt",{"text-anchor":"middle",fill:col,style:"font-size:17px"});
+      const et=el("g",{class:"etq"},g);
+      const t1=tx(et,0,-2,c.nombre,"l1");cabe(t1,190);
+      const t2=tx(et,0,15,`pulso: ${lab}${u&&u.completed_at?" "+rel(u.completed_at):""}`,"l2",{fill:col});cabe(t2,190);
+      g.addEventListener("mouseenter",()=>{o.pausa=true;g.classList.add("foco");capas.sats.appendChild(g)});
+      g.addEventListener("mouseleave",()=>{o.pausa=false;g.classList.remove("foco");untip()});
+      g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(c.nombre)}</b><div class="k">Último pulso: <b style="color:${col}">${esc(lab)}</b>${u?` · ${esc(u.title.split("·").pop().trim())}`:""}</div>
+        ${u&&u.resumen?`<div class="k" style="white-space:pre-wrap;margin-top:4px">${esc(String(u.resumen).slice(0,420))}</div>`:""}
+        ${u&&u.palancas.length?`<div class="k" style="margin-top:4px">Palancas: <b>${u.palancas.slice(0,3).map(esc).join(" · ")}</b></div>`:""}
+        <div class="k" style="margin-top:4px">Tareas abiertas en Atlas: <b>${c.n_tareas}</b> · actividades en Atlas: <b>${c.actividades_atlas}</b></div>
+        <div class="k">Próximo pulso: <b>${c.faro?rel(c.faro.proximo,1):"sin faro"}</b></div>
+        <div class="k" style="color:var(--tx3)">La esfera se detiene mientras la miras · clic para el detalle</div>`));
+      g.addEventListener("click",()=>u?abrirTarea(u.tablero,u.id):c.faro&&abrirNave(c.faro.perfil,c.faro.id));
+      SATS.push({g,et,t1,t2,o,k,N:CLI.length,rx:RCX,ry:RCY,lado:0,lunas,dx:56})});
+  }
+  colocar();
+}
+function colocar(){
+  for(const s of SATS){const o=s.o,th=o.ang*o.dir+(-Math.PI/2)+s.k*2*Math.PI/s.N;
+    const x=o.cx+s.rx*Math.cos(th),y=o.cy+s.ry*Math.sin(th);s.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+    const lado=Math.cos(th)>=0?1:-1;
+    if(s.lunas)s.lunas.setAttribute("transform",`rotate(${(s.o.angM*57.3*.5%360).toFixed(1)})`);
+    if(lado!==s.lado){s.lado=lado;const a=lado>0?"start":"end",dx=(s.dx||24)*lado;
+      [s.t1,s.t2].forEach(t=>{t.setAttribute("text-anchor",a);t.setAttribute("x",dx)})}}
+  for(const m of ANILLOS){const o=m.o,th=o.angM+m.k*2*Math.PI/m.N;
+    const x=o.cx+76*Math.cos(th),y=o.cy+76*Math.sin(th);m.g.setAttribute("transform",`translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(th*180/Math.PI+90).toFixed(1)})`)}}
+let tPrev=performance.now();
+function girar(t){const dt=Math.min(.1,(t-tPrev)/1000);tPrev=t;
+  if(!QUIETO&&!document.hidden){for(const id in ORB){const o=ORB[id];if(o.pausa)continue;o.ang+=dt*2*Math.PI/(o.periodo||VUELTA);o.angM+=dt*2*Math.PI/VUELTA_MIS}colocar()}
+  requestAnimationFrame(girar)}
+requestAnimationFrame(girar);
+function htmlTablero(){
+  const ag=D.agora,d0=new Date(now()*1000);d0.setHours(0,0,0,0);const hoy0=d0/1000;
+  const curso=ag.tareas.filter(t=>t.estado==="running"),cola=ag.tareas.filter(t=>t.estado==="ready"&&t.asignada),
+    bloq=ag.tareas.filter(t=>t.estado==="blocked"),hechas=ag.tareas.filter(t=>t.estado==="done"&&t.fin>=hoy0&&t.asignada),
+    tuyas=ag.tareas.filter(t=>t.estado==="ready"&&!t.asignada).length+(ag.conteo.todo||0);
+  const f=(l,n,hot)=>`<div class="fila ${hot&&n?"hot":""}"><span>${l}</span><b>${n}</b></div>`;
+  return `<div class="tt"><b>Tablero de misiones</b><span>Ágora</span></div>
+    ${f("Esperan tu OK",ag.espera.length,1)}${f("En curso",curso.length)}${f("En cola para un agente",cola.length)}${f("Bloqueadas",bloq.length,1)}${f("Terminadas hoy",hechas.length)}${f("Tuyas sin asignar",tuyas)}
+    ${curso.length?`<div class="ya"><h6>En curso ahora</h6>${curso.slice(0,3).map(t=>`<div class="mi" onclick="abrirTarea('${t.tablero}','${t.id}')" title="${esc(t.titulo)}"><span class="punto" style="background:${color(porPerfil(t.asignada))}"></span><span>${esc(t.titulo)}</span></div>`).join("")}${curso.length>3?`<div class="mi">y ${curso.length-3} más</div>`:""}</div>`:""}`}
+function tipTarea(g,t){g.addEventListener("mousemove",ev=>tip(ev,`<b>${esc(t.titulo)}</b><div class="k">En camino a ${esc(porPerfil(t.asignada)?.nombre||"")} · ${esc(t.tablero)}</div>`));g.addEventListener("mouseleave",untip);g.addEventListener("click",()=>abrirTarea(t.tablero,t.id))}
+function tip(ev,h){const t=$("#tip");t.innerHTML=h;t.style.display="block";const w=t.offsetWidth,hh=t.offsetHeight;let x=ev.clientX+16,y=ev.clientY+14;if(x+w>innerWidth-8)x=ev.clientX-w-16;if(y+hh>innerHeight-8)y=innerHeight-hh-8;t.style.left=x+"px";t.style.top=y+"px"}
+function untip(){$("#tip").style.display="none"}
+
+/* ── paneles ── */
+function paneles(){
+  const L=atencion(),malos=L.some(x=>x.c===C.mal);
+  const [col,tit]=L.length?[malos?C.mal:C.aviso,L.length===1?"Una cosa necesita tu atención":`${L.length} cosas necesitan tu atención`]:[C.bien,"Todo en orden"];
+  $("#e-ico").style.background=col+"22";$("#e-ico").innerHTML=L.length?I.alerta(col):I.ok(col);$("#e-tit").textContent=tit;
+  const act=D.naves.filter(n=>n.estado!=="pausada").length,trab=D.estaciones.filter(e=>e.misiones.running||e.actividad.activas.length).length;
+  $("#e-sub").textContent=`${D.estaciones.length} agentes · ${trab?trab+" trabajando ahora":"ninguno trabajando"} · ${act} tareas automáticas activas`;
+  $("#atencion").innerHTML=L.map(x=>`<div class="at" style="--c:${x.c}"><div class="q">${esc(x.q)}</div><div class="d">${esc(x.d)}</div>${x.s?`<div class="s">${esc(x.s)}</div>`:""}
+    ${x.f?`<div class="acc">Dile a ARG.OS: <span class="frase">«${esc(x.f)}»</span><button class="copiar" data-f="${esc(x.f)}" aria-label="Copiar la frase para pegarla en el chat de ARG.OS">Copiar frase</button></div>`:""}</div>`).join("");
+  $("#atencion").style.display=L.length?"":"none";
+  // trabajando
+  const w=[];D.estaciones.forEach(e=>{D.agora.tareas.filter(t=>t.estado==="running"&&t.estacion===e.id).forEach(t=>w.push(`<div class="trab" style="--c:${color(e)}" data-t onclick="abrirTarea('${t.tablero}','${t.id}')"><b title="${esc(t.titulo)}">${esc(t.titulo)}</b>${esc(e.nombre)} · misión · empezó ${rel(t.inicio)}</div>`));
+    e.actividad.activas.filter(a=>a.fuente!=="kanban").forEach(a=>w.push(`<div class="trab" style="--c:${color(e)}"><b title="${esc(a.titulo)}">${esc(a.titulo||"Sin título")}</b>${esc(e.nombre)} · ${a.fuente==="cron"?"tarea automática":"conversación"} · activa ${rel(a.ultimo)}</div>`))});
+  $("#c-trab").textContent=w.length;$("#trab").innerHTML=w.join("")||`<div class="vacio">Nadie está trabajando en este momento.</div>`;
+  // próximas
+  const nx=D.naves.filter(n=>n.estado!=="pausada"&&n.proximo&&!continuo(n)).sort((a,b)=>a.proximo-b.proximo).slice(0,8);
+  $("#c-prox").textContent=act+" activas";
+  $("#prox").innerHTML=nx.map(n=>`<div class="px" onclick="abrirNave('${n.perfil}','${n.id}')"><span class="punto" style="background:${color(est(n.estacion))}"></span><span class="nm">${esc(n.alias||nombre(n))}<small>${hm(n.proximo)}</small></span><span class="w" data-fut="${n.proximo}">${rel(n.proximo,1)}</span></div>`).join("");
+  // tableros
+  const B=D.agora.tableros,SC=[["running",C.mag,"en curso"],["ready","#7a77a3","lista"],["todo","#3d3a5e","en espera"],["blocked",C.aviso,"bloqueada"],["review",C.vio,"en revisión"],["triage",C.mal,"sin repartir"]];
+  const NB={"default":"General","atlas-sys":"Atlas","coach-sales-outreach":"Ventas y prospección","operaciones-cognilab":"Operaciones CogniLab","personal":"Personal","rediseno-cognilab":"Rediseño CogniLab"};
+  let tot=0;$("#tabs").innerHTML=Object.entries(B).map(([k,o])=>{const t=SC.reduce((a,[s])=>a+(o[s]||0),0);tot+=t;
+    return `<div class="bar" title="${SC.map(([s,,l])=>`${l}: ${o[s]||0}`).join(" · ")}"><div class="k">${esc(NB[k]||k)}<span>${t} abiertas</span></div><div class="stack">${SC.map(([s,c])=>o[s]?`<i style="width:${o[s]/Math.max(t,1)*100}%;background:${c}"></i>`:"").join("")}</div></div>`}).join("")+
+    `<div class="sl">${SC.map(([,c,l])=>`<span><i style="background:${c}"></i>${l}</span>`).join("")}</div>`;
+  $("#c-tab").textContent=tot+" abiertas";
+  // consumo
+  $("#cons").innerHTML=D.estaciones.map(e=>`<div class="c" style="--c:${color(e)}"><b>${esc(e.nombre)}</b><div>${e.actividad.sesiones_hoy} sesiones · ${tok(e.actividad.tokens_hoy)} tokens</div><div>US$ ${(+e.actividad.costo_hoy||0).toFixed(2).replace(".",",")}</div></div>`).join("");
+  // reserva y máquina
+  $("#reserva").innerHTML=(D.reserva||[]).map(r=>`<span class="chip res" title="${esc(SEC[r.sector]||"")}">${retrato(r.alias)?`<img class="mini" src="${retrato(r.alias)}" alt="">`:""}<b>${esc(r.alias)}</b>${esc(r.funcion||"")}</span>`).join("");
+  const sy=D.sistema,sv=sy.servicios||{},en=sy.energia||{},rs=sy.respaldo;
+  const ch=(ok,t)=>`<span class="chip"><span class="punto ${ok===true?"p-bien":ok===false?"p-mal":"p-aviso"}"></span>${t}</span>`;
+  $("#maquina").innerHTML=[ch(sy.gateway==="running"||false,"Mensajería "+(sy.gateway==="running"?"en línea":"detenida")),
+    ...D.estaciones.map(e=>ch(e.bot==="connected"||false,`Bot de ${esc(e.nombre)}`)),
+    ch(sv["flota-despierta"]==="active"?true:null,sv["flota-despierta"]==="active"?"No se duerme con corriente":"Puede dormirse"),
+    ch(en.corriente?true:null,(en.corriente?"Enchufado":"Con batería")+` · ${en.bateria??"?"}%`),
+    ch(rs&&now()-rs.ts<36*3600?true:null,rs?`Respaldo ${rel(rs.ts)}`:"Sin respaldo")].join("");
+  // bitácora
+  const CL={created:"se creó",claimed:"empezó",completed:"terminó",blocked:"se bloqueó",unblocked:"se soltó",assigned:"se asignó",promoted:"quedó lista",spawned:"arrancó",worker_result:"entregó resultado",reclaimed:"se reasignó",archived:"se archivó",commented:"comentario nuevo"};
+  const viejos=new Set((prev?.bitacora||[]).map(b=>b.tipo+b.id+b.ts));
+  const bl=D.bitacora.filter(b=>b.ts>now()-86400&&!(b.tipo==="faro"&&continuo(D.naves.find(n=>n.id===b.id)||{})));
+  $("#c-bit").textContent=bl.length+" movimientos";
+  $("#bitl").innerHTML=bl.map(b=>{const nuevo=prev&&!viejos.has(b.tipo+b.id+b.ts)?" nuevo":"";
+    if(b.tipo==="faro"){const e=est(b.estacion);return `<div class="ev${nuevo}" onclick="abrirNave('${b.perfil}','${b.id}')"><span class="h">${hm(b.ts)}</span><span class="punto ${b.clase==="fallo"?"p-mal":"p-bien"}"></span><span class="x">${esc(b.titulo)}<small>tarea automática · ${esc(e?.nombre||"")}</small></span><span class="r">${b.clase==="fallo"?"falló":b.clase==="silencio"?"sin novedades":"te avisó"}</span></div>`}
+    const e=porPerfil(b.asignada||"");return `<div class="ev${nuevo}" onclick="abrirTarea('${b.tablero}','${b.id}')"><span class="h">${hm(b.ts)}</span><span class="punto" style="background:${e?color(e):C.tx3}"></span><span class="x">${esc(b.titulo||b.id)}<small>misión${e?" · "+esc(e.nombre):""}</small></span><span class="r">${CL[b.clase]||b.clase}</span></div>`}).join("")||`<div class="vacio">Sin movimientos en las últimas 24 horas.</div>`;
+}
+
+/* ── detalle ── */
+function abrir(){$("#det").classList.add("on");$("#tapa").classList.add("on");$("#det").setAttribute("aria-hidden","false");$("#dx").focus()}
+function cerrar(){$("#det").classList.remove("on");$("#tapa").classList.remove("on");$("#det").setAttribute("aria-hidden","true")}
+$("#dx").onclick=cerrar;$("#tapa").onclick=cerrar;addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
+async function abrirNave(perfil,id){const r=await fetch(`/api/nave?perfil=${encodeURIComponent(perfil)}&id=${id}`);if(!r.ok)return;const n=await r.json(),e=porPerfil(perfil);
+  $("#dt").innerHTML=`<span style="color:${color(e)}">${esc(n.alias||nombre(n))}</span>`;$("#ds").textContent=`${n.alias?nombre(n)+" · ":""}tarea automática de ${e?.nombre||perfil}`;
+  const st=!n.activo?"Pausada":n.error?"Falló la última vez":"Funcionando";
+  const salida=(n.ultima_salida||"").replace(/^# Cron Job:.*$/m,"").replace(/^\*\*(Job ID|Run Time|Mode|Schedule|Prompt Characters|Response Characters|Status):\*\*.*$/gm,"").replace(/^\s*---\s*$/m,"").trim();
+  $("#db").innerHTML=`<div class="kv"><div>Estado</div><div>${st}</div><div>Área</div><div>${esc(SEC[n.sector||(/^once/.test(n.horario||"")?"unavez":"otros")])}</div><div>Cuándo corre</div><div>${esc(cuando(n.horario))}</div>
+    <div>Cómo</div><div>${n.sin_modelo?"Script sin IA (no gasta)":"Con un agente de IA"}</div><div>Última vez</div><div>${n.ultimo?`${fecha(n.ultimo)} (${rel(n.ultimo)})`:"Nunca"}</div>
+    <div>Próxima</div><div>${n.activo&&n.proximo?`${fecha(n.proximo)} (${rel(n.proximo,1)})`:"—"}</div>${n.error?`<div>Problema</div><div style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}</div>
+    ${n.historial.length?`<div class="sec">Últimas corridas</div><div class="hist">${n.historial.map(h=>`<span>${esc(h.archivo.replace(".md","").replace("_"," ").replace(/-(\d\d)-(\d\d)$/,":$1"))} · ${esc(h.estado)}</span>`).join("")}</div>`:""}
+    <div class="sec">Lo último que dijo</div><pre>${esc(n.ultima_salida?(salida||"Corrió sin novedades."):"Todavía no ha corrido.")}</pre>
+    ${n.instrucciones?`<div class="sec">Sus instrucciones</div><pre>${esc(n.instrucciones)}</pre>`:""}`;abrir()}
+async function abrirTarea(tab,id){const r=await fetch(`/api/tarea?tablero=${encodeURIComponent(tab)}&id=${id}`);if(!r.ok)return;const t=await r.json(),e=porPerfil(t.asignada||"");
+  const E={running:"En curso",ready:"Lista",blocked:"Bloqueada",done:"Terminada",todo:"En espera",review:"En revisión",triage:"Sin repartir"};
+  $("#dt").textContent=t.titulo;$("#ds").textContent=`Misión ${t.id} · tablero ${t.tablero}`;
+  $("#db").innerHTML=`<div class="kv"><div>Estado</div><div>${E[t.estado]||t.estado}</div><div>La tiene</div><div style="color:${e?color(e):"inherit"}">${esc(e?.nombre||t.asignada||"Nadie (es tuya)")}</div>
+    <div>Creada</div><div>${fecha(t.creada)}</div>${t.inicio?`<div>Empezó</div><div>${fecha(t.inicio)} (${rel(t.inicio)})</div>`:""}${t.fin?`<div>Terminó</div><div>${fecha(t.fin)}</div>`:""}</div>
+    <div class="sec">Qué hacer</div><div style="color:var(--tx2)">Díselo a ARG.OS: «suelta ${esc(t.id)}», «aprueba ${esc(t.id)}» o «¿qué pasa con ${esc(t.id)}?».</div>
+    ${t.resultado?`<div class="sec">Resultado</div><pre>${esc(t.resultado)}</pre>`:""}${t.cuerpo?`<div class="sec">La misión</div><pre>${esc(t.cuerpo)}</pre>`:""}
+    ${t.comentarios?.length?`<div class="sec">Comentarios</div>${t.comentarios.map(c=>`<pre style="margin-bottom:8px">${esc(c.author||"")} · ${fecha(c.created_at)}\n${esc(c.body)}</pre>`).join("")}`:""}`;abrir()}
+document.addEventListener("click",async ev=>{const b=ev.target.closest("button.copiar");if(!b)return;
+  try{await navigator.clipboard.writeText(b.dataset.f);b.textContent="Copiada ✓ pégala en el chat";b.classList.add("ok")}catch{b.textContent="Selecciónala y cópiala"}
+  setTimeout(()=>{b.textContent="Copiar frase";b.classList.remove("ok")},2400)});
+
+/* ── ciclo ── */
+function firma(d){return JSON.stringify([d.naves.map(n=>[n.id,n.estado,n.alias,n.horario,n.ultimo&&now()-n.ultimo<900]),d.estaciones.map(e=>[e.bot,e.misiones,e.actividad.activas.length]),(d.clientes||[]).map(c=>[c.nombre,c.ultimo&&c.ultimo.status,c.ultimo&&c.ultimo.id]),
+  d.agora.tareas.filter(t=>t.estado!=="done").map(t=>[t.id,t.estado,t.asignada]),d.agora.conteo,(d.agora.espera||[]).length,innerWidth])}
+async function tick(){try{const r=await fetch("/api/estado",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();skew=d.ahora-Date.now()/1000;prev=D;D=d;
+  paneles();const f=firma(d);if(f!==firmaPrev){firmaPrev=f;dibujar()}else{$("#tablero").innerHTML=htmlTablero()}
+  $("#vivo").className="vivo";$("#vivo-t").textContent="en vivo · "+hm(now())}catch(e){console.error(e);$("#vivo").className="vivo caido";$("#vivo-t").textContent="sin conexión con el panel"}}
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(D){firmaPrev="";dibujar()}},150)});
+setInterval(()=>document.querySelectorAll("[data-fut]").forEach(x=>x.textContent=rel(+x.dataset.fut,1)),15000);
+tick();setInterval(tick,10000);
+</script>
+<script src="/comun.js"></script>
+</body>
+</html>

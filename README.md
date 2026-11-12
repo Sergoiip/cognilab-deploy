@@ -90,13 +90,22 @@ cambió desde el último `--sellar`.
 - Sin credenciales, sin precios, sin datos de clientes.
 - Un módulo no es "hecho" hasta cumplir su criterio y los comunes (`criterios/`).
 
+## Espacio de trabajo por cliente (patrón ICM)
+`icm/` y `tools/espacio.py` generan en el equipo del cliente un espacio con `CLAUDE.md`, `CONTEXT.md` y las tres fases como etapas con contrato (Entradas, Proceso, Salidas). `instala.sh ... --espacio` lo crea dentro de su bóveda. Es una **hipótesis en prueba**: ver `icm/README.md` para lo que se toma de ICM y sus límites.
+
+## Flota de agentes (Astillero + Flota)
+`flota/` define cómo se arma el equipo de agentes de cada cliente: sectores con dos lentes (PKM + APQC), 3 tipos de estación, catálogo de naves por sector y planos por tipo de empresa × escala. `tools/flota.py estado <manifiesto>` muestra la cobertura por sector cruzada con los crons reales. Ver `flota/README.md`.
+
+## Plugins: metodología y uso
+`docs/plugins/` tiene una ficha por plugin (Git, Templater, TaskNotes, Task Atlas, Cadence, Excalidraw): metodología según su documentación, recomendación de uso y cuidados.
+
 ## Stack de aplicaciones (todo gratis)
 `stack/catalogo.yaml` define las apps, los 3 perfiles y qué módulo necesita qué.
 
 | Perfil | Escala | Incluye |
 |---|---|---|
 | ligero | 1 | Hermes, Obsidian, Git, GitHub CLI, plugins obsidian-git y Templater |
-| negocio | 2 | + TaskNotes, Cadence (CRM y finanzas), Syncthing, Pandoc, FFmpeg |
+| negocio | 2 | + TaskNotes, Task Atlas (metas y tareas en canvas), Cadence (CRM y finanzas), Syncthing, Pandoc, FFmpeg |
 | equipo | 3 | + rclone (espejo en nube), Excalidraw |
 
 Además, cada módulo suma lo suyo (por ejemplo C1 trae Inkscape y GIMP; D2 trae Kdenlive).

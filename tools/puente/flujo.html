@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cogsmos · Flujo</title>
+<link rel="stylesheet" href="/comun.css">
+<style>
+@font-face{font-family:Outfit;src:url(/fuentes/Outfit.ttf) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+:root{
+  --fondo:#06060f; --sup:#0e0d1d; --sup2:#15132b; --linea:#25223f; --linea2:#332f55;
+  --tx:#e6e6f5; --tx2:#b6b6dc; --tx3:#8b8bb4;
+  --azul:#3fa9ff; --violeta:#9b5cff; --magenta:#ff2e88; --coral:#ff4d6d;
+  --bien:#37d39b; --aviso:#f5b53d; --mal:var(--coral); --off:#4d4a6e;
+  --texto:Outfit,system-ui,sans-serif; --dato:"Chakra Petch",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--fondo)}
+body{margin:0;color:var(--tx);font:16px/1.45 var(--texto);min-height:100vh;
+  background:radial-gradient(1100px 500px at 10% -8%,rgba(155,92,255,.12),transparent 60%),radial-gradient(1000px 520px at 95% -5%,rgba(63,169,255,.08),transparent 60%),var(--fondo)}
+.pag{max-width:1520px;margin:0 auto;padding:6px 28px 56px}
+a{color:var(--azul)}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:2px;border-radius:6px}
+h2.t{margin:0 0 12px;font:600 14px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+.top{display:flex;align-items:center;gap:12px;color:var(--tx3);font:14px var(--dato)}
+.top img{width:26px;height:26px}.top b{font:600 17px var(--texto);color:var(--tx)}
+.top .sp{flex:1}
+.top nav{display:flex;gap:14px}.top nav a{color:var(--tx3);text-decoration:none}.top nav a:hover{color:var(--tx)}
+.vivo{display:inline-flex;align-items:center;gap:7px}.vivo i{width:8px;height:8px;border-radius:50%;background:var(--bien)}
+.vivo.caido i{background:var(--mal)}
+.estado{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;margin:22px 0 14px}
+.estado h1{margin:0;font:600 30px/1.15 var(--texto);display:flex;align-items:center;gap:14px}
+.estado h1 .ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none}
+.estado p{margin:4px 0 0 58px;color:var(--tx2)}
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--tx2)}
+.leyenda span{display:inline-flex;align-items:center;gap:7px}
+.atn{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-bottom:26px}
+.at{background:var(--sup);border:1px solid var(--linea);border-left:3px solid var(--c);border-radius:14px;padding:12px 14px}
+.at .q{font-weight:600}.at .d{color:var(--tx2);font-size:15px;overflow-wrap:anywhere}.at .s{font-size:15px;margin-top:2px}
+.at .acc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px;color:var(--tx3)}
+.frase{font:600 14px var(--dato);color:var(--tx);background:var(--sup2);border:1px solid var(--linea);border-radius:8px;padding:4px 9px}
+button.copiar{font:600 14px var(--texto);color:var(--fondo);background:var(--magenta);border:0;border-radius:8px;padding:5px 11px;cursor:pointer}
+button.copiar.ok{background:var(--bien)}
+.bp{position:relative;background:linear-gradient(180deg,rgba(18,16,42,.55),rgba(14,13,29,.35));border:1px solid var(--linea);border-radius:22px;padding:22px 22px 18px}
+.bp-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.bp-cab h2{margin:0;font:600 22px var(--texto)}
+.bp-cab p{margin:0;color:var(--tx3);font-size:15px}
+.cols5{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,.86fr) 64px minmax(0,1fr)}
+.capitan{align-items:end}
+.cap{grid-column:3;justify-self:center;display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,rgba(255,46,136,.10),rgba(255,46,136,.03));border:1.5px solid rgba(255,46,136,.55);border-radius:18px;padding:14px 22px;box-shadow:0 0 0 6px rgba(255,46,136,.05)}
+.cap .av{width:48px;height:48px;border-radius:14px;background:rgba(255,46,136,.18);color:var(--magenta);display:grid;place-items:center;font:700 20px var(--dato)}
+.cap b{display:block;font-size:21px;line-height:1.1}.cap span{color:var(--tx2);font-size:14px}
+.baja{height:58px;margin-bottom:6px}
+.baja svg{display:block;width:100%;height:58px;overflow:visible}
+.baja text{font:600 14px var(--texto);fill:var(--tx2)}
+.fila{align-items:start}
+.flecha{align-self:start;margin-top:54px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--tx2);font-size:14px;text-align:center;line-height:1.2}
+.flecha svg{width:64px;height:16px}
+.num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--magenta);color:var(--fondo);font:700 14px var(--dato);margin-bottom:2px}
+.paso{font-weight:600;color:var(--tx)}
+.sub-t{margin:10px 18px 0;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);border-top:1px solid var(--linea);padding-top:12px}
+.flecha .linea{stroke:var(--magenta);stroke-width:2;stroke-dasharray:4 6}
+.flecha.viva .linea{animation:fluir 1.2s linear infinite}
+@keyframes fluir{to{stroke-dashoffset:-20}}
+.ag{background:var(--sup);border:1px solid var(--linea);border-top:3px solid var(--c);border-radius:18px;overflow:hidden}
+.ag .cab{padding:16px 18px 12px;display:flex;gap:12px;align-items:center}
+.ag .av{width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;font:700 18px var(--dato);color:var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
+.ag h3{margin:0;font:600 22px/1.1 var(--texto)}
+.ag .rol{color:var(--tx3);font-size:14px}
+.ag .bot{margin-left:auto;font:14px var(--dato);color:var(--tx3);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.ahora{margin:0 18px 12px;padding:10px 12px;border-radius:12px;background:var(--sup2);border:1px solid var(--linea)}
+.ahora .e{display:flex;align-items:center;gap:8px;font-weight:600}
+.ahora ul{margin:6px 0 0;padding:0;list-style:none}
+.ahora li{font-size:15px;color:var(--tx2);padding:3px 0 3px 18px;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.ahora li::before{content:"▸";position:absolute;left:2px;color:var(--magenta)}
+.ahora li:hover{color:var(--tx)}
+.sect{padding:2px 18px 6px}
+.sect h4{margin:12px 0 4px;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.nv{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 8px;margin:0 -8px;border-radius:10px;cursor:pointer}
+.nv:hover{background:var(--sup2)}
+.nv .n{min-width:0}.nv .n div{min-width:0}
+.nv .n b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nv .n span{display:block;color:var(--tx3);font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nv .h{font:14px var(--dato);color:var(--tx3);white-space:nowrap;text-align:right}
+.nv .h.mal{color:var(--mal)}.nv .h.trab{color:var(--magenta)}
+.pausadas{padding:6px 18px 14px;color:var(--tx3);font-size:14px}
+.punto{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.p-bien{background:var(--bien)}.p-mal{background:var(--mal)}.p-off{border:2px solid var(--off)}.p-aviso{background:var(--aviso)}
+.p-trab{background:var(--magenta);animation:lat 1.6s ease-in-out infinite}
+@keyframes lat{50%{box-shadow:0 0 0 5px rgba(255,46,136,.2)}}
+.ago{background:var(--sup);border:1px dashed var(--linea2);border-radius:18px;padding:14px 14px 10px}
+.ago .cab2{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:2px 4px 10px}
+.ago .cab2 b{font-size:19px;font-weight:600}.ago .cab2 span{font:14px var(--dato);color:var(--tx3)}
+.carril{border-radius:12px;padding:10px 12px;margin-bottom:10px;background:var(--sup2);border:1px solid var(--linea)}
+.carril h5{margin:0 0 4px;font:600 14px var(--texto);display:flex;justify-content:space-between;align-items:center;color:var(--tx2)}
+.carril h5 em{font:600 14px var(--dato);font-style:normal;color:var(--tx)}
+.mi{display:grid;grid-template-columns:10px minmax(0,1fr);gap:9px;align-items:center;padding:5px 0;font-size:15px;cursor:pointer}
+.mi div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mi:hover div{color:#fff}
+.carril .vacio{color:var(--tx3);font-size:14px}
+.tuyas{font-size:14px;color:var(--tx3);padding:2px 4px 4px}
+.base{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:16px}
+.base > div{background:var(--sup);border:1px solid var(--linea);border-radius:16px;padding:12px 16px}
+.base h4{margin:0 0 8px;font:600 13px var(--dato);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:14px;border:1px solid var(--linea);border-radius:99px;padding:5px 11px;color:var(--tx2);display:inline-flex;align-items:center;gap:7px}
+.chip.res{border-style:dashed}.chip b{color:var(--tx);font-weight:600}
+.hoy{margin-top:28px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.caja{background:var(--sup);border:1px solid var(--linea);border-radius:16px;padding:14px 18px}
+.lin{display:grid;grid-template-columns:62px 10px minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 2px;border-top:1px solid var(--linea)}
+.lin:first-child{border-top:0}
+.lin .h{font:600 15px var(--dato);color:var(--tx2)}
+.lin .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lin .n small{color:var(--tx3);font-size:14px;margin-left:6px}
+.lin .r{font-size:14px;white-space:nowrap;color:var(--tx3)}
+.lin.fut .h,.lin.fut .n{color:var(--tx3)}
+.marca-ahora{display:flex;align-items:center;gap:10px;color:var(--magenta);font:600 14px var(--dato);letter-spacing:.08em;padding:6px 0}
+.marca-ahora::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--magenta),transparent)}
+.pie2{margin-top:24px;color:var(--tx3);font-size:14px}
+#tapa{position:fixed;inset:0;background:rgba(3,3,10,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+#tapa.on{opacity:1;pointer-events:auto}
+#det{position:fixed;top:0;right:0;bottom:0;width:min(560px,96vw);background:#0b0a18;border-left:1px solid var(--linea2);z-index:70;transform:translateX(102%);transition:transform .25s ease;display:flex;flex-direction:column}
+#det.on{transform:none}
+#det .dh{padding:18px 20px;border-bottom:1px solid var(--linea);display:flex;justify-content:space-between;gap:12px}
+#det h3{margin:0;font:600 23px/1.15 var(--texto)}#det .sub{color:var(--tx3);font-size:14px;margin-top:4px}
+#det .x{font:600 14px var(--texto);color:var(--tx2);background:none;border:1px solid var(--linea2);border-radius:8px;padding:5px 11px;cursor:pointer;height:fit-content}
+#det .db{overflow-y:auto;padding:16px 20px 30px}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:7px 12px;font-size:15px}
+.kv div:nth-child(odd){color:var(--tx3);font-size:14px;padding-top:1px}
+.sec{font:600 13px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--magenta);margin:18px 0 8px}
+pre{white-space:pre-wrap;word-break:break-word;font:14px/1.5 var(--dato);color:var(--tx2);background:#08070f;border:1px solid var(--linea);border-radius:10px;padding:12px;margin:0}
+@media (max-width:1100px){
+  .cols5{grid-template-columns:minmax(0,1fr)}.baja{display:none}.cap{grid-column:1}
+  .flecha{margin:8px 0;flex-direction:row;justify-content:center}.flecha svg{transform:rotate(90deg)}.flecha br{display:none}
+  .base,.hoy{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<link rel="stylesheet" href="/piel.css">
+</head>
+<body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="pag">
+  <div class="estado">
+    <div><h1 aria-live="polite"><span class="ico" id="e-ico"></span><span id="e-tit">Cargando…</span></h1><p id="e-sub"></p></div>
+    <div class="leyenda"><span><i class="punto p-bien"></i>funcionando</span><span><i class="punto p-trab"></i>trabajando ahora</span><span><i class="punto p-mal"></i>falló</span><span><i class="punto p-off"></i>pausada</span></div>
+  </div>
+  <div class="atn" id="atencion"></div>
+
+  <section class="bp" aria-labelledby="h-bp">
+    <div class="bp-cab"><h2 id="h-bp">Cómo está trabajando todo</h2><p>Se lee de izquierda a derecha · toca cualquier tarea o misión para ver su detalle</p></div>
+    <div class="cols5 capitan"><div class="cap"><div class="av">S</div><div><b id="capn">Sergio</b><span>capitán · escritorio y Telegram</span></div></div></div>
+    <div class="baja"><svg id="lineas" preserveAspectRatio="none"></svg></div>
+    <div class="cols5 fila">
+      <div id="col-a"></div>
+      <div class="flecha" id="f1"><svg viewBox="0 0 64 16" aria-hidden="true"><path class="linea" d="M2 8H56" fill="none"/><path d="M52 3l8 5-8 5" fill="none" stroke="var(--magenta)" stroke-width="2"/></svg><span class="num">2</span><span class="paso">crea la<br>misión</span></div>
+      <div id="col-m"></div>
+      <div class="flecha" id="f2"><svg viewBox="0 0 64 16" aria-hidden="true"><path class="linea" d="M2 8H56" fill="none"/><path d="M52 3l8 5-8 5" fill="none" stroke="var(--magenta)" stroke-width="2"/></svg><span class="num">3</span><span class="paso">la<br>ejecuta</span></div>
+      <div id="col-b"></div>
+    </div>
+    <div class="base">
+      <div><h4>En reserva · con nombre, sin tarea todavía</h4><div class="chips" id="reserva"></div></div>
+      <div><h4>La máquina</h4><div class="chips" id="maquina"></div></div>
+    </div>
+  </section>
+
+  <div class="hoy">
+    <section><h2 class="t">Hoy</h2><div class="caja" id="agenda"></div></section>
+    <section><h2 class="t">Últimas 24 horas</h2><div class="caja" id="historia"></div></section>
+  </div>
+  <div class="pie2">Esta vista solo muestra. Para soltar, aprobar o descartar algo, díselo a ARG.OS por el chat o Telegram.</div>
+</div>
+<div id="tapa"></div>
+<aside id="det" aria-hidden="true"><div class="dh"><div><h3 id="dt"></h3><div class="sub" id="ds"></div></div><button class="x" id="dx">Cerrar ✕</button></div><div class="db" id="db"></div></aside>
+
+<script>
+const $=s=>document.querySelector(s);
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null,skew=0;const now=()=>Date.now()/1000+skew;
+const C={bien:"#37d39b",aviso:"#f5b53d",mal:"#ff4d6d",mag:"#ff2e88",vio:"#9b5cff",azul:"#3fa9ff",tx3:"#8b8bb4"};
+const I={ok:c=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`,
+  alerta:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M12 4l9 16H3z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.6v.2"/></svg>`};
+const SEC={unavez:"De una sola vez",otros:"Sin clasificar",direccion:"Ritmo y dirección",clientes:"Clientes",marca:"Marca y contenido",ideas:"Ideas",operacion:"Entregas y operación",finanzas:"Dinero",equipo:"Aprendizaje y mejora",memoria:"Memoria",mantenimiento:"Cuidado de la máquina"};
+const DOW={"*":"diario","1-5":"L a V","0":"dom","1":"lun","2":"mar","3":"mié","4":"jue","5":"vie","6":"sáb"};
+function cuando(s){if(!s)return"";const o=s.match(/^once at (\d{4})-(\d\d)-(\d\d)[ T](\d\d:\d\d)/);if(o){const hoy=new Date(now()*1000),M=["","ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];return (+o[3]===hoy.getDate()&&+o[2]===hoy.getMonth()+1?"hoy":`${+o[3]}-${M[+o[2]]}`)+" "+o[4]}let m=s.match(/^every (\d+)m$/);if(m){const v=+m[1];return v%60===0?`cada ${v/60} h`:`cada ${v} min`}
+  const p=s.split(/\s+/);if(p.length!==5)return s;const [mi,ho,dom,mon,dow]=p,hh=`${ho.padStart(2,"0")}:${mi.padStart(2,"0")}`;
+  const M=["","ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];if(dom!=="*"&&mon!=="*")return `${dom}-${M[+mon]} ${hh}`;
+  return `${dow.split(",").map(x=>DOW[x]||x).join(" y ")} ${hh}`}
+function rel(t,fut){if(!t)return"—";let s=Math.max(0,Math.round(fut?t-now():now()-t));let x;
+  if(s<60)x="segundos";else if(s<3600)x=`${Math.floor(s/60)} min`;else if(s<86400){const h=Math.floor(s/3600),m=Math.floor(s%3600/60);x=h<6&&m?`${h} h ${m} min`:`${h} h`}else{const d=Math.floor(s/86400);x=d===1?"1 día":`${d} días`}
+  return fut?`en ${x}`:`hace ${x}`}
+const hm=t=>new Date(t*1000).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",hour12:false});
+const fecha=t=>t?new Date(t*1000).toLocaleString("es-CO",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false}):"—";
+const continuo=n=>/^every/.test(n.horario||"");
+const nombre=n=>n.nombre.replace(/^Misión · /,"");
+const est=id=>D.estaciones.find(e=>e.id===id);
+const porPerfil=p=>D.estaciones.find(e=>e.perfil===p);
+const color=e=>e&&e.coordinador?C.vio:C.azul;
+const rol=e=>e.coordinador?"Coordina, reparte y hace lo personal":e.tipo==="negocio"?"Hace el trabajo del negocio":e.tipo==="servicio"?"Atiende al público":"Hace lo personal";
+function errorClaro(e){if(!e)return"";if(/not configured|not enabled|deliver|chat_id|telegram|discord/i.test(e))return"Hizo su trabajo, pero no te pudo mandar el mensaje con el resultado.";
+  if(/timeout|timed out/i.test(e))return"Se demoró más de lo permitido y se detuvo.";if(/credential|auth|401|403|api key/i.test(e))return"Le falta una credencial o acceso.";
+  if(/not found|no such file|404/i.test(e))return"No encontró un archivo o recurso que necesita.";return"Tuvo un error técnico. ARG.OS puede ver el detalle."}
+const punto=n=>n.estado==="pausada"?"p-off":n.estado==="fallo"?"p-mal":n.estado==="corriendo"?"p-trab":"p-bien";
+
+function atencion(){
+  const L=[],sy=D.sistema;
+  for(const t of D.agora.espera){const v={"para soltar":["Una misión espera que la sueltes",`suelta ${t.id}`],"visto bueno":["Un documento espera tu visto bueno",`aprueba ${t.id}`],"en revisión":["Una misión terminó y espera tu revisión",`revisa ${t.id}`]}[t.motivo]||["Esto espera tu decisión",`revisa ${t.id}`];
+    L.push({c:C.aviso,q:v[0],d:t.titulo,s:"No avanza hasta que decidas.",f:v[1]})}
+  for(const t of D.agora.atascadas){const larga=/corriendo/.test(t.motivo);
+    L.push({c:C.aviso,q:larga?"Una misión lleva más de 6 horas trabajando":/triage/.test(t.motivo)?"Una misión no se pudo repartir":/fallos/.test(t.motivo)?"Una misión ha fallado varias veces":"Una misión lleva días bloqueada",
+      d:`${t.titulo} · ${porPerfil(t.asignada)?.nombre||"sin asignar"} · desde ${rel(t.inicio||t.creada)}`,s:larga?"Puede que se haya trabado. Si no esperabas que tardara tanto, pregúntale.":"Mientras siga así, ese trabajo no avanza.",f:`¿qué pasa con ${t.id}?`})}
+  for(const n of D.naves.filter(n=>n.estado==="fallo"))L.push({c:C.mal,q:`Falló «${nombre(n)}»`,d:`${n.alias?n.alias+" · ":""}${est(n.estacion)?.nombre||""} · ${rel(n.ultimo)}`,s:errorClaro(n.error),f:`revisa la tarea automática ${n.alias||nombre(n)}`});
+  for(const e of D.estaciones)if(e.bot!=="connected")L.push({c:C.mal,q:`El bot de ${e.nombre} está desconectado`,d:"No te van a llegar sus avisos por Telegram.",f:`revisa el bot de ${e.nombre}`});
+  if(sy.gateway!=="running")L.push({c:C.mal,q:"La mensajería está detenida",d:"Ningún agente puede escribirte ni recibir mensajes.",f:"revisa el gateway"});
+  const en=sy.energia||{};if(en.corriente===false)L.push({c:C.aviso,q:"El portátil está con batería",d:`Va en ${en.bateria??"?"}%. Si se apaga, se detiene todo.`});
+  if(!sy.respaldo||now()-sy.respaldo.ts>36*3600)L.push({c:C.aviso,q:"No hay respaldo reciente",d:sy.respaldo?`El último fue ${rel(sy.respaldo.ts)}.`:"Todavía no hay ninguno.",f:"revisa el respaldo"});
+  return L}
+
+function colAgente(e){
+  const c=color(e),naves=D.naves.filter(n=>n.estacion===e.id);
+  const act=naves.filter(n=>n.estado!=="pausada"),pau=naves.filter(n=>n.estado==="pausada");
+  const mis=D.agora.tareas.filter(t=>t.estado==="running"&&t.estacion===e.id);
+  const ses=e.actividad.activas.filter(a=>a.fuente!=="kanban");
+  const items=ses.map(a=>({t:(a.fuente==="cron"?"Tarea automática: ":"Conversación: ")+(a.titulo||"sin título")}));
+  const estado=mis.length?`<span class="punto p-trab"></span>Trabajando en ${mis.length} misión${mis.length>1?"es":""} <span style="color:var(--tx3);font-weight:400;font-size:14px">· están en el tablero →</span>`:ses.length?`<span class="punto p-trab"></span>Conversando contigo`:`<span class="punto" style="background:${C.tx3}"></span>En espera, sin misiones`;
+  const orden=[...Object.keys(SEC).filter(k=>!["unavez","otros"].includes(k)),"unavez","otros"],grupos={};
+  act.sort((a,b)=>(a.proximo||9e12)-(b.proximo||9e12)).forEach(n=>{const k=n.sector||(/^once/.test(n.horario||"")?"unavez":"otros");(grupos[k]=grupos[k]||[]).push(n)});
+  const secs=Object.keys(grupos).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  return `<article class="ag" style="--c:${c}">
+    <div class="cab">${D.personajes&&D.personajes[claveP(e.nombre)]?`<img class="av con-retrato retrato" style="--c:${color(e)}" src="${D.personajes[claveP(e.nombre)]}" alt="">`:`<div class="av">${esc(e.nombre.slice(0,1))}</div>`}<div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div>
+      <div class="bot"><span class="punto ${e.bot==="connected"?"p-bien":"p-mal"}"></span>${e.bot==="connected"?"bot":"sin bot"}</div></div>
+    <div class="ahora"><div class="e">${estado}</div>${items.length?`<ul>${items.slice(0,3).map(i=>`<li ${i.click?`onclick="${i.click}"`:""} title="${esc(i.t)}">${esc(i.t)}</li>`).join("")}${items.length>3?`<li>y ${items.length-3} más</li>`:""}</ul>`:""}</div>
+    <div class="sub-t">Sus tareas automáticas · ${act.length}</div>
+    ${secs.map(s=>`<div class="sect"><h4>${esc(SEC[s]||D.sectores[s]||s)}</h4>${grupos[s].map(n=>{
+      const h=n.estado==="fallo"?["mal","falló"]:n.estado==="corriendo"?["trab","ahora"]:["",cuando(n.horario)];
+      return `<div class="nv" onclick="abrirNave('${n.perfil}','${n.id}')" title="${esc(nombre(n))}"><span class="punto ${punto(n)}"></span>
+        <div class="n"><div>${n.alias?`<b>${esc(n.alias)}</b><span>${esc(nombre(n))}</span>`:`<b>${esc(nombre(n))}</b>`}</div></div><span class="h ${h[0]}">${esc(h[1])}</span></div>`}).join("")}</div>`).join("")}
+    ${pau.length?`<div class="pausadas"><span class="punto p-off" style="vertical-align:-1px;margin-right:6px"></span>${pau.length} pausada${pau.length>1?"s":""}: ${pau.map(n=>esc(nombre(n))).join(" · ")}</div>`:`<div style="height:10px"></div>`}
+  </article>`}
+
+function colMisiones(){
+  const ag=D.agora,d0=new Date(now()*1000);d0.setHours(0,0,0,0);const hoy0=d0/1000;
+  const fila=t=>`<div class="mi" onclick="abrirTarea('${t.tablero}','${t.id}')" title="${esc(t.titulo)}"><span class="punto" style="background:${t.asignada?color(porPerfil(t.asignada)):C.tx3}"></span><div>${esc(t.titulo)}</div></div>`;
+  const carril=(tit,arr,vacio,max=4)=>`<div class="carril"><h5>${tit}<em>${arr.length}</em></h5>${arr.length?arr.slice(0,max).map(fila).join("")+(arr.length>max?`<div class="tuyas">y ${arr.length-max} más</div>`:""):`<div class="vacio">${vacio}</div>`}</div>`;
+  const curso=ag.tareas.filter(t=>t.estado==="running");
+  const cola=ag.tareas.filter(t=>t.estado==="ready"&&t.asignada);
+  const hechas=ag.tareas.filter(t=>t.estado==="done"&&t.fin>=hoy0&&t.asignada);
+  const tuyas=ag.tareas.filter(t=>t.estado==="ready"&&!t.asignada).length+(ag.conteo.todo||0);
+  return `<div class="ago"><div class="cab2"><b>Tablero de misiones</b><span>Ágora</span></div>
+    ${carril("Esperan tu OK",ag.espera,"Nada esperando")}
+    ${carril("En curso",curso,"Ninguna ahora")}
+    ${carril("En cola para un agente",cola,"Cola vacía",3)}
+    ${carril("Terminadas hoy",hechas,"Todavía ninguna",3)}
+    <div class="tuyas">Además tienes ${tuyas} pendientes tuyos sin asignar en los tableros.</div></div>`}
+
+function lineas(){
+  const svg=$("#lineas"),w=svg.clientWidth;if(!w)return;const h=58;svg.setAttribute("viewBox",`0 0 ${w} ${h}`);
+  const g=svg.getBoundingClientRect(),a=$("#col-a").getBoundingClientRect(),b=$("#col-b").getBoundingClientRect(),cap=$(".cap").getBoundingClientRect();
+  const xa=a.left-g.left+a.width/2,xb=b.left-g.left+b.width/2,xc1=cap.left-g.left,xc2=cap.right-g.left;
+  svg.innerHTML=`<defs><marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.mag}"/></marker>
+    <marker id="pb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.tx3}"/></marker></defs>
+    <path d="M${xc1} -22 C ${xa} -22, ${xa} 10, ${xa} ${h-6}" fill="none" stroke="${C.mag}" stroke-width="2" marker-end="url(#pa)"/>
+    <circle cx="${xa+26}" cy="${h/2+1}" r="12" fill="${C.mag}"/><text x="${xa+26}" y="${h/2+6}" text-anchor="middle" style="fill:#06060f;font:700 14px 'Chakra Petch'">1</text>
+    <text x="${xa+46}" y="${h/2+6}" style="fill:#e6e6f5">le pides todo</text>
+    <path d="M${xb} ${h-6} C ${xb} 10, ${xb} -22, ${xc2} -22" fill="none" stroke="${C.tx3}" stroke-width="1.6" stroke-dasharray="4 5" marker-end="url(#pb)"/>
+    <circle cx="${xb-26}" cy="${h/2+1}" r="12" fill="${C.tx3}"/><text x="${xb-26}" y="${h/2+6}" text-anchor="middle" style="fill:#06060f;font:700 14px 'Chakra Petch'">4</text>
+    <text x="${xb-46}" y="${h/2+6}" text-anchor="end" style="fill:#e6e6f5">te avisa del resultado</text>`}
+
+function agenda(){
+  const d0=new Date(now()*1000);d0.setHours(0,0,0,0);const hoy0=d0/1000,man0=hoy0+86400,F=[];
+  for(const n of D.naves){if(continuo(n)||n.estado==="pausada")continue;
+    if(n.ultimo&&n.ultimo>=hoy0)F.push({t:n.ultimo,n,k:n.estado==="fallo"?"fallo":n.ultimo_silencio?"sil":"ok"});
+    if(n.proximo&&n.proximo<man0&&n.proximo>now())F.push({t:n.proximo,n,k:"pend"})}
+  for(const t of D.agora.tareas)if(t.estado==="done"&&t.fin>=hoy0&&t.asignada)F.push({t:t.fin,m:t,k:"mis"});
+  F.sort((a,b)=>a.t-b.t);
+  const R={ok:["p-bien","avisó"],sil:["p-bien","sin novedades"],fallo:["p-mal","falló"],pend:["p-off","pendiente"],mis:["p-bien","misión terminada"]};
+  let h="",puesto=false;
+  const vig=D.naves.filter(n=>continuo(n)&&n.estado!=="pausada"),vm=vig.some(n=>n.estado==="fallo");
+  if(vig.length)h+=`<div class="lin"><span class="h">siempre</span><span class="punto ${vm?"p-mal":"p-bien"}"></span><span class="n">Vigilancia: ${vig.map(n=>esc(nombre(n).toLowerCase())).join(" y ")}</span><span class="r">${vm?"con fallas":"sin problemas"}</span></div>`;
+  for(const f of F){if(!puesto&&f.t>now()){h+=`<div class="marca-ahora">AHORA · ${hm(now())}</div>`;puesto=true}
+    const [p,l]=R[f.k];
+    if(f.m){h+=`<div class="lin" onclick="abrirTarea('${f.m.tablero}','${f.m.id}')" style="cursor:pointer"><span class="h">${hm(f.t)}</span><span class="punto ${p}"></span><span class="n">${esc(f.m.titulo)}<small>${esc(porPerfil(f.m.asignada)?.nombre||"")}</small></span><span class="r">${l}</span></div>`;continue}
+    h+=`<div class="lin ${f.k==="pend"?"fut":""}" onclick="abrirNave('${f.n.perfil}','${f.n.id}')" style="cursor:pointer"><span class="h">${hm(f.t)}</span><span class="punto ${p}"></span><span class="n">${esc(nombre(f.n))}<small>${esc(est(f.n.estacion)?.nombre||"")}</small></span><span class="r">${l}</span></div>`}
+  if(!puesto)h+=`<div class="marca-ahora">AHORA · ${hm(now())}</div><div class="lin fut"><span class="h"></span><span class="punto p-off"></span><span class="n">No queda nada más programado para hoy</span><span></span></div>`;
+  $("#agenda").innerHTML=h;
+  const CL={created:"se creó",claimed:"empezó",completed:"terminó",blocked:"se bloqueó",unblocked:"se soltó",assigned:"se asignó",promoted:"quedó lista",spawned:"arrancó",worker_result:"entregó resultado",reclaimed:"se reasignó",archived:"se archivó",commented:"comentario nuevo"};
+  const hist=D.bitacora.filter(b=>b.ts>now()-86400&&!(b.tipo==="faro"&&continuo(D.naves.find(n=>n.id===b.id)||{}))).slice(0,14);
+  $("#historia").innerHTML=hist.map(b=>`<div class="lin" onclick="${b.tipo==="faro"?`abrirNave('${b.perfil}','${b.id}')`:`abrirTarea('${b.tablero}','${b.id}')`}" style="cursor:pointer"><span class="h">${hm(b.ts)}</span><span class="punto ${b.clase==="fallo"?"p-mal":b.tipo==="faro"?"p-bien":"p-off"}"></span>
+    <span class="n">${b.tipo==="faro"?esc(b.nombre||b.titulo):esc(b.titulo||b.id)}<small>${b.tipo==="faro"?"tarea automática":"misión"}</small></span>
+    <span class="r">${b.tipo==="faro"?(b.clase==="fallo"?"falló":b.clase==="silencio"?"sin novedades":"avisó"):(CL[b.clase]||b.clase)}</span></div>`).join("")||`<div class="lin"><span class="n">Sin movimientos.</span></div>`}
+
+function pintar(){
+  const L=atencion(),malos=L.some(x=>x.c===C.mal);
+  const [col,tit]=L.length?[malos?C.mal:C.aviso,L.length===1?"Una cosa necesita tu atención":`${L.length} cosas necesitan tu atención`]:[C.bien,"Todo en orden"];
+  $("#e-ico").style.background=col+"22";$("#e-ico").innerHTML=L.length?I.alerta(col):I.ok(col);$("#e-tit").textContent=tit;
+  const act=D.naves.filter(n=>n.estado!=="pausada").length,trab=D.estaciones.filter(e=>e.misiones.running||e.actividad.activas.length).length;
+  $("#e-sub").textContent=`${D.estaciones.length} agentes · ${trab?trab+" trabajando ahora":"ninguno trabajando"} · ${act} tareas automáticas activas`;
+  $("#atencion").innerHTML=L.map(x=>`<div class="at" style="--c:${x.c}"><div class="q">${esc(x.q)}</div><div class="d">${esc(x.d)}</div>${x.s?`<div class="s">${esc(x.s)}</div>`:""}
+    ${x.f?`<div class="acc">Dile a ARG.OS: <span class="frase">«${esc(x.f)}»</span><button class="copiar" data-f="${esc(x.f)}" aria-label="Copiar la frase para pegarla en el chat de ARG.OS">Copiar frase</button></div>`:""}</div>`).join("");
+  $("#atencion").style.display=L.length?"":"none";
+  $("#capn").textContent=D.capitan||"Capitán";
+  const orden=[...D.estaciones].sort((a,b)=>(b.coordinador?1:0)-(a.coordinador?1:0));
+  $("#col-a").innerHTML=orden[0]?colAgente(orden[0]):"";$("#col-b").innerHTML=orden[1]?colAgente(orden[1]):"";$("#col-m").innerHTML=colMisiones();
+  $("#f1").classList.toggle("viva",D.agora.tareas.some(t=>["running","ready"].includes(t.estado)&&t.asignada));
+  $("#f2").classList.toggle("viva",D.agora.tareas.some(t=>t.estacion===orden[1]?.id&&["running","ready"].includes(t.estado)));
+  $("#reserva").innerHTML=(D.reserva||[]).map(r=>`<span class="chip res" title="${esc(SEC[r.sector]||"")}"><b>${esc(r.alias)}</b>${esc(r.funcion||"")}</span>`).join("");
+  const sy=D.sistema,sv=sy.servicios||{},en=sy.energia||{},rs=sy.respaldo;
+  const ch=(ok,txt)=>`<span class="chip"><span class="punto ${ok===true?"p-bien":ok===false?"p-mal":"p-aviso"}"></span>${txt}</span>`;
+  $("#maquina").innerHTML=[ch(sy.gateway==="running","Mensajería "+(sy.gateway==="running"?"en línea":"detenida")),
+    ch(sv["flota-despierta"]==="active"?true:null,sv["flota-despierta"]==="active"?"No se duerme con corriente":"Puede dormirse"),
+    ch(en.corriente?true:null,(en.corriente?"Enchufado":"Con batería")+` · ${en.bateria??"?"}%`),
+    ch(rs&&now()-rs.ts<36*3600?true:null,rs?`Respaldo ${rel(rs.ts)}`:"Sin respaldo")].join("");
+  agenda();requestAnimationFrame(lineas)}
+
+function abrir(){$("#det").classList.add("on");$("#tapa").classList.add("on");$("#det").setAttribute("aria-hidden","false");$("#dx").focus()}
+function cerrar(){$("#det").classList.remove("on");$("#tapa").classList.remove("on");$("#det").setAttribute("aria-hidden","true")}
+$("#dx").onclick=cerrar;$("#tapa").onclick=cerrar;addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
+async function abrirNave(perfil,id){const r=await fetch(`/api/nave?perfil=${encodeURIComponent(perfil)}&id=${id}`);if(!r.ok)return;const n=await r.json(),e=porPerfil(perfil);
+  $("#dt").innerHTML=`<span style="color:${color(e)}">${esc(n.alias||nombre(n))}</span>`;$("#ds").textContent=`${n.alias?nombre(n)+" · ":""}tarea automática de ${e?.nombre||perfil}`;
+  const st=!n.activo?"Pausada":n.error?"Falló la última vez":"Funcionando";
+  const salida=(n.ultima_salida||"").replace(/^# Cron Job:.*$/m,"").replace(/^\*\*(Job ID|Run Time|Mode|Schedule|Prompt Characters|Response Characters|Status):\*\*.*$/gm,"").replace(/^\s*---\s*$/m,"").trim();
+  $("#db").innerHTML=`<div class="kv"><div>Estado</div><div>${st}</div><div>Área</div><div>${esc(SEC[n.sector]||n.sector||"—")}</div><div>Cuándo corre</div><div>${esc(cuando(n.horario))}</div>
+    <div>Cómo</div><div>${n.sin_modelo?"Script sin IA (no gasta)":"Con un agente de IA"}</div><div>Última vez</div><div>${n.ultimo?`${fecha(n.ultimo)} (${rel(n.ultimo)})`:"Nunca"}</div>
+    <div>Próxima</div><div>${n.activo&&n.proximo?`${fecha(n.proximo)} (${rel(n.proximo,1)})`:"—"}</div>${n.error?`<div>Problema</div><div style="color:var(--mal)">${esc(errorClaro(n.error))}</div>`:""}</div>
+    <div class="sec">Lo último que dijo</div><pre>${esc(n.ultima_salida?(salida||"Corrió sin novedades."):"Todavía no ha corrido.")}</pre>
+    ${n.instrucciones?`<div class="sec">Sus instrucciones</div><pre>${esc(n.instrucciones)}</pre>`:""}`;abrir()}
+async function abrirTarea(tab,id){const r=await fetch(`/api/tarea?tablero=${encodeURIComponent(tab)}&id=${id}`);if(!r.ok)return;const t=await r.json(),e=porPerfil(t.asignada||"");
+  const E={running:"En curso",ready:"Lista",blocked:"Bloqueada",done:"Terminada",todo:"En espera",review:"En revisión",triage:"Sin repartir"};
+  $("#dt").textContent=t.titulo;$("#ds").textContent=`Misión ${t.id} · tablero ${t.tablero}`;
+  $("#db").innerHTML=`<div class="kv"><div>Estado</div><div>${E[t.estado]||t.estado}</div><div>La tiene</div><div style="color:${e?color(e):"inherit"}">${esc(e?.nombre||t.asignada||"Nadie (es tuya)")}</div>
+    <div>Creada</div><div>${fecha(t.creada)}</div>${t.inicio?`<div>Empezó</div><div>${fecha(t.inicio)} (${rel(t.inicio)})</div>`:""}${t.fin?`<div>Terminó</div><div>${fecha(t.fin)}</div>`:""}</div>
+    <div class="sec">Qué hacer</div><div style="color:var(--tx2)">Díselo a ARG.OS: «suelta ${esc(t.id)}», «aprueba ${esc(t.id)}» o «¿qué pasa con ${esc(t.id)}?».</div>
+    ${t.resultado?`<div class="sec">Resultado</div><pre>${esc(t.resultado)}</pre>`:""}${t.cuerpo?`<div class="sec">La misión</div><pre>${esc(t.cuerpo)}</pre>`:""}`;abrir()}
+document.addEventListener("click",async ev=>{const b=ev.target.closest("button.copiar");if(!b)return;
+  try{await navigator.clipboard.writeText(b.dataset.f);b.textContent="Copiada ✓ pégala en el chat";b.classList.add("ok")}catch{b.textContent="Selecciónala y cópiala"}
+  setTimeout(()=>{b.textContent="Copiar frase";b.classList.remove("ok")},2400)});
+async function tick(){try{const r=await fetch("/api/estado",{cache:"no-store"});if(!r.ok)throw 0;D=await r.json();skew=D.ahora-Date.now()/1000;pintar();
+  $("#vivo").className="vivo";$("#vivo-t").textContent="en vivo · "+hm(now())}catch(e){console.error(e);$("#vivo").className="vivo caido";$("#vivo-t").textContent="sin conexión con el panel"}}
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>D&&lineas(),120)});
+tick();setInterval(tick,10000);
+</script>
+<script src="/comun.js"></script>
+</body>
+</html>

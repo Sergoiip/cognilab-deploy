@@ -1,0 +1,27 @@
+id: agencia-e3
+tipo_empresa: agencia-creativa
+escala: 3
+estado: borrador                 # pasa a piloto cuando se instale en el primer cliente real
+lentes: [apqc]                   # negocio con varias personas; cada Estación Persona usa la lente pkm
+estaciones:
+  - tipo: negocio                # «perfil madre»: la voz de la agencia hacia los clientes
+  - tipo: persona                # una por cada persona clave (socios, coordinación)
+    por_persona: true
+opcionales:
+  - tipo: servicio
+    cuando: "Si se automatiza la atención por WhatsApp a clientes finales"
+naves_base:
+  - aviso-cobros
+  - estado-entregables
+cobertura_minima:
+  - direccion
+  - clientes
+  - marca
+  - operacion
+  - finanzas
+  - equipo
+  - mantenimiento
+reglas:
+  - "Toda nave que absorba la labor de una persona del equipo declara rol_humano_afectado y activa la regla de transición"
+  - "Las Estaciones Persona no se leen entre sí ni las lee la estación madre"
+evidencia: []

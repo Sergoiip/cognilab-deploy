@@ -1,0 +1,22 @@
+id: esperando-ok
+pieza: faro
+sector: direccion
+nombre_visible: "Esperando tu OK"
+la_ejecuta: coordinador
+capitan: "<responsable de la Flota>"
+mision: "Juntar en un solo aviso diario lo que necesita al capitán: misiones por soltar, vistos buenos listos para revisar, revisiones abiertas y lo que se terminó."
+hace:
+  - "Leer todos los tableros vivos del Ágora"
+  - "Quedarse en silencio si no hay nada que decidir ni nada nuevo terminado"
+no_hace:
+  - "Aprobar, soltar o cerrar nada: eso lo decide el capitán"
+disparador: {faro: "0 13 * * 1-5", modo: no_agent}
+script: esperando_ok.py
+argumentos: ["--horas", "24"]
+registro: "Solo lectura del Kanban; el aviso queda en el canal"
+hecho:
+  - "El capitán puede soltar o aprobar todo lo pendiente sin abrir la terminal, respondiendo al aviso"
+indicador: "Horas que una misión espera al capitán (antes / después)"
+rol_humano_afectado: null
+modulo: cd-flujos-trabajo
+planos: [consultor-e2, agencia-e3]

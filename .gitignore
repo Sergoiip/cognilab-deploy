@@ -6,3 +6,4 @@ __pycache__/
 *.pyc
 tools/prohibidos.local.txt
 dist/
+!flota/naves/clientes/

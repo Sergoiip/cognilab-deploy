@@ -1,0 +1,35 @@
+id: estado-entregables
+pieza: faro
+sector: operacion
+nombre_visible: "Estado de entregables por cliente"
+la_ejecuta: negocio
+capitan: "<responsable de la entrega>"
+mision: "Mostrar una vez por semana qué vence y qué está atrasado en cada frente activo, sin duplicar datos."
+hace:
+  - "Leer los Milestones (o una tabla «## Entregables») de los proyectos que el manifiesto declara activos"
+  - "Agrupar por cliente: atrasado, vence en la semana, sin fecha y cuántos van entregados"
+  - "Quedarse en silencio si no hay nada atrasado ni por vencer"
+no_hace:
+  - "Marcar un entregable como hecho: eso lo confirma el responsable con [x] y evidencia"
+  - "Prometer fechas al cliente"
+  - "Tomar como vencimiento una fecha suelta del texto (una corrección o un pedido): solo cuenta la del inicio del ítem, la que va sola entre paréntesis o la del bloque del mes"
+disparador:
+  faro: "15 13 * * 1"            # lunes; ajustable por cliente
+  modo: no_agent
+script: estado_entregables.py
+argumentos: ["--raiz", "{crm.proyectos}", "--dias", "7"]
+por_frente: "--incluir"          # cada frente del manifiesto se pasa con este argumento
+convencion_registro: |
+  ## Milestones
+  **Mes 1 · 28 oct – 27 nov · Orden**      <- los ítems debajo vencen el 27 nov
+  - [ ] Revisión de entregables del mes 1 (27 nov 2026).
+  - [ ] 20-nov: renegociar el contrato
+  - [x] Entregado
+registro: "Las notas de proyecto del CRM; el faro no escribe nada"
+hecho:
+  - "4 lunes seguidos con el estado correcto, verificado contra el proyecto"
+  - "Cero ruido de proyectos que no están en el manifiesto"
+indicador: "Entregables atrasados por cliente y por mes"
+rol_humano_afectado: null
+modulo: cd-flujos-trabajo
+planos: [consultor-e2, agencia-e3]

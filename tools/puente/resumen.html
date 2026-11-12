@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cogsmos · Resumen</title>
+<link rel="stylesheet" href="/comun.css">
+<style>
+@font-face{font-family:Outfit;src:url(/fuentes/Outfit.ttf) format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url(/fuentes/ChakraPetch-SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+:root{
+  /* Manual de marca CogniLab 2026 */
+  --fondo:#06060f; --noche:#12102a; --sup:#0e0d1d; --sup2:#15132b; --linea:#25223f;
+  --tx:#e6e6f5; --tx2:#b6b6dc; --tx3:#8b8bb4;
+  --azul:#3fa9ff; --violeta:#9b5cff; --magenta:#ff2e88; --coral:#ff4d6d;
+  --bien:#37d39b; --aviso:#f5b53d; --mal:var(--coral);
+  --texto:Outfit,system-ui,sans-serif; --dato:"Chakra Petch",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--fondo)}
+body{margin:0;color:var(--tx);font:16px/1.5 var(--texto);
+  background:radial-gradient(1200px 520px at 15% -10%,rgba(155,92,255,.13),transparent 60%),radial-gradient(900px 480px at 100% 0%,rgba(63,169,255,.08),transparent 60%),var(--fondo);min-height:100vh}
+.pag{max-width:1140px;margin:0 auto;padding:22px 32px 56px}
+a{color:var(--azul)}
+:focus-visible{outline:2px solid var(--magenta);outline-offset:2px;border-radius:6px}
+
+/* barra superior */
+.top{display:flex;align-items:center;gap:12px;color:var(--tx3);font:14px var(--dato)}
+.top img{width:26px;height:26px}
+.top b{font:600 17px var(--texto);color:var(--tx);letter-spacing:.02em}
+.top .sp{flex:1}
+.vivo{display:inline-flex;align-items:center;gap:7px}
+.vivo i{width:8px;height:8px;border-radius:50%;background:var(--bien)}
+.vivo.caido i{background:var(--mal)}
+
+/* titular */
+.estado{margin:30px 0 26px;display:flex;align-items:flex-start;gap:18px}
+.estado .ico{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center}
+.estado h1{margin:0;font:600 34px/1.15 var(--texto);letter-spacing:-.01em}
+.estado p{margin:6px 0 0;color:var(--tx2);font-size:17px}
+
+/* grilla principal */
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;align-items:start}
+section h2{margin:0 0 12px;font:600 14px var(--dato);letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+.caja{background:var(--sup);border:1px solid var(--linea);border-radius:18px;padding:18px 20px}
+
+/* atención */
+.at{display:grid;grid-template-columns:36px minmax(0,1fr);gap:4px 14px;padding:14px 0;border-top:1px solid var(--linea)}
+.at:first-child{border-top:0;padding-top:2px}
+.at .ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;grid-row:span 4}
+.at .q{font-weight:600;font-size:17px}
+.at .d{color:var(--tx2);font-size:15px;overflow-wrap:anywhere}
+.at .s{color:var(--tx);font-size:15px}
+.dile{color:var(--tx3);font-size:14px}
+.at .acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+.frase{font:600 14px var(--dato);color:var(--tx);background:var(--sup2);border:1px solid var(--linea);border-radius:9px;padding:6px 10px}
+button.copiar{font:600 14px var(--texto);color:var(--fondo);background:var(--magenta);border:0;border-radius:9px;padding:7px 12px;cursor:pointer}
+button.copiar:hover{filter:brightness(1.1)}
+button.copiar.ok{background:var(--bien)}
+.vacio{display:flex;gap:14px;align-items:center;color:var(--tx2)}
+.vacio b{color:var(--tx);display:block;font-size:17px}
+
+/* agentes */
+.ag{background:var(--sup);border:1px solid var(--linea);border-radius:18px;padding:18px 20px;margin-bottom:16px;border-top:3px solid var(--c)}
+.ag .cab{display:flex;align-items:center;gap:12px}
+.ag .av{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);font:700 16px var(--dato)}
+.ag h3{margin:0;font:600 22px/1.1 var(--texto)}
+.ag .rol{color:var(--tx3);font-size:14px}
+.ag .est{margin:14px 0 6px;display:flex;align-items:center;gap:9px;font-weight:600;font-size:17px}
+.punto{width:10px;height:10px;border-radius:50%;flex:none}
+.punto.trab{background:var(--magenta);animation:lat 1.6s ease-in-out infinite}
+@keyframes lat{50%{box-shadow:0 0 0 6px rgba(255,46,136,.18)}}
+.ag ul{margin:0 0 4px;padding:0;list-style:none}
+.ag li{padding:5px 0 5px 19px;position:relative;color:var(--tx2);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag li::before{content:"";position:absolute;left:4px;top:13px;width:5px;height:5px;border-radius:50%;background:var(--tx3)}
+.ag .prox{margin-top:10px;padding-top:10px;border-top:1px solid var(--linea);color:var(--tx2);font-size:15px}
+.ag .prox b{color:var(--tx);font-weight:600}
+.ag .pie{margin-top:6px;color:var(--tx3);font:14px var(--dato)}
+
+/* hoy */
+.hoy{margin-top:30px}
+.lin{display:grid;grid-template-columns:62px 26px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 4px;border-top:1px solid var(--linea)}
+.lin:first-child{border-top:0}
+.lin .h{font:600 15px var(--dato);color:var(--tx2)}
+.lin .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lin .n small{color:var(--tx3);font-size:14px;margin-left:6px}
+.lin .r{font-size:14px;white-space:nowrap;padding:3px 10px;border-radius:99px;border:1px solid var(--linea);color:var(--tx2)}
+.lin.futuro .h,.lin.futuro .n{color:var(--tx3)}
+.ahora{display:flex;align-items:center;gap:10px;color:var(--magenta);font:600 14px var(--dato);letter-spacing:.08em;padding:6px 0}
+.ahora::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--magenta),transparent)}
+.vig{display:flex;gap:10px;align-items:center;color:var(--tx2);font-size:15px;margin-bottom:12px}
+
+/* detalles */
+details{margin-top:18px;background:var(--sup);border:1px solid var(--linea);border-radius:14px}
+summary{cursor:pointer;padding:14px 18px;font-weight:600;color:var(--tx2);list-style:none;display:flex;justify-content:space-between}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"Mostrar";font:14px var(--dato);color:var(--tx3)}
+details[open] summary::after{content:"Ocultar"}
+details .in{padding:0 18px 16px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font:600 13px var(--dato);letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);padding:8px 10px 8px 0}
+td{padding:9px 10px 9px 0;border-top:1px solid var(--linea);vertical-align:top}
+td small{color:var(--tx3);font-size:14px}
+.pie2{margin-top:26px;color:var(--tx3);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media (max-width:880px){.grid{grid-template-columns:1fr}.pag{padding:18px}.estado h1{font-size:27px}.lin{grid-template-columns:54px 22px minmax(0,1fr)}.lin .r{grid-column:3;justify-self:start}}
+@media (prefers-reduced-motion:reduce){.punto.trab{animation:none}}
+</style>
+<link rel="stylesheet" href="/piel.css">
+</head>
+<body>
+<div class="barra-env"><header class="barra"><a class="marca" href="/"><img src="/isotipo.svg" alt=""><b>Cogsmos</b></a><nav class="vistas" aria-label="Vistas del puente de mando"><a href="/" data-v="mapa">Mapa</a><a href="/avance" data-v="avance">Avance</a><a href="/flujo" data-v="flujo">Flujo</a><a href="/resumen" data-v="resumen">Resumen</a></nav><span class="sp"></span><span class="vivo" id="vivo"><i></i><span id="vivo-t">conectando…</span></span></header></div>
+<div class="pag">
+
+  <header class="estado" aria-live="polite">
+    <div class="ico" id="e-ico"></div>
+    <div><h1 id="e-tit">Cargando…</h1><p id="e-sub"></p></div>
+  </header>
+
+  <div class="grid">
+    <section aria-labelledby="h-at">
+      <h2 id="h-at">Necesita de ti</h2>
+      <div class="caja" id="atencion"></div>
+    </section>
+    <section aria-labelledby="h-ag">
+      <h2 id="h-ag">Tus agentes ahora</h2>
+      <div id="agentes"></div>
+    </section>
+  </div>
+
+  <section class="hoy" aria-labelledby="h-hoy">
+    <h2 id="h-hoy">Hoy</h2>
+    <div class="caja"><div class="vig" id="vigilancia"></div><div id="agenda"></div></div>
+  </section>
+
+  <details id="d-tareas"><summary id="s-tareas">Todas las tareas automáticas</summary><div class="in" id="tabla"></div></details>
+  <details><summary>Lo que pasó en las últimas 24 horas</summary><div class="in" id="historia"></div></details>
+
+  <div class="pie2">
+    <span>Esta página solo muestra. Para soltar, aprobar o descartar algo, díselo a ARG.OS por el chat o Telegram.</span>
+    
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const claveP=s=>String(s||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null,skew=0;
+const now=()=>Date.now()/1000+skew;
+const C={bien:"#37d39b",aviso:"#f5b53d",mal:"#ff4d6d",mag:"#ff2e88",vio:"#9b5cff",azul:"#3fa9ff",tx3:"#8b8bb4"};
+
+/* íconos simples (marca: toda tarjeta lleva ícono) */
+const I={
+  ok:c=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`,
+  alerta:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M12 4l9 16H3z" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.6v.2"/></svg>`,
+  mano:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9M8 8.5V5.5M16 12V6M8 9v4l-2-2c-1-1-2.6.2-1.8 1.4L8 18a5 5 0 0 0 4 2h1a5 5 0 0 0 5-5v-3"/></svg>`,
+  reloj:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
+  enchufe:c=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/></svg>`,
+};
+const caja=(c,svg)=>`<span class="ic" style="background:${c}22">${svg}</span>`;
+
+/* formato */
+const DOW={"*":"todos los días","1-5":"lunes a viernes","0":"domingos","1":"lunes","2":"martes","3":"miércoles","4":"jueves","5":"viernes","6":"sábados"};
+function cuando(s){
+  if(!s) return "";
+  let m=s.match(/^every (\d+)m$/); if(m){const v=+m[1];return v%60===0?`cada ${v/60} h`:`cada ${v} min`}
+  const p=s.split(/\s+/); if(p.length!==5) return s;
+  const [mi,ho,dom,mon,dow]=p, hh=`${ho.padStart(2,"0")}:${mi.padStart(2,"0")}`;
+  const M=["","enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  if(dom!=="*"&&mon!=="*") return `${dom} de ${M[+mon]}, ${hh}`;
+  const d=DOW[dow]||dow.split(",").map(x=>DOW[x]||x).join(" y ");
+  return `${d}, ${hh}`;
+}
+function rel(t,fut){
+  if(!t) return "—"; let s=Math.round(fut?t-now():now()-t); s=Math.max(0,s);
+  let x; if(s<60) x="unos segundos"; else if(s<3600) x=`${Math.floor(s/60)} min`;
+  else if(s<86400){const h=Math.floor(s/3600),m=Math.floor(s%3600/60);x=h<6&&m?`${h} h ${m} min`:`${h} h`}
+  else {const d=Math.floor(s/86400);x=d===1?"1 día":`${d} días`}
+  return fut?`en ${x}`:`hace ${x}`;
+}
+const hm=t=>new Date(t*1000).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit",hour12:false});
+const continuo=n=>/^every/.test(n.horario||"");
+const nombre=n=>n.nombre.replace(/^Misión · /,"");
+const est=id=>D.estaciones.find(e=>e.id===id);
+const porPerfil=p=>D.estaciones.find(e=>e.perfil===p);
+const color=e=>e&&e.coordinador?C.vio:C.azul;
+const rol=e=>e.coordinador?"Coordina, reparte y hace lo personal":e.tipo==="negocio"?"Hace el trabajo del negocio":e.tipo==="servicio"?"Atiende al público":"Hace lo personal";
+const corto=s=>s.length>70?s.slice(0,68)+"…":s;
+function errorClaro(e){
+  if(!e) return "";
+  if(/not configured|not enabled|deliver|chat_id|telegram|discord/i.test(e)) return "Hizo su trabajo, pero no te pudo mandar el mensaje con el resultado.";
+  if(/timeout|timed out/i.test(e)) return "Se demoró más de lo permitido y se detuvo.";
+  if(/credential|auth|401|403|api key/i.test(e)) return "Le falta una credencial o acceso.";
+  if(/not found|no such file|404/i.test(e)) return "No encontró un archivo o recurso que necesita.";
+  return "Tuvo un error técnico. ARG.OS puede ver el detalle.";
+}
+
+/* qué necesita de ti */
+function atencion(){
+  const L=[], sy=D.sistema;
+  for(const t of D.agora.espera){
+    const v={"para soltar":["Hay una misión lista para que la sueltes",`suelta ${t.id}`],"visto bueno":["Hay un documento esperando tu visto bueno",`aprueba ${t.id}`],"en revisión":["Una misión terminó y espera tu revisión",`revisa ${t.id}`]}[t.motivo]||["Esto espera tu decisión",`revisa ${t.id}`];
+    L.push({c:C.aviso,ic:I.mano,q:v[0],d:t.titulo,s:"No avanza hasta que decidas.",f:v[1]});
+  }
+  for(const t of D.agora.atascadas){
+    const q=/corriendo/.test(t.motivo)?"Una misión lleva más de 6 horas trabajando":/triage/.test(t.motivo)?"Una misión no se pudo repartir":/fallos/.test(t.motivo)?"Una misión ha fallado varias veces":"Una misión lleva días bloqueada";
+    const s=/corriendo/.test(t.motivo)?"Puede que se haya trabado. Si no esperabas que tardara tanto, pregúntale.":"Mientras siga así, ese trabajo no avanza.";
+    L.push({c:C.aviso,ic:I.reloj,q,d:`${t.titulo} · la tiene ${porPerfil(t.asignada)?.nombre||t.asignada||"nadie"} desde ${rel(t.inicio||t.creada)}`,s,f:`¿qué pasa con ${t.id}?`});
+  }
+  for(const n of D.naves.filter(n=>n.estado==="fallo"))
+    L.push({c:C.mal,ic:I.alerta,q:`Falló la tarea «${nombre(n)}»`,d:`${n.alias?n.alias+" · ":""}de ${est(n.estacion)?.nombre||""} · última vez ${rel(n.ultimo)}`,s:errorClaro(n.error),f:`revisa la tarea automática ${n.alias||nombre(n)}`});
+  for(const e of D.estaciones) if(e.bot!=="connected")
+    L.push({c:C.mal,ic:I.alerta,q:`El bot de ${e.nombre} está desconectado`,d:"No te van a llegar sus avisos por Telegram.",f:`revisa el bot de ${e.nombre}`});
+  if(sy.gateway!=="running") L.push({c:C.mal,ic:I.alerta,q:"El sistema de mensajes está detenido",d:"Ningún agente puede escribirte ni recibir mensajes.",f:"revisa el gateway"});
+  const en=sy.energia||{};
+  if(en.corriente===false) L.push({c:C.aviso,ic:I.enchufe,q:"El portátil está con batería",d:`Va en ${en.bateria??"?"}%. Si se apaga, las tareas automáticas se detienen.`,f:null});
+  if(!sy.respaldo||now()-sy.respaldo.ts>36*3600) L.push({c:C.aviso,ic:I.alerta,q:"No hay respaldo reciente",d:sy.respaldo?`El último fue ${rel(sy.respaldo.ts)}.`:"Todavía no hay ninguno.",f:"revisa el respaldo"});
+  return L;
+}
+
+function pintar(){
+  const L=atencion();
+  // titular
+  const malos=L.filter(x=>x.c===C.mal).length;
+  const activos=D.naves.filter(n=>n.estado!=="pausada").length;
+  const trabajando=D.estaciones.filter(e=>e.misiones.running||e.actividad.activas.length).length;
+  const [col,tit]=L.length===0?[C.bien,"Todo en orden"]:[malos?C.mal:C.aviso,L.length===1?"Una cosa necesita tu atención":`${L.length} cosas necesitan tu atención`];
+  $("#e-ico").style.background=col+"22";$("#e-ico").innerHTML=L.length?I.alerta(col):I.ok(col);
+  $("#e-tit").textContent=tit;
+  $("#e-sub").textContent=`${D.estaciones.length} agentes · ${trabajando?trabajando+" trabajando ahora":"ninguno trabajando ahora"} · ${activos} tareas automáticas activas`;
+
+  // atención
+  $("#atencion").innerHTML=L.length?L.map((x,i)=>`<div class="at">${caja(x.c,x.ic(x.c))}<div class="q">${esc(x.q)}</div><div class="d">${esc(x.d)}</div>${x.s?`<div class="s">${esc(x.s)}</div>`:""}
+    ${x.f?`<div class="acc"><span class="dile">Dile a ARG.OS:</span><span class="frase">«${esc(x.f)}»</span><button class="copiar" data-f="${esc(x.f)}" aria-label="Copiar la frase «${esc(x.f)}» para pegarla en el chat de ARG.OS">Copiar frase</button></div>`:""}</div>`).join("")
+    :`<div class="vacio">${caja(C.bien,I.ok(C.bien))}<div><b>Nada pendiente</b>Puedes seguir en lo tuyo; te aviso si algo cambia.</div></div>`;
+
+  // agentes
+  const orden=[...D.estaciones].sort((a,b)=>(b.coordinador?1:0)-(a.coordinador?1:0));
+  $("#agentes").innerHTML=orden.map(e=>{
+    const c=color(e);
+    const mis=D.agora.tareas.filter(t=>t.estado==="running"&&t.estacion===e.id).map(t=>"Misión: "+t.titulo);
+    const ses=e.actividad.activas.filter(a=>a.fuente!=="kanban").map(a=>(a.fuente==="cron"?"Tarea automática: ":"Conversando: ")+(a.titulo||"sin título"));
+    const items=[...mis,...ses];
+    const estado=mis.length?["trab",`Trabajando en ${mis.length} misión${mis.length>1?"es":""}`]:ses.length?["trab","Conversando contigo"]:["",`En espera`];
+    const prox=D.naves.filter(n=>n.estacion===e.id&&n.estado!=="pausada"&&n.proximo&&!continuo(n)).sort((a,b)=>a.proximo-b.proximo)[0];
+    const n=D.naves.filter(x=>x.estacion===e.id&&x.estado!=="pausada").length;
+    return `<article class="ag" style="--c:${c}">
+      <div class="cab">${D.personajes&&D.personajes[claveP(e.nombre)]?`<img class="av con-retrato retrato" style="--c:${color(e)}" src="${D.personajes[claveP(e.nombre)]}" alt="">`:`<div class="av">${esc(e.nombre.slice(0,1))}</div>`}<div><h3>${esc(e.nombre)}</h3><div class="rol">${rol(e)}</div></div></div>
+      <div class="est"><span class="punto ${estado[0]}" style="${estado[0]?"":`background:${C.tx3}`}"></span>${estado[1]}</div>
+      ${items.length?`<ul>${items.slice(0,3).map(t=>`<li title="${esc(t)}">${esc(t)}</li>`).join("")}${items.length>3?`<li>y ${items.length-3} más</li>`:""}</ul>`:""}
+      ${prox?`<div class="prox">Lo próximo: <b>${esc(nombre(prox))}</b> a las ${hm(prox.proximo)} <span data-fut="${prox.proximo}">(${rel(prox.proximo,1)})</span></div>`:""}
+      <div class="pie">${e.bot==="connected"?"Bot de Telegram conectado":"Bot desconectado"} · ${n} tareas automáticas</div>
+    </article>`}).join("");
+
+  // vigilancia continua
+  const vig=D.naves.filter(n=>continuo(n)&&n.estado!=="pausada");
+  const vmal=vig.filter(n=>n.estado==="fallo");
+  $("#vigilancia").innerHTML=vig.length?`${vmal.length?I.alerta(C.mal):I.ok(C.bien)}<span>Vigilancia continua: ${vig.map(n=>`${esc(nombre(n).toLowerCase())} (${cuando(n.horario)})`).join(" y ")} · ${vmal.length?"con fallas":"sin problemas"}</span>`:"";
+
+  // agenda de hoy
+  const d0=new Date(now()*1000);d0.setHours(0,0,0,0);const hoy0=d0.getTime()/1000,man0=hoy0+86400;
+  const filas=[];
+  for(const n of D.naves){ if(continuo(n)||n.estado==="pausada")continue;
+    if(n.ultimo&&n.ultimo>=hoy0) filas.push({t:n.ultimo,n,tipo:n.estado==="fallo"?"fallo":n.ultimo_silencio?"silencio":"hecho"});
+    if(n.proximo&&n.proximo<man0&&n.proximo>now()) filas.push({t:n.proximo,n,tipo:"pendiente"});
+    if(n.estado==="corriendo") filas.push({t:now(),n,tipo:"trabajando"});
+  }
+  for(const t of D.agora.tareas) if(t.estado==="done"&&t.fin>=hoy0&&t.asignada) filas.push({t:t.fin,m:t,tipo:"mision"});
+  filas.sort((a,b)=>a.t-b.t);
+  const R={hecho:[C.bien,"Hecho · avisó"],silencio:[C.bien,"Hecho · sin novedades"],fallo:[C.mal,"Falló"],pendiente:[C.tx3,"Pendiente"],trabajando:[C.mag,"Trabajando"],mision:[C.bien,"Misión terminada"]};
+  let html="",puesto=false;
+  for(const f of filas){
+    if(!puesto&&f.t>now()){html+=`<div class="ahora">AHORA · ${hm(now())}</div>`;puesto=true}
+    const [c,l]=R[f.tipo];
+    if(f.m){const e=porPerfil(f.m.asignada);
+      html+=`<div class="lin"><span class="h">${hm(f.t)}</span>${I.ok(c)}<span class="n">${esc(f.m.titulo)}<small>${esc(e?.nombre||f.m.asignada)}</small></span><span class="r" style="color:${c};border-color:${c}55">${l}</span></div>`;continue}
+    const e=est(f.n.estacion);
+    html+=`<div class="lin ${f.tipo==="pendiente"?"futuro":""}"><span class="h">${hm(f.t)}</span>${f.tipo==="fallo"?I.alerta(c):f.tipo==="pendiente"?I.reloj(c):I.ok(c)}<span class="n">${esc(nombre(f.n))}<small>${esc(f.n.alias?f.n.alias+" · ":"")}${esc(e?.nombre||"")}</small></span><span class="r" style="color:${c};border-color:${c}55">${l}</span></div>`;
+  }
+  if(!puesto) html+=`<div class="ahora">AHORA · ${hm(now())}</div>`+(filas.length?"":"")+`<div class="lin futuro"><span class="h"></span>${I.reloj(C.tx3)}<span class="n">No queda nada más programado para hoy</span><span></span></div>`;
+  $("#agenda").innerHTML=html;
+
+  // tabla completa
+  const ns=[...D.naves].sort((a,b)=>(a.estado==="pausada")-(b.estado==="pausada")||(a.estacion>b.estacion?1:-1));
+  $("#s-tareas").firstChild.textContent=`Todas las tareas automáticas (${activos} activas, ${ns.length-activos} pausadas)`;
+  const EST={activa:"Activa",corriendo:"Trabajando",fallo:"Falló",pausada:"Pausada"};
+  $("#tabla").innerHTML=`<table><thead><tr><th>Qué hace</th><th>Agente</th><th>Cuándo</th><th>Última vez</th><th>Estado</th></tr></thead><tbody>${ns.map(n=>`<tr>
+    <td>${esc(nombre(n))}${n.alias?`<br><small>${esc(n.alias)}</small>`:""}</td><td>${esc(est(n.estacion)?.nombre||"")}</td><td>${esc(cuando(n.horario))}</td>
+    <td>${n.ultimo?rel(n.ultimo):"<small>nunca</small>"}</td><td style="color:${({fallo:C.mal,pausada:C.tx3,corriendo:C.mag})[n.estado]||C.bien}">${EST[n.estado]||n.estado}</td></tr>`).join("")}</tbody></table>`;
+
+  // últimas 24 h
+  const CL={created:"se creó",claimed:"empezó",completed:"terminó",blocked:"se bloqueó",unblocked:"se soltó",assigned:"se asignó",promoted:"quedó lista",spawned:"arrancó",worker_result:"entregó resultado",reclaimed:"se reasignó",archived:"se archivó",commented:"tiene un comentario nuevo"};
+  const hist=D.bitacora.filter(b=>b.ts>now()-86400&&!(b.tipo==="faro"&&continuo(D.naves.find(n=>n.id===b.id)||{})));
+  $("#historia").innerHTML=`<table><tbody>${hist.map(b=>`<tr><td style="width:64px;font-family:var(--dato)">${hm(b.ts)}</td><td>${b.tipo==="faro"
+    ?`${esc(b.nombre||b.titulo)} <small>${b.clase==="fallo"?"falló":b.clase==="silencio"?"corrió sin novedades":"corrió y te avisó"}</small>`
+    :`Misión «${esc(b.titulo||b.id)}» <small>${CL[b.clase]||b.clase}${b.asignada&&porPerfil(b.asignada)?" · "+esc(porPerfil(b.asignada).nombre):""}</small>`}</td></tr>`).join("")||`<tr><td>Sin movimientos.</td></tr>`}</tbody></table>`;
+}
+
+document.addEventListener("click",async ev=>{
+  const b=ev.target.closest("button.copiar");if(!b)return;
+  try{await navigator.clipboard.writeText(b.dataset.f);b.textContent="Copiada: pégala en el chat ✓";b.classList.add("ok")}
+  catch{b.textContent="Selecciona la frase y cópiala"}
+  setTimeout(()=>{b.textContent="Copiar frase";b.classList.remove("ok")},2200);
+});
+
+async function tick(){
+  try{
+    const r=await fetch("/api/estado",{cache:"no-store"});if(!r.ok)throw 0;
+    D=await r.json();skew=D.ahora-Date.now()/1000;
+    const abiertos=[...document.querySelectorAll("details")].map(d=>d.open);
+    pintar();
+    document.querySelectorAll("details").forEach((d,i)=>d.open=abiertos[i]);
+    $("#vivo").className="vivo";$("#vivo-t").textContent="en vivo · "+hm(now());
+  }catch{$("#vivo").className="vivo caido";$("#vivo-t").textContent="sin conexión con el panel"}
+}
+setInterval(()=>document.querySelectorAll("[data-fut]").forEach(x=>x.textContent=`(${rel(+x.dataset.fut,1)})`),15000);
+tick();setInterval(tick,10000);
+</script>
+<script src="/comun.js"></script>
+</body>
+</html>

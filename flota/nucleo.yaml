@@ -1,0 +1,45 @@
+# Núcleo de la Flota · reglas que ningún cliente ni plano puede quitar
+version: 1
+codigo_de_navegacion:            # se agrega a la lista «no_hace» de TODA ficha
+  - "Nada sale hacia afuera (clientes, redes, pagos) sin visto bueno del responsable"
+  - "No inventa datos: si no está en el registro, pregunta y escala"
+  - "No elimina por completo el componente humano de un proceso (línea roja)"
+  - "No reemplaza un esfuerzo que forma a la persona; solo quita procesos sin sentido (test de diseño)"
+campos_obligatorios:             # toda ficha de estación, nave o faro
+  - id
+  - pieza                        # estacion | nave | faro
+  - sector                       # clave de sectores.yaml
+  - nombre_visible               # lo único que ve el cliente; nunca lore
+  - capitan                      # responsable humano; en el catálogo va "<responsable>"
+  - mision                       # una frase
+  - no_hace
+  - registro                     # dónde deja evidencia
+  - hecho                        # criterio de hecho (mínimo 1 punto verificable)
+  - indicador                    # qué se mide para saber que sirve
+piezas: [estacion, nave, faro]
+tipos_de_estacion: [persona, negocio, servicio]
+roles_de_estacion:               # una estación de cualquier tipo puede tomar un rol extra
+  coordinador: "Recibe lo que pide el capitán, decide quién lo hace, reparte misiones y corre los faros del Ágora y de la máquina. El manifiesto dice cuál estación es (`coordinador: <id>`)"
+estados_de_plano:
+  borrador: "Escrito, nunca corrido"
+  piloto: "Corriendo en un cliente real, con línea base"
+  validado: "Un ciclo completo en un cliente real, criterios de hecho cumplidos e indicador medido"
+promocion: "Una nave local que aparece en 2 clientes se promueve al catálogo"
+protocolo_de_tarjeta:            # se agrega al cuerpo de TODA misión (idea tomada de la flota de un estudio aliado, 10-nov)
+  - "Haz solo lo que pide la tarjeta y de la forma más económica: no cargues skills que no necesites ni leas la bóveda completa"
+  - "Cierra con un resumen de máximo 6 líneas: qué hiciste, dónde quedó y qué decide el capitán"
+  - "Si falta un dato, un acceso o una decisión, bloquea la tarjeta diciendo exactamente qué necesitas; no adivines"
+  - "Si otra estación debe hacer algo después, créale su propia tarjeta; no la cuelgues como hija de la tuya"
+  - "Lo que aprendas que sirva para la próxima vez, anótalo en la nota de la estación, en la sección «Memoria»"
+presupuesto_por_defecto:         # el manifiesto lo sobrescribe
+  modo: manual                   # manual: toda misión nace bloqueada hasta que el capitán la suelta; auto: entra directo hasta el tope
+  max_dia: 5                     # misiones creadas por día que entran solas en modo auto
+vocabulario_cliente:             # lore interno -> nombre visible
+  estacion: "Agente principal"
+  nave: "Agente de tarea"
+  faro: "Revisión automática"
+  muelle: "Canal"
+  puente: "Tablero de tareas"
+  mision: "Tarea"
+  bitacora: "Registro"
+  capitan: "Responsable"

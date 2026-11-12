@@ -1,4 +1,7 @@
 # Cambios del catálogo
+- 0.5.0 (repo): patrón ICM. `icm/`, `tools/espacio.py` y la opción `--espacio` de `instala.sh`. Sin cambios de versiones de plugins.
+- 0.4.1: documentación de plugins en `docs/plugins/` (sin cambios de versiones).
+- 0.4.0: Task Atlas 0.4.0 incluido (vendor, con hash) en el perfil negocio. Depende de TaskNotes.
 - 0.3.0: Cadence modificado incluido (vendor, con hash). Apps opcionales; el instalador pregunta. `extras.yaml` para ampliar.
 - 0.2.0: catálogo inicial, 3 perfiles, plugins por release oficial con sha256.
 - 0.4.0: Task Atlas (plugin propio, vendor con hash) en el perfil negocio. Referencia a Cadence apunta a «Paquete Del caos al sistema en 90 días».
@@ -35,3 +38,4 @@
 - 0.29.0: Como el manifiesto ahora se arma durante la instalación, los 22 módulos viajan siempre al equipo (en `--base` y en la instalación completa); el manifiesto ya no recorta las skills sino que marca cuáles están activas en `ACTIVOS`, y la skill del manifiesto en vivo le dice al agente que solo entregue módulos activos.
 - 0.29.1: Se quitan de los módulos las skills que no existían en ningún lado: D1 y C4 se quedan sin ellas hasta tener una real, D2 usa `capcut` en lugar de `capcut-automation` y C6 deja la duplicada y se queda con `edicion-reels-ffmpeg-subtitulos`.
 - 0.30.0: Las skills de Hermes que piden los módulos ahora llegan al cliente: las propias se abstrajeron sin datos del consultor ni de clientes en `aprendizaje/Skills replicables/` (tres se fusionaron con su pariente y los módulos B2, A4, B3 y C6 se ajustaron), `docx` y `xlsx` viajan desde el repo porque Hermes ya no las trae, y `capcut` se instala del hub con su identificador exacto (`stack/skills_hermes.yaml`). `instala.sh` gana el paso 6/7, que instala las de los módulos activos y deja en «a mano» las que no encuentre; `tools/skills_hermes.py auditar` revisa que ninguna skill pedida se quede sin fuente. `verificar.py` deja de confundir las referencias de Excel (`B$2`) con precios.
+- 0.31.0: Se publica la línea de trabajo de la Flota que vivía solo en el equipo de Sergio: Astillero y Flota (`flota/`: núcleo, sectores, estaciones, naves y misiones, `tools/flota.py`), Puente de mando (`tools/puente/`), patrón ICM (`icm/`, `tools/espacio.py`, `instala.sh --espacio`) y fichas de plugins (`docs/plugins/`). Se integra con lo publicado desde 0.4.0: el Task Atlas y Lab Cadence vigentes se quedan como estaban, y las versiones 0.5.0 a 1.6.1 de esa línea quedan contadas aquí.

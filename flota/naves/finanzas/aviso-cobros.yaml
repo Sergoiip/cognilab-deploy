@@ -1,0 +1,33 @@
+id: aviso-cobros
+pieza: faro
+sector: finanzas
+nombre_visible: "Aviso de cobros próximos"
+la_ejecuta: negocio
+capitan: "<responsable de cobros>"
+mision: "Avisar a tiempo cada cobro que se acerca o que ya venció, con el mensaje listo para que el responsable lo envíe."
+hace:
+  - "Leer las tablas de pagos del registro del negocio (sección «## Pagos», «## Cobros» o «## Cuotas» con columnas Fecha y Estado)"
+  - "Avisar los cobros pendientes que vencen dentro de la ventana (3 días por defecto) y los vencidos"
+  - "Quedarse en silencio si no hay nada que avisar"
+no_hace:
+  - "Enviar el cobro al cliente por su cuenta"
+  - "Marcar un cobro como pagado: eso lo confirma el responsable"
+disparador:
+  faro: "10 13 * * 1-5"          # días hábiles; ajustable por cliente
+  modo: no_agent                 # script determinista: sin modelo, sin costo, sin inventar montos
+script: aviso_cobros.py
+argumentos: ["--raiz", "{crm.raiz}", "--dias", "3"]
+convencion_registro: |
+  ## Pagos
+  | Fecha | Monto | Cubre | Estado |
+  |---|---|---|---|
+  | 12 nov 2026 | <monto> | <periodo> | Pendiente |
+  Estado que empieza por Pagado, Cobrado, Anulado o Cancelado = no se avisa.
+registro: "Las mismas notas de proyecto del CRM; el faro no escribe nada"
+hecho:
+  - "5 avisos correctos seguidos, verificados contra el registro"
+  - "Cero avisos en días sin cobros cercanos"
+indicador: "Cobros atrasados por mes y días promedio de atraso (antes / después)"
+rol_humano_afectado: null
+modulo: cd-propuestas-cobros
+planos: [consultor-e2, agencia-e3]
