@@ -22,6 +22,8 @@ done
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HH="${HERMES_HOME:-$HOME/.hermes}"
 DEST="$HH/skills/cognilab-deploy"
+REPL="$HH/skills/cognilab-replicables"   # skills de aprendizaje/Skills replicables que piden los módulos activos
+MANUALES=()
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 run() { if [[ $DRY -eq 1 ]]; then echo "  [dry-run] $*"; else eval "$@"; fi; }
@@ -39,7 +41,7 @@ instalar_skill_manifiesto() {
   run "mkdir -p '$DEST/cd-manifiesto-en-vivo' && sed 's#~/cognilab-deploy#$REPO#g' '$REPO/bootstrap/skill-manifiesto/SKILL.md' > '$DEST/cd-manifiesto-en-vivo/SKILL.md'"
 }
 
-echo "== 1/$([[ $BASE -eq 1 ]] && echo 3 || echo 6) Preflight"
+echo "== 1/$([[ $BASE -eq 1 ]] && echo 3 || echo 7) Preflight"
 PY=""
 for c in /usr/bin/python3 python3 "$HH/hermes-agent/venv/bin/python"; do
   if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import yaml' 2>/dev/null; then PY="$c"; break; fi
@@ -67,7 +69,7 @@ if [[ $BASE -eq 1 ]]; then
   exit 0
 fi
 
-echo "== 2/6 Resolver módulos del manifiesto"
+echo "== 2/7 Resolver módulos del manifiesto"
 RESUELTO="$("$PY" - "$MANIFIESTO" "$REPO" <<'PY'
 import sys, yaml, pathlib
 man = yaml.safe_load(open(sys.argv[1], encoding="utf-8"))
@@ -87,14 +89,14 @@ PY
 mapfile -t SLUGS <<<"$RESUELTO"
 for l in "${SLUGS[@]}"; do echo "  - ${l%%|*}"; done
 
-echo "== 3/6 Estructura de la bóveda (se refleja de inmediato)"
+echo "== 3/7 Estructura de la bóveda (se refleja de inmediato)"
 if [[ $DRY -eq 1 ]]; then
   "$PY" "$REPO/tools/scaffold_vault.py" "$MANIFIESTO" --dry-run
 else
   "$PY" "$REPO/tools/scaffold_vault.py" "$MANIFIESTO"
 fi
 
-echo "== 4/6 Instalar skills en $DEST"
+echo "== 4/7 Instalar módulos en $DEST"
 run "mkdir -p '$DEST'"
 instalar_todos_los_modulos
 ACT=""; for l in "${SLUGS[@]}"; do ACT+="${l%%|*} "; done
@@ -109,7 +111,7 @@ else
   "$PY" "$REPO/tools/personalizar_agente.py" "$MANIFIESTO" "$HH"
 fi
 
-echo "== 5/6 Aplicaciones"
+echo "== 5/7 Aplicaciones"
 if [[ $SIN_APPS -eq 1 ]]; then
   echo "  (omitido por --sin-apps)"
 else
@@ -132,7 +134,6 @@ else
   fi
   PLAN="$("$PY" "$REPO/tools/stack.py" plan "$MANIFIESTO" --pm "$PM" --excluir "$EXCL")" || die "no se pudo resolver el stack"
   VAULT="$("$PY" -c 'import sys,yaml,os;print(os.path.expanduser(yaml.safe_load(open(sys.argv[1])).get("vault","")))' "$MANIFIESTO")"
-  MANUALES=()
   while IFS='|' read -r tipo a b; do
     case "$tipo" in
       INFO) echo "  $a" ;;
@@ -163,10 +164,28 @@ else
       MANUAL) MANUALES+=("$a") ;;
     esac
   done <<<"$PLAN"
-  if [[ ${#MANUALES[@]} -gt 0 ]]; then echo "  A mano (no se pueden automatizar):"; for m in "${MANUALES[@]}"; do echo "    [ ] $m"; done; fi
 fi
 
-echo "== 6/6 Registrar versión instalada"
+echo "== 6/7 Skills de Hermes que piden los módulos activos"
+# Fuente de cada una: aprendizaje/Skills replicables (se copia), Hermes (ya viene) o el hub
+# (stack/skills_hermes.yaml). Las que no se encuentran pasan a la lista «a mano».
+PLAN_SK="$("$PY" "$REPO/tools/skills_hermes.py" plan $ACT --hermes-home "$HH" --destino "$REPL")" || die "no se pudo resolver las skills de Hermes"
+HAY_HERMES=0; command -v hermes >/dev/null 2>&1 && HAY_HERMES=1
+while IFS='|' read -r tipo nombre det; do
+  case "$tipo" in
+    YA)     echo "  = $nombre (ya instalada en $det)" ;;
+    REPO)   echo "  + $nombre (del repo)"
+            run "mkdir -p '$REPL' && rm -rf '$REPL/$nombre' && cp -r '$det' '$REPL/$nombre'" ;;
+    HERMES) echo "  = $nombre (viene con Hermes; se siembra al abrir Hermes)" ;;
+    HUB)    if [[ $HAY_HERMES -eq 1 ]]; then echo "  + $nombre (hub: $det)"
+              run "HERMES_HOME='$HH' hermes skills install '$det' --yes" || MANUALES+=("Skill $nombre: falló 'hermes skills install $det --yes'; repetirlo a mano")
+            else MANUALES+=("Skill $nombre: instalar Hermes y luego 'hermes skills install $det --yes'"); fi ;;
+    FALTA)  MANUALES+=("Skill $nombre (módulos $det): no está en el repo, ni en Hermes, ni en el hub") ;;
+  esac
+done <<<"$PLAN_SK"
+if [[ ${#MANUALES[@]} -gt 0 ]]; then echo "  A mano (no se pueden automatizar):"; for m in "${MANUALES[@]}"; do echo "    [ ] $m"; done; fi
+
+echo "== 7/7 Registrar versión instalada"
 VER="$(git -C "$REPO" describe --tags --always 2>/dev/null || echo sin-git)"
 run "cp '$MANIFIESTO' '$DEST/MANIFIESTO.yaml' && printf '%s\n' '$VER' > '$DEST/VERSION'"
 echo "Listo. Versión del repo: $VER. Anótala en Cadence junto al cliente."

@@ -1,0 +1,21 @@
+# De dónde sale cada skill de Hermes que piden los módulos (`requiere_skills_hermes`).
+# tools/skills_hermes.py clasifica cada nombre así, en este orden:
+#   1. REPO   → existe `aprendizaje/Skills replicables/<nombre>/SKILL.md` (viaja con el repo)
+#   2. HERMES → viene con Hermes (lista `incluidas_en_hermes`; se siembra al abrir Hermes)
+#   3. HUB    → se instala del hub con `hermes skills install <identificador> --yes`
+#   4. NO-VIAJA → ninguna de las anteriores: el instalador la deja en la lista «a mano»
+# Al agregar una skill a un módulo, debe caer en 1, 2 o 3 (`tools/skills_hermes.py auditar`).
+
+# Vienen en el paquete de Hermes (carpeta skills/ de la instalación oficial).
+incluidas_en_hermes:
+  - computer-use
+  - google-workspace
+  - hermes-agent
+  - obsidian
+  - pdf
+  - weekly-review-planning
+
+# Identificador exacto del hub (revisado con `hermes skills inspect`). Nunca un nombre suelto:
+# un nombre corto puede resolver a la copia de otro autor.
+hub:
+  capcut: skills-sh/social-media-skills/skills/capcut   # comunidad, escaneo limpio

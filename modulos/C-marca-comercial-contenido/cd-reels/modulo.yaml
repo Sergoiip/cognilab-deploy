@@ -6,7 +6,7 @@ ms: MS-15
 estado: esqueleto-desde-meta-skill
 requiere_skills_hermes:
 - edicion-reels-ffmpeg-subtitulos
-- local-audio-transcription
+- local-meeting-transcription
 hecho:
 - Lote de al menos 5 reels reproducidos y revisados.
 - Plantilla reutilizable entregada.

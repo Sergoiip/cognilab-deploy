@@ -12,7 +12,7 @@ con datos reales durante la semana, no se decide todo de una sentada con el clie
    `agente.personalidad`, abrir una conversación y preguntarle su nombre — debe coincidir. Si no
    coincide, revisar que `tools/personalizar_agente.py` corrió (lo hace solo `instala.sh`, pero
    confirmar si algo falló en esa etapa).
-2. **La bóveda ya refleja el manifiesto, no solo abre vacía.** `instala.sh` (paso 3/6) corre
+2. **La bóveda ya refleja el manifiesto, no solo abre vacía.** `instala.sh` (paso 3/7) corre
    `tools/scaffold_vault.py`: crea la bóveda si falta, escribe `00 - Bienvenida.md` con el nombre
    del cliente, el agente y los módulos elegidos (checklist), y las carpetas base que los módulos
    elegidos ya necesitan (`Cadence/Gastos` si hay A2 a escala 2+, `TaskNotes/Tasks` y `daily/` si
@@ -41,7 +41,7 @@ con datos reales durante la semana, no se decide todo de una sentada con el clie
 7. **El manifiesto puede cambiar al final de la semana** (día 5): `tools/plan.py` puede proponer
    otra escala, otro módulo principal, u otro modo de herramientas según lo que de verdad se
    observó. Eso NO obliga a desinstalar nada: `bootstrap/instala.sh` es idempotente — correrlo de
-   nuevo con el manifiesto ajustado solo agrega/actualiza lo que cambió, y el paso 3/6 regenera
+   nuevo con el manifiesto ajustado solo agrega/actualiza lo que cambió, y el paso 3/7 regenera
    `00 - Bienvenida.md` y crea cualquier carpeta nueva que los módulos añadidos necesiten. No hace
    falta correr `tools/scaffold_vault.py` aparte — `instala.sh` ya lo incluye — pero si solo se
    quiere refrescar la bóveda sin tocar skills/apps, se puede correr suelto: `python3

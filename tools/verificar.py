@@ -44,7 +44,8 @@ if len(ids) != len(set(ids)):
     err.append("ids duplicados")
 
 # Reglas de contenido: sin precios, sin datos de clientes, sin rastros de otros clientes
-PROHIBIDO = [(r"\$\s?\d[\d.,]*", "precio"), (r"\bCOP\b", "moneda"),
+# precio: «$» + cifra; si va pegado a una letra (B$2) es una referencia de Excel, no un precio
+PROHIBIDO = [(r"(?<![A-Za-z])\$\s?\d[\d.,]*", "precio"), (r"\bCOP\b", "moneda"),
              (r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", "IP")]
 # Nombres de clientes: NO viven en el repo. Si existe tools/prohibidos.local.txt (ignorado por git),
 # una expresión regular por línea, se aplican también.

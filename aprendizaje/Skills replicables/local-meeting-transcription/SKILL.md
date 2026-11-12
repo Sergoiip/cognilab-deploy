@@ -1,7 +1,7 @@
 ---
 name: local-meeting-transcription
-description: Use when configuring local meeting transcription.
-version: 0.1.0
+description: Use when transcribing meetings or audio locally.
+version: 0.2.0
 ---
 
 # Captura de reuniones y transcripción local
@@ -58,6 +58,79 @@ Límites de dictado no limitan reuniones. Dos binarios presentes pueden fallar p
 
 ## Variantes
 Solo dictado local; reunión presencial; reunión remota con señales autorizadas; recuperación por fragmentos; respaldo independiente; cierre con análisis autorizado y distribución inicialmente en borrador. Activar únicamente variantes dentro del pedido y permisos.
+
+## Transcribir un archivo de audio con Whisper local
+Usar cuando la tarea depende del CONTENIDO de un archivo de audio (nota de voz de Telegram,
+reunión grabada, adjunto `.ogg`/`.m4a`/`.mp3`) y no hay transcripción ya disponible en el
+contexto. Nunca pedir al usuario que describa un audio que el agente puede transcribir.
+
+### Procedimiento
+0. **Localizar el audio cuando el usuario dice "la última grabación / nota de voz" sin adjuntarla.**
+   Las notas de voz de Telegram recibidas por el gateway de Hermes se guardan en
+   `~/.hermes/cache/audio/*.ogg` (`ls -lt --time-style=full-iso` para el orden;
+   `ffprobe -show_entries format=duration` para la duración). Transcribir TODOS los candidatos
+   recientes en una sola carga de Whisper (bucle sobre el glob, guardar cada uno en
+   `$TMPDIR/<archivo>.txt`) y elegir el que corresponde a la tarea: "la última" por `mtime` suele
+   ser una nota corta sin relación. Si ninguno coincide, decir cuáles se revisaron y de qué
+   trataba cada uno, y preguntar dónde está la grabación; nunca construir el entregable solo con
+   datos de la bóveda afirmando que salió de la grabación.
+   Para contexto que el usuario dio en chats anteriores, consultar la base de sesiones del perfil:
+   `sqlite3 ~/.hermes/profiles/<perfil>/state.db "select session_id, datetime(timestamp,'unixepoch','localtime'), role, substr(content,1,400) from messages where content like '%<nombre>%' order by timestamp desc limit 10;"`.
+1. **Usar un venv dedicado con `openai-whisper`** (p. ej. `~/.hermes/whisper_venv`). Si no existe,
+   crearlo e instalar: `python3 -m venv ~/.hermes/whisper_venv && ~/.hermes/whisper_venv/bin/pip install openai-whisper`
+   (arrastra PyTorch y decodifica con `ffmpeg`). Es un hueco de instalación único, no una
+   limitación: no decir al usuario que la transcripción no está disponible.
+
+   ```bash
+   ~/.hermes/whisper_venv/bin/python3 -c "
+   import whisper
+   model = whisper.load_model('base')
+   result = model.transcribe('/ruta/absoluta/al/audio.ogg', language='es')
+   print(result['text'])
+   "
+   ```
+
+   - `language='es'` cuando el audio es en español (alinear con `stt.language` de la config de
+     Hermes); omitirlo o cambiarlo solo si se confirma otro idioma.
+   - El modelo `base` basta para una nota de voz corta (segundos, en CPU). Ver pitfalls para cuándo
+     subir a `small` o `medium`.
+   - La primera llamada por tamaño de modelo lo descarga una vez (~140MB para `base`); las
+     siguientes son inmediatas. La barra de progreso de descarga no es un fallo.
+2. **Alternativa:** si ese venv falta o está roto y otro venv ya tiene `faster_whisper` (mismos
+   pesos, backend CTranslate2, API distinta): `WhisperModel(nombre, device='cpu', compute_type='int8')`,
+   luego iterar los segmentos de `model.transcribe(ruta, language='es')` y unir `.text`.
+3. **Leer la transcripción y extraer lo que la tarea necesita** (nombres, cifras, decisiones,
+   pedidos); no pegar el texto crudo salvo que se pida la transcripción. Whisper devuelve frases
+   corridas con poca puntuación: interpretarlo como dictado oral informal, no como prosa escrita.
+
+### Pitfalls
+- **Reels / videos: transcribir el audio, no solo los fotogramas.** Descargar con `yt-dlp`,
+  extraer `ffmpeg -i reel.mp4 -ar 16000 -ac 1 a.wav` y pasar por el Whisper del venv
+  (`language='en'` si el hablante es angloparlante; modelo `small`). El comando suelto `whisper`
+  puede no estar en el PATH y una llamada de shell a él no produce `.txt` sin avisar: usar siempre
+  el `python3` del venv y comprobar que la salida existe antes de concluir que no hay voz. El
+  análisis solo de fotogramas pierde el argumento de un reel hablado; una nota hecha sin
+  transcripción debe decirlo explícitamente.
+- **Dictado largo y divagante en español regional: empezar con `small`, no `base`.** El disparador
+  es el patrón de habla (varios minutos, muletillas, dialecto, frases corridas), no quién habla:
+  `base` confunde nombres propios y términos de negocio. `small` en CPU (`fp16=False`) transcribe
+  bastante mejor en aproximadamente un minuto. Guardar cada resultado en `<audio>.txt` junto al
+  archivo para reutilizarlo y señalar nombres propios mal oídos en vez de normalizarlos en silencio.
+- **Si la salida de `small` es incoherente** (fragmentos repetidos tipo "idea... idea...", cadenas
+  de verbos sin sentido), subir a `medium` antes de reportar el contenido; no entregar una
+  transcripción ilegible. `medium` se descarga una vez (~1.4GB) y luego es inmediato. Contrastar
+  todo nombre propio con contexto verificable (p. ej. un nombre de dispositivo contra
+  `tailscale status`, una empresa contra el CRM): un sustantivo plausible pero erróneo es el fallo
+  principal que `medium` conserva.
+- **Testimonios de clientes: mantener la literalidad.** Corregir solo errores de transcripción
+  (palabras mal oídas como "Inux"→Linux), marcar cortes con `[...]`, anotar que proviene de una
+  nota de voz transcrita y guardar el audio original junto al registro del cliente. El cliente
+  valida el texto antes de publicarlo.
+- **El audio suele llegar dentro de un zip.** `unzip -q` en el scratch y buscar `*.ogg` con glob,
+  sin suponer un único archivo.
+- **El hablante de una nota de voz no es necesariamente el usuario.** Puede ser audio de un
+  tercero (un cliente, un contacto) reenviado como insumo de una tarea. Leer quién habla y de qué
+  antes de asumir que son palabras del usuario o una simple idea.
 
 ## Referencia técnica
 Consultar [Implementación de referencia](references/Implementación%20de%20referencia.md) solo al concretar herramientas; el método no depende de esa implementación. Esta entrega es documental e instalable como carpeta de skill; no acredita instalación ni prueba del entorno receptor. Resolver los parámetros antes de ejecutar; no pegar tokens sin sustituir.
