@@ -5,7 +5,6 @@ bloque: C
 ms: MS-15
 estado: esqueleto-desde-meta-skill
 requiere_skills_hermes:
-- client-video-edit-ffmpeg-captions
 - edicion-reels-ffmpeg-subtitulos
 - local-audio-transcription
 hecho:

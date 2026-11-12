@@ -4,8 +4,7 @@ slug: cd-universo-cliente
 bloque: C
 ms: MS-08
 estado: esqueleto-desde-meta-skill
-requiere_skills_hermes:
-- client-universe-marketing-workflow
+requiere_skills_hermes: []
 hecho:
 - Documento de voz y estilo construido con al menos 10 muestras reales.
 - Tres piezas generadas que el cliente reconoce como suyas.
