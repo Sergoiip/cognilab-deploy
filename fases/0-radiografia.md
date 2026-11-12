@@ -51,5 +51,5 @@ separada) sí hace falta para no decidir el manifiesto solo con lo dicho.
 6. Lo que depende de sistema operativo no soportado (el instalador cubre pacman, apt y dnf) se marca «a mano» antes de prometerlo.
 
 ## Salida y camino
-- El cliente decide: quedarse con el Mapa vivo, tomar un **Piloto** (un entregable) o pasar al **paquete de 90 días** (Esencial o Integral). El Mapa vivo sigue creciendo durante el piloto y el paquete.
+- El cliente decide: quedarse con el Mapa vivo, tomar un **Piloto** (un entregable) o pasar a un paquete (**Esencial** de 1 mes o **Ecosistema** de 3 a 4 meses). El Mapa vivo sigue creciendo durante el piloto y el paquete.
 - El manifiesto aprobado pasa a la Fase 1 y, de ahí, a la instalación (Fase 2).

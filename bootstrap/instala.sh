@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 # Deja un PC listo según el manifiesto del cliente. Idempotente: se puede repetir sin romper nada.
+#   bootstrap/instala.sh --base [--dry-run]                       (1.º: sin manifiesto)
 #   bootstrap/instala.sh manifiestos/cliente.yaml [--dry-run] [--sin-apps] [--si]
+# Desde 0.28.0 el manifiesto se arma DURANTE la instalación: --base deja el agente con la skill
+# cd-manifiesto-en-vivo, el Hermes del cliente hace las preguntas y luego corre este script
+# con el manifiesto que resultó (bootstrap/skill-manifiesto/SKILL.md).
 # Las apps son OPCIONALES: sin --si pregunta cuáles instalar (sin terminal, no instala ninguna).
 # Instala los módulos pedidos (más E2, siempre) y las aplicaciones que el manifiesto resuelve.
 set -euo pipefail
 
-MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0
+MANIFIESTO=""; DRY=0; SIN_APPS=0; SI=0; BASE=0
 for a in "$@"; do
   case "$a" in
     --dry-run) DRY=1 ;;
     --sin-apps) SIN_APPS=1 ;;
     --si) SI=1 ;;
+    --base) BASE=1 ;;
     *) MANIFIESTO="$a" ;;
   esac
 done
@@ -21,9 +26,14 @@ DEST="$HH/skills/cognilab-deploy"
 die() { echo "ERROR: $*" >&2; exit 1; }
 run() { if [[ $DRY -eq 1 ]]; then echo "  [dry-run] $*"; else eval "$@"; fi; }
 
-[[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh <manifiesto.yaml> [--dry-run] [--sin-apps]"
+if [[ $BASE -eq 0 ]]; then
+  [[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh --base  |  instala.sh <manifiesto.yaml> [--dry-run] [--sin-apps]"
+fi
+instalar_skill_manifiesto() {
+  run "mkdir -p '$DEST/cd-manifiesto-en-vivo' && sed 's#~/cognilab-deploy#$REPO#g' '$REPO/bootstrap/skill-manifiesto/SKILL.md' > '$DEST/cd-manifiesto-en-vivo/SKILL.md'"
+}
 
-echo "== 1/6 Preflight"
+echo "== 1/$([[ $BASE -eq 1 ]] && echo 3 || echo 6) Preflight"
 PY=""
 for c in /usr/bin/python3 python3 "$HH/hermes-agent/venv/bin/python"; do
   if command -v "$c" >/dev/null 2>&1 && "$c" -c 'import yaml' 2>/dev/null; then PY="$c"; break; fi
@@ -34,6 +44,21 @@ for c in pacman apt-get dnf; do command -v "$c" >/dev/null 2>&1 && { PM="$c"; br
 [[ "$PM" == "apt-get" ]] && PM="apt"
 [[ -n "$PM" ]] || die "gestor de paquetes no soportado (solo pacman, apt, dnf)"
 echo "  SO: $(uname -sr) · gestor: $PM · Hermes en: $HH · disco libre: $(df -h "$HOME" | awk 'NR==2{print $4}')"
+
+if [[ $BASE -eq 1 ]]; then
+  E2="$(ls -d "$REPO"/modulos/*/cd-entrega-verificada)"
+  echo "== 2/3 Base: entrega verificada + manifiesto en vivo en $DEST"
+  run "mkdir -p '$DEST' && rm -rf '$DEST/cd-entrega-verificada' && cp -r '$E2' '$DEST/cd-entrega-verificada'"
+  instalar_skill_manifiesto
+  echo "== 3/3 Registrar versión"
+  VER="$(git -C "$REPO" describe --tags --always 2>/dev/null || echo sin-git)"
+  run "printf '%s\n' '$VER' > '$DEST/VERSION'"
+  echo "Base lista (versión $VER). Siguiente paso: abre Hermes en este equipo y escribe"
+  echo "  «Arma mi manifiesto de CogniLab»"
+  echo "Hermes hará las preguntas en ventanas de respuesta y terminará la instalación con tu aprobación."
+  [[ $DRY -eq 1 ]] && echo "(dry-run: no se escribió nada)"
+  exit 0
+fi
 
 echo "== 2/6 Resolver módulos del manifiesto"
 RESUELTO="$("$PY" - "$MANIFIESTO" "$REPO" <<'PY'
@@ -68,6 +93,7 @@ for l in "${SLUGS[@]}"; do
   IFS='|' read -r id slug src <<<"$l"
   run "rm -rf '$DEST/$slug' && cp -r '$src' '$DEST/$slug'"
 done
+instalar_skill_manifiesto   # para ajustar el manifiesto después (p. ej. tras la sesión de mapeo)
 
 echo "== Personalizar agente (nombre y personalidad)"
 if [[ $DRY -eq 1 ]]; then

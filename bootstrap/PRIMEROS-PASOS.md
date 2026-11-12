@@ -1,8 +1,9 @@
 # Primeros pasos después de instalar (manifiesto preliminar)
 
 Esto es lo que se hace justo después de correr `bootstrap/instala.sh` con un manifiesto que
-salió de la encuesta (`bootstrap/encuesta.html` o `tools/encuesta_manifiesto.py`) — **antes**
-de que termine la semana de Radiografía. Es normal que ese manifiesto sea preliminar: se afina
+armó el propio Hermes del cliente durante la instalación (`--base` + skill
+`cd-manifiesto-en-vivo`; o, si no había Hermes, `tools/encuesta_manifiesto.py`) — **antes**
+de que termine la semana de Radiografía o de la sesión de mapeo. Es normal que ese manifiesto sea preliminar: se afina
 con datos reales durante la semana, no se decide todo de una sentada con el cliente.
 
 ## Justo después de instalar
@@ -27,7 +28,7 @@ con datos reales durante la semana, no se decide todo de una sentada con el clie
    (Second Brain), el cliente mismo crea una nota real y una tarea enlazada en la sesión — ese es
    el criterio C1 "Verificado" de todo módulo (`criterios/CRITERIOS-DE-HECHO.md`).
 
-## Si el manifiesto es preliminar (vino de la encuesta, no de una Radiografía completa)
+## Si el manifiesto es preliminar (armado en la instalación, no tras una Radiografía o un mapeo)
 
 6. **Activar la Fase 0 esta misma semana** para afinarlo con datos reales, no con lo que el
    cliente contestó en una encuesta de 5 minutos:

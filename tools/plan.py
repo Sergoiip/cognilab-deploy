@@ -27,8 +27,9 @@ def main():
     a = ap.parse_args()
     f = cargar(a.ficha); inv = cargar(a.inventario) if a.inventario else {}
     mapa = cargar(ROOT / "criterios/dolor-a-modulo.yaml")
-    paquete = f.get("paquete_objetivo", "integral")
-    pk = cargar(ROOT / f"paquetes/{'esencial' if paquete in ('esencial','piloto') else 'integral'}.yaml")
+    paquete = f.get("paquete_objetivo", "ecosistema")
+    if paquete == "integral": paquete = "ecosistema"   # nombre anterior (antes de 0.28.0)
+    pk = cargar(ROOT / f"paquetes/{'esencial' if paquete in ('esencial','piloto') else 'ecosistema'}.yaml")
     avisos, razones, score = [], [], {}
 
     for d in f.get("dolores", []):
@@ -47,14 +48,10 @@ def main():
     if paquete == "piloto":
         elegidos = ranking[:1]; nota = "Piloto: un solo entregable (el de mayor puntaje)."
     elif paquete == "esencial":
-        ligeros = set(pk.get("ligero", {}).get("entre_PROPUESTA", []))
-        princ = ranking[:1]
-        lig = next((m for m in ranking[1:] if m in ligeros), None)
-        elegidos = princ + ([lig] if lig else [])
-        nota = "Esencial: 1 principal + 1 ligero (la lista de ligeros es PROPUESTA, la define Sergio)."
-        if not lig: avisos.append("Esencial: ningún dolor lleva a un módulo ligero; elegir el segundo a mano.")
+        elegidos = ranking[:1]
+        nota = "Esencial: 1 mes, un solo frente (el módulo de mayor puntaje), entregables fijos."
     else:
-        elegidos = ranking; nota = "Integral: a medida; el tope es el tiempo (90 días), no el número de módulos."
+        elegidos = ranking; nota = "Ecosistema: a medida; empieza con la sesión de mapeo. El tope es el tiempo (3 meses, a veces 4), no el número de módulos."
 
     modulos = [{"id": m, "escala": 2} for m in OBLIGATORIOS[:1]]
     uso = f.get("uso_modulos", {}) or {}

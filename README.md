@@ -5,13 +5,13 @@ Repo público (solo lectura, sin token). Es el producto técnico; **los precios,
 `Cadence/Services/Paquete Del caos al sistema en 90 días`.
 
 ## Dos ejes
-- **Paquete** (qué módulos entran): `Esencial` o `Integral` → `paquetes/`.
+- **Paquete** (qué módulos entran): `Esencial` (1 mes, un solo frente) o `Ecosistema` (antes «Integral»; 3 a 4 meses, empieza con la sesión de mapeo) → `paquetes/`.
 - **Escala del cliente** (qué profundidad): 1 individuo, 2 negocio, 3 equipo → `escalas.md`.
 
 ## Estructura
 ```
 modulos/       22 entregables en 5 bloques (A a E), cada uno con SKILL.md, modulo.yaml y variantes/1,2,3
-paquetes/      esencial.yaml, integral.yaml (escalera de oferta en escalera.md)
+paquetes/      esencial.yaml, ecosistema.yaml (escalera de oferta en escalera.md)
 fases/         las 3 fases de 90 días y su hito
 fichas/        ficha de ingreso y de cierre
 criterios/     criterios de "hecho" para aprobar
@@ -24,11 +24,13 @@ tools/         verificar.py: estructura + sincronía con Cadence
 ## Flujo con un cliente
 0. **Radiografía** (`fases/0-radiografia.md`, 1 semana): entrevistas, observación, `tools/inventario.sh` (con permiso), línea base, Mapa vivo v1. Sale `radiografia.yaml`.
    `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
-1. Fase 1 — el manifiesto (paquete + módulos + escala + acompañamiento + agente) sale de una encuesta, no se escribe el YAML a mano:
-   - **El cliente la llena solo, antes de la sesión:** abrir `bootstrap/encuesta.html` (doble clic, cualquier navegador, sin internet ni servidor) y enviar el YAML resultante (copiarlo o descargarlo) a Sergio.
-   - **O se llena en vivo junto al cliente:** `python3 tools/encuesta_manifiesto.py` — mismo cuestionario por terminal, guarda directo en `manifiestos/cliente-X.yaml`.
-   - La encuesta web se regenera con `python3 tools/generar_encuesta_html.py` cada vez que cambien `modulos/` o `paquetes/` (lee los datos reales, nunca queda con una lista vieja).
-2. Fase 2: `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
+1. Fase 1 — **el manifiesto se arma durante la instalación, no antes** (desde 0.28.0). Nadie escribe YAML ni llena una encuesta previa:
+   1. `bootstrap/instala.sh --base` deja la base en el equipo: entrega verificada y la skill `cd-manifiesto-en-vivo`.
+   2. En Hermes, ya instalado, el cliente escribe «Arma mi manifiesto de CogniLab». El agente le hace las preguntas con sus ventanas de respuesta (`clarify`) en cuatro rondas cortas, lee los paquetes y módulos reales con `tools/manifiesto_en_vivo.py opciones` y guarda con `tools/manifiesto_en_vivo.py guardar`, que valida (por ejemplo, que un Esencial tenga un solo frente) y escribe `manifiestos/cliente-X.yaml`.
+   3. El agente muestra el resumen y el `--dry-run`, y con «Aprobado» corre `instala.sh` con ese manifiesto. Procedimiento completo: `bootstrap/skill-manifiesto/SKILL.md`.
+   - Alternativas si no hay Hermes todavía: `python3 tools/encuesta_manifiesto.py` (terminal) o `bootstrap/encuesta.html` (se regenera con `tools/generar_encuesta_html.py`).
+   - En el Ecosistema el manifiesto es provisional hasta la sesión de mapeo: después se repiten las rondas que cambien y se corre `instala.sh` de nuevo (es idempotente).
+2. Fase 2: con el manifiesto ya armado, `bootstrap/instala.sh manifiestos/cliente-X.yaml --dry-run`, revisar, y correr sin `--dry-run`. `--sin-apps` instala solo los skills.
    Si el cliente ya tiene Hermes, él mismo puede correr el setup: la instrucción lista para pegar está en `bootstrap/INSTRUCCION-HERMES.md`.
    La bóveda se personaliza **desde el momento en que existe el manifiesto, no al final**: el paso 3/6 de `instala.sh` (`tools/scaffold_vault.py`) escribe `00 - Bienvenida.md` con el nombre del cliente, su agente y sus módulos elegidos, y crea las carpetas que esos módulos ya necesitan. Si el manifiesto es preliminar y cambia durante la Radiografía, correr `instala.sh` de nuevo (o solo `scaffold_vault.py`) refleja el cambio de inmediato — nunca hay que esperar a la semana completa para que se vea algo personalizado.
    Justo después de instalar: `bootstrap/PRIMEROS-PASOS.md` — qué verificar y, si el manifiesto es preliminar (vino de la encuesta, no de una Radiografía completa), cómo afinarlo esa misma semana.

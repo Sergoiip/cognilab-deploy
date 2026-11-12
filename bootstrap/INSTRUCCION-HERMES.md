@@ -4,14 +4,14 @@ Para cuando el equipo del cliente ya tiene Hermes y quieres que **él** corra el
 
 ## Cómo le llega el repo al cliente (lo haces tú antes)
 
-El repo `cognilab-deploy` es **público** (acceso de solo lectura para cualquiera, sin token ni login). Esto resuelve el problema recurrente de *fine-grained tokens* que vencían o no se generaban bien. Lo único privado sigue siendo el manifiesto del cliente (`manifiestos/cliente-X.yaml`), que nunca está en el repo: se lo entregas aparte.
+El repo `cognilab-deploy` es **público** (acceso de solo lectura para cualquiera, sin token ni login). Esto resuelve el problema recurrente de *fine-grained tokens* que vencían o no se generaban bien. Lo único privado es el manifiesto del cliente (`manifiestos/cliente-X.yaml`), que nunca está en el repo. Desde 0.28.0 no hace falta entregarlo: lo arma el propio Hermes del cliente durante la instalación.
 
 | Opción | Cuándo | Qué le entregas | Por qué canal |
 |---|---|---|---|
-| **A · Clon directo (repo público)** | El cliente tiene `git` | Nada que entregar salvo el manifiesto de cliente | El manifiesto por canal privado (no por chat de grupo ni correo abierto) |
+| **A · Clon directo (repo público)** | El cliente tiene `git` | Nada que entregar (el manifiesto se arma en la instalación) | Solo si ya existe un manifiesto: por canal privado |
 | **B · Paquete firmado** | El cliente no tiene `git`/GitHub, o la máquina no tiene salida a internet fiable | `cognilab-deploy-<versión>.tar.gz` y su `.sha256` (los genera `tools/empaquetar.sh`) | Enlace temporal (Drive, Syncthing). Lo borras al terminar |
 
-El manifiesto de cliente nunca se pega dentro de esta instrucción ni se sube al repo: se entrega aparte, por canal privado.
+El manifiesto de cliente nunca se pega dentro de esta instrucción ni se sube al repo.
 
 ## Instrucción · Opción A (clon directo)
 
@@ -19,7 +19,10 @@ El manifiesto de cliente nunca se pega dentro de esta instrucción ni se sube al
 Vas a dejar este equipo listo con el paquete de CogniLab. Sigue estos pasos en orden y NO saltes la aprobación del paso 4.
 
 1. Trae el repo (es público, no pide usuario ni contraseña): `git clone https://github.com/Sergoiip/cognilab-deploy.git ~/cognilab-deploy` (si ya existe, `git -C ~/cognilab-deploy pull`). Si falla el acceso, detente y avísame.
-2. Revisa que existan PyYAML y mi manifiesto `~/cognilab-deploy/manifiestos/cliente-X.yaml`. Si falta algo, dímelo y detente.
+2. Revisa que exista PyYAML. Si falta, dímelo y detente.
+   Instala la base: `bash ~/cognilab-deploy/bootstrap/instala.sh --base`.
+   Después arma mi manifiesto conmigo siguiendo la skill `cd-manifiesto-en-vivo`: pregúntame con tus ventanas de respuesta, en rondas cortas, y guárdalo con `tools/manifiesto_en_vivo.py guardar`. No escribas el YAML a mano. Queda en `~/cognilab-deploy/manifiestos/cliente-X.yaml`.
+   (Si ya te entregué un manifiesto, salta esto y úsalo.)
 3. Corre en simulación, sin instalar nada:
    bash ~/cognilab-deploy/bootstrap/instala.sh ~/cognilab-deploy/manifiestos/cliente-X.yaml --dry-run
    Muéstrame la salida completa y resúmela en 5 líneas: qué skills, qué apps, qué plugins, qué pide sudo, qué queda «a mano».
@@ -40,7 +43,7 @@ Sustituye los pasos 1 y 2 del bloque anterior por estos; los pasos 3 a 6 quedan 
 
 ```
 1. Tengo en ~/Descargas el paquete `cognilab-deploy-<versión>.tar.gz` y su archivo `.sha256`. Verifica la integridad ANTES de abrir nada: `cd ~/Descargas && sha256sum -c cognilab-deploy-<versión>.tar.gz.sha256`. Si no dice OK, detente y avísame; no lo extraigas.
-2. Extrae: `mkdir -p ~/cognilab-deploy && tar -xzf cognilab-deploy-<versión>.tar.gz -C ~/cognilab-deploy --strip-components=1`. Guarda el manifiesto que te pegaré en `~/cognilab-deploy/manifiestos/cliente-X.yaml` y revisa que exista PyYAML. Si falta algo, dímelo y detente.
+2. Extrae: `mkdir -p ~/cognilab-deploy && tar -xzf cognilab-deploy-<versión>.tar.gz -C ~/cognilab-deploy --strip-components=1`. Revisa que exista PyYAML, instala la base (`bash ~/cognilab-deploy/bootstrap/instala.sh --base`) y arma mi manifiesto conmigo con la skill `cd-manifiesto-en-vivo`. Si falta algo, dímelo y detente.
 ```
 
 Para comprobar el hash por otro canal, mándale el valor del `.sha256` por un medio distinto al del enlace (por ejemplo, el hash por WhatsApp y el archivo por Drive).

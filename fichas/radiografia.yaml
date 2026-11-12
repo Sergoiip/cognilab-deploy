@@ -2,7 +2,7 @@
 # Alimenta tools/plan.py y tools/roster_sugerido.py. Reemplaza en la práctica a fichas/ingreso.md (que sigue como guion de entrevista).
 cliente: "[cliente]"
 tipo: negocio              # negocio | proyecto
-paquete_objetivo: integral # esencial | integral | piloto
+paquete_objetivo: ecosistema # esencial | ecosistema | piloto
 vault: ~/Documents/Obsidian/Bóveda-cliente
 
 personas:                  # quién toca el trabajo (roles, no nombres)

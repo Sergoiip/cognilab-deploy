@@ -1,6 +1,11 @@
 paquete: Esencial
+oferta_ref: 01 - Comercial/Oferta y precios/Oferta vigente
 cadence_ref: Cadence/Services/Paquete Del caos al sistema en 90 días
-fases: 3
+# Desde 0.28.0: 1 mes, un solo frente, entregables fijos. Reemplaza al Esencial de 90 días
+# (que llevaba 1 principal + 1 ligero en 3 fases).
+duracion_meses: 1
+frentes: 1
+entregables: fijos   # se instala, queda funcionando y se entrega; no se re-planea a mitad de camino
 obligatorios:
 - A1
 - E1
@@ -27,14 +32,5 @@ principal:
   - C6
   - D1
   - D2
-ligero:
-  elegir: 1
-  entre_PROPUESTA:
-  - A5
-  - A6
-  - B3
-  - C2
-  - C3
-  - D1
-  nota: Sergio define cuáles son 'ligeros'; hoy es una propuesta.
-precio: ver Cadence
+no_incluye: Otras áreas de la empresa; para eso está el Ecosistema.
+precio: ver Oferta vigente (nunca en el repo)

@@ -168,7 +168,7 @@ Fuente de los entregables: `Cadence/Services/Paquete Del caos al sistema en 90 d
 
 1. ¿Los 5 comunes están bien?
 2. ¿Algún umbral numérico cambia?
-3. ¿Qué módulos son 'ligeros' para el Esencial? (`paquetes/esencial.yaml`)
+3. ~~¿Qué módulos son 'ligeros' para el Esencial?~~ Resuelto en 0.28.0: el Esencial es un solo frente, sin módulo ligero (`paquetes/esencial.yaml`).
 4. ¿Cuántas rondas de ajuste incluye C1 identidad? (hoy sin definir)
 5. ¿Los módulos sin origen (A1, A6, B1, E1, E3) se escriben primero?
 

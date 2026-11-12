@@ -1,5 +1,5 @@
 cliente: "[cliente]"
-paquete: integral
+paquete: ecosistema
 acompanamiento: integral   # tecnico = explica el cómo y el porqué | integral = resultados simples, sin tecnicismo
 agente:
   nombre: "[nombre con el que el cliente se dirige a su agente]"
