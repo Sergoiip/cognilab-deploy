@@ -25,7 +25,7 @@ tools/         verificar.py: estructura + sincronía con Cadence
 0. **Radiografía** (`fases/0-radiografia.md`, 1 semana): entrevistas, observación, `tools/inventario.sh` (con permiso), línea base, Mapa vivo v1. Sale `radiografia.yaml`.
    `python3 tools/plan.py radiografia.yaml --inventario inventario.yaml --salida manifiestos/cliente-X.yaml` propone el manifiesto y explica cada decisión (dolor → módulo → escala). Es propuesta, no decisión.
 1. Fase 1 — **el manifiesto se arma durante la instalación, no antes** (desde 0.28.0). Nadie escribe YAML ni llena una encuesta previa:
-   1. `bootstrap/instala.sh --base` deja la base en el equipo: entrega verificada y la skill `cd-manifiesto-en-vivo`.
+   1. `bootstrap/instala.sh --base` deja la base en el equipo: los 22 módulos (ninguno activo todavía) y la skill `cd-manifiesto-en-vivo`. Desde 0.29.0 el manifiesto no recorta qué skills viajan: marca cuáles quedan activas (`ACTIVOS`).
    2. En Hermes, ya instalado, el cliente escribe «Arma mi manifiesto de CogniLab». El agente le hace las preguntas con sus ventanas de respuesta (`clarify`) en cuatro rondas cortas, lee los paquetes y módulos reales con `tools/manifiesto_en_vivo.py opciones` y guarda con `tools/manifiesto_en_vivo.py guardar`, que valida (por ejemplo, que un Esencial tenga un solo frente) y escribe `manifiestos/cliente-X.yaml`.
    3. El agente muestra el resumen y el `--dry-run`, y con «Aprobado» corre `instala.sh` con ese manifiesto. Procedimiento completo: `bootstrap/skill-manifiesto/SKILL.md`.
    - Alternativas si no hay Hermes todavía: `python3 tools/encuesta_manifiesto.py` (terminal) o `bootstrap/encuesta.html` (se regenera con `tools/generar_encuesta_html.py`).

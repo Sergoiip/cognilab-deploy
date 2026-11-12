@@ -29,6 +29,12 @@ run() { if [[ $DRY -eq 1 ]]; then echo "  [dry-run] $*"; else eval "$@"; fi; }
 if [[ $BASE -eq 0 ]]; then
   [[ -n "$MANIFIESTO" && -f "$MANIFIESTO" ]] || die "uso: instala.sh --base  |  instala.sh <manifiesto.yaml> [--dry-run] [--sin-apps]"
 fi
+instalar_todos_los_modulos() {   # desde 0.29.0: los 22 módulos viajan siempre; el manifiesto solo marca cuáles están activos
+  for d in "$REPO"/modulos/*/cd-*/; do
+    d="${d%/}"; run "rm -rf '$DEST/$(basename "$d")' && cp -r '$d' '$DEST/$(basename "$d")'"
+  done
+  echo "  $(ls -d "$REPO"/modulos/*/cd-*/ | wc -l) módulos instalados"
+}
 instalar_skill_manifiesto() {
   run "mkdir -p '$DEST/cd-manifiesto-en-vivo' && sed 's#~/cognilab-deploy#$REPO#g' '$REPO/bootstrap/skill-manifiesto/SKILL.md' > '$DEST/cd-manifiesto-en-vivo/SKILL.md'"
 }
@@ -46,10 +52,11 @@ for c in pacman apt-get dnf; do command -v "$c" >/dev/null 2>&1 && { PM="$c"; br
 echo "  SO: $(uname -sr) · gestor: $PM · Hermes en: $HH · disco libre: $(df -h "$HOME" | awk 'NR==2{print $4}')"
 
 if [[ $BASE -eq 1 ]]; then
-  E2="$(ls -d "$REPO"/modulos/*/cd-entrega-verificada)"
-  echo "== 2/3 Base: entrega verificada + manifiesto en vivo en $DEST"
-  run "mkdir -p '$DEST' && rm -rf '$DEST/cd-entrega-verificada' && cp -r '$E2' '$DEST/cd-entrega-verificada'"
+  echo "== 2/3 Base: todos los módulos + manifiesto en vivo en $DEST (ninguno activo todavía)"
+  run "mkdir -p '$DEST'"
+  instalar_todos_los_modulos
   instalar_skill_manifiesto
+  run ": > '$DEST/ACTIVOS'"
   echo "== 3/3 Registrar versión"
   VER="$(git -C "$REPO" describe --tags --always 2>/dev/null || echo sin-git)"
   run "printf '%s\n' '$VER' > '$DEST/VERSION'"
@@ -89,10 +96,10 @@ fi
 
 echo "== 4/6 Instalar skills en $DEST"
 run "mkdir -p '$DEST'"
-for l in "${SLUGS[@]}"; do
-  IFS='|' read -r id slug src <<<"$l"
-  run "rm -rf '$DEST/$slug' && cp -r '$src' '$DEST/$slug'"
-done
+instalar_todos_los_modulos
+ACT=""; for l in "${SLUGS[@]}"; do ACT+="${l%%|*} "; done
+echo "  activos según el manifiesto: $ACT"
+run "printf '%s\n' $ACT > '$DEST/ACTIVOS'"
 instalar_skill_manifiesto   # para ajustar el manifiesto después (p. ej. tras la sesión de mapeo)
 
 echo "== Personalizar agente (nombre y personalidad)"

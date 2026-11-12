@@ -21,6 +21,12 @@ Hermes ya está corriendo en el equipo: tú le haces las preguntas con tus venta
 - Hay que cambiar un manifiesto ya hecho (después de la sesión de mapeo del Ecosistema):
   mismas rondas, empezando con las respuestas actuales como recomendadas.
 
+## Qué ya está instalado
+Los 22 módulos (`cd-*`) ya están en el equipo desde `--base`. El manifiesto no instala ni
+bloquea módulos: decide cuáles quedan **activos** (archivo `ACTIVOS` junto a esta skill) según
+el paquete. Solo usa como entregable del cliente un módulo activo; si el cliente pide algo de un
+módulo inactivo, dile que está fuera de su paquete y que se lo comentas a Sergio.
+
 ## Procedimiento
 
 1. **Lee las opciones reales del repo, nunca de memoria:**
