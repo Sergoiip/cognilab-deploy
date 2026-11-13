@@ -24,6 +24,11 @@ con datos reales durante la semana, no se decide todo de una sentada con el clie
 4. **Resolver la lista "a mano".** `instala.sh` imprime al final qué no se puede automatizar
    (cuentas de Telegram/WhatsApp/Discord/Drive, plugins sin `vault:` resuelto, etc.) — cerrarla
    con el cliente antes de irse, no dejarla para después.
+4b. **Después de configurar el gateway: transcripción de audios con Groq.** En cuanto el agente
+   responda por Telegram o WhatsApp, activar Groq para que entienda las notas de voz: el cliente
+   crea su clave y la guarda en su terminal, y el agente deja `stt.provider: groq`. Pasos, prueba
+   con un audio real y errores comunes en `bootstrap/TRANSCRIPCION-GROQ.md`. La clave nunca se
+   pega en un chat.
 5. **Un caso real por módulo instalado**, no una demo vacía: por ejemplo, si se instaló A2
    (Second Brain), el cliente mismo crea una nota real y una tarea enlazada en la sesión — ese es
    el criterio C1 "Verificado" de todo módulo (`criterios/CRITERIOS-DE-HECHO.md`).

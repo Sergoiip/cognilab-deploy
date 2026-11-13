@@ -47,6 +47,11 @@ version: 1.0.0
 7. Pedir al usuario que escriba al bot desde un número permitido; las respuestas llevan un prefijo
    del agente. Solo se procesan los números de la lista; los desconocidos reciben un código de
    emparejamiento salvo que `whatsapp.unauthorized_dm_behavior` sea `ignore`.
+8. **Siguiente paso obligatorio: transcripción de audios con Groq.** Con el gateway respondiendo,
+   seguir `bootstrap/TRANSCRIPCION-GROQ.md` del repo cognilab-deploy. El cliente guarda su
+   `GROQ_API_KEY` en su propia terminal (con `read -s`, nunca en el chat); el agente fija
+   `stt.provider groq` y el idioma, reinicia el gateway con aprobación y prueba con una nota de voz
+   real.
 
 ### Reglas de decisión
 - Datos ya presentes en la config → no volver a preguntarlos.

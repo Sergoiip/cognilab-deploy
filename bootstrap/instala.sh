@@ -178,6 +178,11 @@ if [[ $ESPACIO -eq 1 ]]; then
 fi
 
 
+# Toda instalación con canal de mensajería deja pendiente la transcripción con Groq (después del gateway).
+if "$PY" -c 'import sys,yaml;c=(yaml.safe_load(open(sys.argv[1])).get("herramientas") or {}).get("cuentas") or [];sys.exit(0 if any(x in str(c).lower() for x in ("telegram","whatsapp","discord","signal")) else 1)' "$MANIFIESTO"; then
+  MANUALES+=("Después de configurar el gateway: activar la transcripción de audios con Groq (bootstrap/TRANSCRIPCION-GROQ.md; la clave la guarda el cliente)")
+fi
+
 echo "== 6/7 Skills de Hermes que piden los módulos activos"
 # Fuente de cada una: aprendizaje/Skills replicables (se copia), Hermes (ya viene) o el hub
 # (stack/skills_hermes.yaml). Las que no se encuentran pasan a la lista «a mano».
