@@ -68,6 +68,12 @@ módulo inactivo, dile que está fuera de su paquete y que se lo comentas a Serg
    salió de verdad (versión, qué se instaló, qué falló, la lista «a mano») y sigue con
    `bootstrap/PRIMEROS-PASOS.md`.
 
+6. **Prioridad inmediata: Composio** (`bootstrap/COMPOSIO.md`). Pídele al cliente que corra en su
+   terminal `hermes mcp add composio --url https://connect.composio.dev/mcp --auth header` y pegue
+   ahí su clave (tú nunca la ves). Luego conecta con `COMPOSIO_MANAGE_CONNECTIONS` las cuentas que
+   piden sus módulos activos y prueba con una lectura real. Después de configurar el gateway, la
+   transcripción con Groq (`bootstrap/TRANSCRIPCION-GROQ.md`).
+
 ## Reglas
 - El manifiesto tiene datos del cliente: se queda en `manifiestos/` (git lo ignora), no se pega
   en un chat de grupo ni se sube a ningún lado.

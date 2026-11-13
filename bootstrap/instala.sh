@@ -178,6 +178,10 @@ if [[ $ESPACIO -eq 1 ]]; then
 fi
 
 
+# Composio va primero en la lista «a mano»: es prioridad del setup (bootstrap/COMPOSIO.md).
+if grep -q "connect.composio.dev" "$HH/config.yaml" 2>/dev/null; then echo "  = Composio ya está configurado en este perfil (probar con 'hermes mcp test composio')"; else
+MANUALES=("PRIORIDAD · Conectar Composio: el cliente corre 'hermes mcp add composio --url https://connect.composio.dev/mcp --auth header' con su clave y autoriza sus cuentas desde el chat (bootstrap/COMPOSIO.md)" ${MANUALES[@]+"${MANUALES[@]}"})
+fi
 # Toda instalación con canal de mensajería deja pendiente la transcripción con Groq (después del gateway).
 if "$PY" -c 'import sys,yaml;c=(yaml.safe_load(open(sys.argv[1])).get("herramientas") or {}).get("cuentas") or [];sys.exit(0 if any(x in str(c).lower() for x in ("telegram","whatsapp","discord","signal")) else 1)' "$MANIFIESTO"; then
   MANUALES+=("Después de configurar el gateway: activar la transcripción de audios con Groq (bootstrap/TRANSCRIPCION-GROQ.md; la clave la guarda el cliente)")

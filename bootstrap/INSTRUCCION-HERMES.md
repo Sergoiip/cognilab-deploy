@@ -34,7 +34,7 @@ Vas a dejar este equipo listo con el paquete de CogniLab. Sigue estos pasos en o
    - No uses `--si` salvo que yo lo pida. Si el script pregunta qué apps instalar, pregúntame a mí.
    - Si un comando pide sudo, dime cuál es y espera.
    - Si algo falla, no improvises ni repitas con otros comandos: muéstrame el error y espera.
-6. Al terminar dime: la versión que quedó registrada, qué se instaló, qué falló y la lista «a mano» (cuentas por crear, modo restringido de Obsidian). No inventes resultados: reporta lo que salió.
+6. Al terminar, lo primero de la lista «a mano» es Composio (bootstrap/COMPOSIO.md): dime el comando que tengo que correr yo con mi clave y, cuando lo corra, conecta mis cuentas. Dime también la versión que quedó registrada, qué se instaló, qué falló y el resto de la lista «a mano» (cuentas por crear, modo restringido de Obsidian). No inventes resultados: reporta lo que salió.
 ```
 
 ## Instrucción · Opción B (paquete firmado)

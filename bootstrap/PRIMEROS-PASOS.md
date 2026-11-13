@@ -12,6 +12,11 @@ con datos reales durante la semana, no se decide todo de una sentada con el clie
    `agente.personalidad`, abrir una conversación y preguntarle su nombre — debe coincidir. Si no
    coincide, revisar que `tools/personalizar_agente.py` corrió (lo hace solo `instala.sh`, pero
    confirmar si algo falló en esa etapa).
+1b. **Composio conectado (prioridad).** Antes de seguir con los módulos, el cliente agrega el
+   servidor MCP de Composio con su propia clave (`hermes mcp add composio --url
+   https://connect.composio.dev/mcp --auth header`) y autoriza desde el chat las cuentas que piden
+   sus módulos activos. Se cierra con una lectura real (últimos posts, agenda de mañana). Pasos y
+   errores comunes en `bootstrap/COMPOSIO.md`.
 2. **La bóveda ya refleja el manifiesto, no solo abre vacía.** `instala.sh` (paso 3/7) corre
    `tools/scaffold_vault.py`: crea la bóveda si falta, escribe `00 - Bienvenida.md` con el nombre
    del cliente, el agente y los módulos elegidos (checklist), y las carpetas base que los módulos

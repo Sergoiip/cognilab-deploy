@@ -10,7 +10,7 @@ version: 1.0.0
 
 ## Configuración que debe fijar el cliente (en su perfil o notas del agente)
 - **Cuenta de Instagram** que se atiende (el handle de la marca del cliente).
-- **Variable de entorno con la clave MCP** de Composio (por convención `COMPOSIO_API_KEY`, guardada en el `.env` del agente).
+- **Variable de entorno con la clave MCP** de Composio: `MCP_COMPOSIO_API_KEY`, guardada en el `.env` del agente (la escribe `hermes mcp add`).
 - **Frase de derivación**: respuesta fija para consultas de precio/información, que remite al canal de mensajería donde se atienden leads (por ejemplo, el WhatsApp del negocio).
 - **Canal de contacto** al que se deriva y quién lo opera (el propio negocio o un tercero).
 - **Página oficial de precios** del cliente (si la tiene).
@@ -22,7 +22,7 @@ version: 1.0.0
 Si alguno de estos datos falta, preguntarlo antes de responder nada en nombre de la marca.
 
 ## Preparación
-- Servidor MCP `composio` (`https://connect.composio.dev/mcp`, cabecera `x-consumer-api-key`, secreto en el `.env` del agente). Añadir con `hermes config set` (el asistente interactivo se cuelga en su prompt de auth). Verificar con `hermes mcp test composio`.
+- Servidor MCP `composio` (`https://connect.composio.dev/mcp`, cabecera `Authorization: Bearer ${MCP_COMPOSIO_API_KEY}`, secreto en el `.env` del agente). Alta y alternativa sin asistente en `bootstrap/COMPOSIO.md` del repo. Verificar con `hermes mcp test composio`.
 - La clave del panel `ck_` es de consumidor/MCP, no de SDK.
 - Conectados típicamente: Instagram y YouTube (un 403 en `mine:true` indica permiso de canal faltante). TikTok no tiene auth gestionada (solo publica/lista estadísticas, sin comentarios/DMs).
 - Regenerar cualquier clave pegada en el chat al terminar.
